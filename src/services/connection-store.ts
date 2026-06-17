@@ -75,6 +75,11 @@ class ConnectionStore {
     return (this.db.prepare('SELECT COUNT(*) as count FROM users').get() as any).count;
   }
 
+  // Get database instance for external use
+  getDb(): Database.Database {
+    return this.db;
+  }
+
   // Connection operations
   getConnections(): Connection[] {
     return this.db.prepare('SELECT * FROM connections ORDER BY name').all() as Connection[];

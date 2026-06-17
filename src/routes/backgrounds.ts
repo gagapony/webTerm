@@ -2,14 +2,13 @@ import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import Database from 'better-sqlite3';
-import { config } from '../config';
+import { store } from '../services/connection-store';
+import { requireAuth } from '../middleware/auth';
 
 const router = Router();
 
-// Create database connection for backgrounds table
-const db = new Database(config.database.path);
-db.pragma('journal_mode = WAL');
+// Get database instance from ConnectionStore
+const db = store.getDb();
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -23,7 +22,11 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const timestamp = Date.now();
     const ext = path.extname(file.originalname);
-    cb(null, `${timestamp}-${file.originalname}`);
+    // Sanitize filename: remove path separators and dangerous characters
+    const sanitizedName = file.originalname
+      .replace(/[/\\]/g, '_')
+      .replace(/[^a-zA-Z0-9._-]/g, '_');
+    cb(null, `${timestamp}-${sanitizedName}`);
   }
 });
 
@@ -55,7 +58,7 @@ db.exec(`
 `);
 
 // GET /api/backgrounds - List all backgrounds
-router.get('/', (req: Request, res: Response) => {
+router.get('/', requireAuth, (req: Request, res: Response) => {
   try {
     const backgrounds = db.prepare('SELECT * FROM backgrounds ORDER BY created_at DESC').all();
     res.json(backgrounds);
@@ -66,7 +69,7 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 // POST /api/backgrounds/upload - Upload a new background
-router.post('/upload', upload.single('image'), (req: Request, res: Response) => {
+router.post('/upload', requireAuth, upload.single('image'), (req: Request, res: Response) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -91,9 +94,13 @@ router.post('/upload', upload.single('image'), (req: Request, res: Response) => 
 });
 
 // DELETE /api/backgrounds/:id - Delete a background
-router.delete('/:id', (req: Request, res: Response) => {
+router.delete('/:id', requireAuth, (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = parseInt(req.params.id, 10);
+
+    if (isNaN(id)) {
+      return res.status(400).json({ error: 'Invalid ID' });
+    }
 
     // Get the background record
     const background = db.prepare('SELECT * FROM backgrounds WHERE id = ?').get(id) as any;
