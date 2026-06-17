@@ -161,19 +161,6 @@ class WebTerm {
       this.hideSettingsModal();
     });
 
-    // Font size slider
-    const fontSizeSlider = document.getElementById('fontSizeSlider');
-    const fontSizeValue = document.getElementById('fontSizeValue');
-    fontSizeSlider?.addEventListener('input', (e) => {
-      const size = e.target.value;
-      if (fontSizeValue) fontSizeValue.textContent = `${size}px`;
-      document.documentElement.style.setProperty('--font-size', `${size}px`);
-      // Update all terminals
-      this.terminals.forEach(t => {
-        if (t.terminal) t.terminal.options.fontSize = parseInt(size);
-      });
-    });
-
     // Modal controls
     if (this.newSessionClose) {
       this.newSessionClose.addEventListener('click', () => {
@@ -952,6 +939,20 @@ class WebTerm {
     };
 
     localStorage.setItem('webterm-settings', JSON.stringify(settings));
+  }
+
+  // Background image methods (stub - will be implemented in Task 5)
+  applyBackground(background) {
+    if (!background) {
+      document.body.style.backgroundImage = '';
+      return;
+    }
+
+    const url = background.value || background;
+    document.body.style.backgroundImage = `url(${url})`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundAttachment = 'fixed';
   }
 }
 
