@@ -1043,8 +1043,6 @@ class WebTerm {
         this.applyBackground(settings.backgroundImage);
       }
 
-      // Render saved themes list
-      this.renderSavedThemesList();
     }
   }
 
@@ -1195,58 +1193,6 @@ class WebTerm {
     }
   }
 
-  renderSavedThemesList() {
-    const list = document.getElementById('savedThemesList');
-    if (!list) return;
-
-    const customThemes = Object.entries(this.savedThemes || {})
-      .filter(([id]) => id.startsWith('custom-') && id !== 'custom-current');
-
-    if (customThemes.length === 0) {
-      list.innerHTML = '<div class="saved-themes-empty">No saved themes</div>';
-      return;
-    }
-
-    list.innerHTML = customThemes.map(([id, theme]) => {
-      const colors = theme.colors || {};
-      const isActive = id === this.currentTheme;
-      return `
-        <div class="saved-theme-item ${isActive ? 'is-active' : ''}" data-theme-id="${id}">
-          <div class="saved-theme-preview" style="background: ${colors.base || '#1e1e2e'};">
-            <div class="saved-theme-accent" style="background: ${colors.accent || '#89b4fa'};"></div>
-          </div>
-          <div class="saved-theme-info">
-            <div class="saved-theme-name">${this.escapeHtml(theme.name || id)}</div>
-            <div class="saved-theme-meta">${colors.base || 'N/A'}</div>
-          </div>
-          <button class="saved-theme-delete" data-theme-id="${id}" title="Delete">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-      `;
-    }).join('');
-
-    // Add click handlers
-    list.querySelectorAll('.saved-theme-item').forEach(item => {
-      item.addEventListener('click', (e) => {
-        if (!e.target.closest('.saved-theme-delete')) {
-          this.selectSavedTheme(item.dataset.themeId);
-        }
-      });
-    });
-
-    // Add delete handlers
-    list.querySelectorAll('.saved-theme-delete').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.deleteCustomTheme(btn.dataset.themeId);
-      });
-    });
-  }
-
   selectSavedTheme(themeId) {
     if (!themeId || !this.savedThemes[themeId]) return;
 
@@ -1257,7 +1203,6 @@ class WebTerm {
     this.updateCustomColorPickers(theme.colors);
     this.updateThemeSelectorUI(themeId);
     this.updateCustomThemeDropdown();
-    this.renderSavedThemesList();
   }
 
   saveCustomTheme() {
@@ -1290,7 +1235,6 @@ class WebTerm {
     this.applyCustomThemeFromColors(colors);
     this.updateThemeSelectorUI(themeId);
     this.updateCustomThemeDropdown();
-    this.renderSavedThemesList();
 
     // Clear name input
     if (nameInput) nameInput.value = '';
@@ -1313,7 +1257,6 @@ class WebTerm {
     }
 
     this.updateCustomThemeDropdown();
-    this.renderSavedThemesList();
 
     log.info(`Theme deleted: ${themeId}`);
   }
@@ -1618,25 +1561,6 @@ class WebTerm {
       });
     }
 
-    // Import JSON textarea
-    const importThemeBtn = document.getElementById('importThemeBtn');
-    if (importThemeBtn) {
-      importThemeBtn.addEventListener('click', () => {
-        const textarea = document.getElementById('importThemeJSON');
-        if (textarea && textarea.value.trim()) {
-          const result = this.importThemeFromJSON(textarea.value.trim());
-          if (result.success) {
-            textarea.value = '';
-            alert(`Theme "${result.name}" imported successfully!`);
-          } else {
-            alert(`Import failed: ${result.error}`);
-          }
-        } else {
-          alert('Please paste JSON configuration');
-        }
-      });
-    }
-
     // Import from file
     const importFileBtn = document.getElementById('importThemeFileBtn');
     const importFileInput = document.getElementById('importThemeFile');
@@ -1693,8 +1617,9 @@ class WebTerm {
         const select = document.getElementById('customThemeSelect');
         if (select && select.value && this.savedThemes[select.value]) {
           const themeId = select.value;
+          const themeName = this.savedThemes[themeId].name || themeId;
+          if (!confirm(`Delete theme "${themeName}"?`)) return;
           delete this.savedThemes[themeId];
-          this.renderSavedThemesList();
           this.updateCustomThemeDropdown();
           this.saveSettings();
         }
