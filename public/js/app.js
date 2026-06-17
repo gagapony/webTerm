@@ -21,6 +21,8 @@ class WebTerm {
 
     // Initialize settings
     this.currentTheme = 'catppuccin-mocha';
+    this.savedThemes = {};
+    this.customThemeColors = null;
     this.currentFontSize = 14;
     this.currentOpacity = 0.85;
     this.currentBlurStrength = 12;
@@ -31,6 +33,7 @@ class WebTerm {
     this.initCustomThemePickers();
     this.initSliders();
     this.initBackgroundUpload();
+    this.initThemeManagement();
     this.loadSettings();
 
     // Load backgrounds when settings modal opens
@@ -775,6 +778,9 @@ class WebTerm {
 
         // Apply theme
         this.applyTheme(theme);
+
+        // Update custom theme dropdown
+        this.updateCustomThemeDropdown();
       });
     });
   }
@@ -785,12 +791,18 @@ class WebTerm {
       const text = document.getElementById('customText')?.value || '#cdd6f4';
       const accent = document.getElementById('customAccent')?.value || '#89b4fa';
       const surface = document.getElementById('customSurface')?.value || '#313244';
+      const surface1 = document.getElementById('customSurface1')?.value || '#45475a';
+      const overlay0 = document.getElementById('customOverlay0')?.value || '#585b70';
+      const overlay1 = document.getElementById('customOverlay1')?.value || '#6c7086';
 
-      document.documentElement.style.setProperty('--ctp-base', base);
-      document.documentElement.style.setProperty('--ctp-text', text);
-      document.documentElement.style.setProperty('--ctp-accent', accent);
-      document.documentElement.style.setProperty('--ctp-surface0', surface);
-      document.documentElement.removeAttribute('data-theme');
+      this.customThemeColors = { base, text, accent, surface0: surface, surface1, overlay0, overlay1 };
+      this.applyCustomThemeFromColors(this.customThemeColors);
+    } else if (theme && theme.startsWith('custom-') && this.savedThemes && this.savedThemes[theme]) {
+      // It's a saved custom theme
+      const customTheme = this.savedThemes[theme];
+      this.customThemeColors = customTheme.colors;
+      this.applyCustomThemeFromColors(customTheme.colors);
+      this.updateCustomColorPickers(customTheme.colors);
     } else {
       document.documentElement.setAttribute('data-theme', theme);
       // Reset custom properties
@@ -798,20 +810,33 @@ class WebTerm {
       document.documentElement.style.removeProperty('--ctp-text');
       document.documentElement.style.removeProperty('--ctp-accent');
       document.documentElement.style.removeProperty('--ctp-surface0');
+      document.documentElement.style.removeProperty('--ctp-surface1');
+      document.documentElement.style.removeProperty('--ctp-overlay0');
+      document.documentElement.style.removeProperty('--ctp-overlay1');
     }
 
     this.currentTheme = theme;
   }
 
   initCustomThemePickers() {
-    const pickers = ['customBase', 'customText', 'customAccent', 'customSurface'];
+    const pickers = ['customBase', 'customText', 'customAccent', 'customSurface', 'customSurface1', 'customOverlay0', 'customOverlay1'];
 
     pickers.forEach(id => {
       const picker = document.getElementById(id);
       if (picker) {
         picker.addEventListener('input', () => {
-          if (this.currentTheme === 'custom') {
-            this.applyTheme('custom');
+          if (this.currentTheme?.startsWith('custom') || this.currentTheme === 'custom') {
+            // Update custom theme colors
+            this.customThemeColors = {
+              base: document.getElementById('customBase')?.value || '#1e1e2e',
+              text: document.getElementById('customText')?.value || '#cdd6f4',
+              accent: document.getElementById('customAccent')?.value || '#89b4fa',
+              surface0: document.getElementById('customSurface')?.value || '#313244',
+              surface1: document.getElementById('customSurface1')?.value || '#45475a',
+              overlay0: document.getElementById('customOverlay0')?.value || '#585b70',
+              overlay1: document.getElementById('customOverlay1')?.value || '#6c7086'
+            };
+            this.applyCustomThemeFromColors(this.customThemeColors);
           }
         });
       }
@@ -870,32 +895,59 @@ class WebTerm {
     if (saved) {
       const settings = JSON.parse(saved);
 
+      // Load saved themes (backward compatible)
+      if (settings.themes) {
+        this.savedThemes = settings.themes;
+      } else if (settings.customColors) {
+        // Migrate old format
+        this.savedThemes = {
+          'custom-legacy': {
+            name: 'Legacy Custom Theme',
+            colors: settings.customColors
+          }
+        };
+      } else {
+        this.savedThemes = {};
+      }
+
       // Apply theme
-      if (settings.theme) {
-        this.applyTheme(settings.theme);
+      const themeToApply = settings.currentTheme || settings.theme || 'catppuccin-mocha';
+      this.currentTheme = themeToApply;
 
-        // Update UI
-        const themeOption = document.querySelector(`[data-theme="${settings.theme}"]`);
-        if (themeOption) {
-          document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('is-active'));
-          themeOption.classList.add('is-active');
-        }
+      // Check if it's a saved custom theme
+      if (themeToApply.startsWith('custom-') && this.savedThemes[themeToApply]) {
+        const customTheme = this.savedThemes[themeToApply];
+        this.applyCustomThemeFromColors(customTheme.colors);
+        this.customThemeColors = customTheme.colors;
 
-        // Show custom section if needed
+        // Update color pickers
+        this.updateCustomColorPickers(customTheme.colors);
+
+        // Show custom section
         const customThemeSection = document.querySelector('.custom-theme-section');
         if (customThemeSection) {
-          customThemeSection.hidden = settings.theme !== 'custom';
+          customThemeSection.hidden = false;
         }
+
+        // Update custom theme dropdown if exists
+        this.updateCustomThemeDropdown();
+      } else if (themeToApply === 'custom') {
+        // Legacy custom theme handling
+        if (settings.customColors) {
+          this.customThemeColors = settings.customColors;
+          this.applyCustomThemeFromColors(settings.customColors);
+          this.updateCustomColorPickers(settings.customColors);
+        }
+        const customThemeSection = document.querySelector('.custom-theme-section');
+        if (customThemeSection) {
+          customThemeSection.hidden = false;
+        }
+      } else {
+        this.applyTheme(themeToApply);
       }
 
-      // Apply custom colors
-      if (settings.customColors) {
-        const { base, text, accent, surface0 } = settings.customColors;
-        if (document.getElementById('customBase')) document.getElementById('customBase').value = base;
-        if (document.getElementById('customText')) document.getElementById('customText').value = text;
-        if (document.getElementById('customAccent')) document.getElementById('customAccent').value = accent;
-        if (document.getElementById('customSurface')) document.getElementById('customSurface').value = surface0;
-      }
+      // Update theme selector UI
+      this.updateThemeSelectorUI(themeToApply);
 
       // Apply font size
       if (settings.fontSize) {
@@ -931,25 +983,299 @@ class WebTerm {
       if (settings.backgroundImage) {
         this.applyBackground(settings.backgroundImage);
       }
+
+      // Render saved themes list
+      this.renderSavedThemesList();
     }
   }
 
   saveSettings() {
     const settings = {
-      theme: this.currentTheme || 'catppuccin-mocha',
-      customColors: this.currentTheme === 'custom' ? {
-        base: document.getElementById('customBase')?.value || '#1e1e2e',
-        text: document.getElementById('customText')?.value || '#cdd6f4',
-        accent: document.getElementById('customAccent')?.value || '#89b4fa',
-        surface0: document.getElementById('customSurface')?.value || '#313244'
-      } : null,
+      themes: this.savedThemes || {},
+      currentTheme: this.currentTheme || 'catppuccin-mocha',
       fontSize: this.currentFontSize || 14,
       backgroundImage: this.currentBackground || null,
       terminalOpacity: this.currentOpacity !== undefined ? this.currentOpacity : 0.85,
       blurStrength: this.currentBlurStrength || 12
     };
 
+    // If current theme is custom, save the colors
+    if (this.currentTheme === 'custom' && this.customThemeColors) {
+      settings.themes['custom-current'] = {
+        name: 'Current Custom',
+        colors: this.customThemeColors
+      };
+    }
+
     localStorage.setItem('webterm-settings', JSON.stringify(settings));
+  }
+
+  // Theme management methods
+  applyCustomThemeFromColors(colors) {
+    if (!colors) return;
+
+    const base = colors.base || '#1e1e2e';
+    const text = colors.text || '#cdd6f4';
+    const accent = colors.accent || '#89b4fa';
+    const surface = colors.surface0 || colors.surface || '#313244';
+    const surface1 = colors.surface1 || '#45475a';
+    const overlay0 = colors.overlay0 || '#585b70';
+    const overlay1 = colors.overlay1 || '#6c7086';
+
+    document.documentElement.style.setProperty('--ctp-base', base);
+    document.documentElement.style.setProperty('--ctp-text', text);
+    document.documentElement.style.setProperty('--ctp-accent', accent);
+    document.documentElement.style.setProperty('--ctp-surface0', surface);
+    document.documentElement.style.setProperty('--ctp-surface1', surface1);
+    document.documentElement.style.setProperty('--ctp-overlay0', overlay0);
+    document.documentElement.style.setProperty('--ctp-overlay1', overlay1);
+    document.documentElement.removeAttribute('data-theme');
+  }
+
+  updateCustomColorPickers(colors) {
+    if (!colors) return;
+
+    if (document.getElementById('customBase')) document.getElementById('customBase').value = colors.base || '#1e1e2e';
+    if (document.getElementById('customText')) document.getElementById('customText').value = colors.text || '#cdd6f4';
+    if (document.getElementById('customAccent')) document.getElementById('customAccent').value = colors.accent || '#89b4fa';
+    if (document.getElementById('customSurface')) document.getElementById('customSurface').value = colors.surface0 || colors.surface || '#313244';
+    if (document.getElementById('customSurface1')) document.getElementById('customSurface1').value = colors.surface1 || '#45475a';
+    if (document.getElementById('customOverlay0')) document.getElementById('customOverlay0').value = colors.overlay0 || '#585b70';
+    if (document.getElementById('customOverlay1')) document.getElementById('customOverlay1').value = colors.overlay1 || '#6c7086';
+  }
+
+  updateThemeSelectorUI(themeId) {
+    // Reset all theme options
+    document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('is-active'));
+
+    // Find and activate the matching theme option
+    const themeOption = document.querySelector(`[data-theme="${themeId}"]`);
+    if (themeOption) {
+      themeOption.classList.add('is-active');
+    } else if (themeId && themeId.startsWith('custom-')) {
+      // It's a saved custom theme, activate the custom option
+      const customOption = document.querySelector('[data-theme="custom"]');
+      if (customOption) {
+        customOption.classList.add('is-active');
+      }
+    }
+
+    // Show/hide custom theme section
+    const customThemeSection = document.querySelector('.custom-theme-section');
+    if (customThemeSection) {
+      customThemeSection.hidden = !themeId?.startsWith('custom');
+    }
+  }
+
+  updateCustomThemeDropdown() {
+    const dropdown = document.getElementById('customThemeSelect');
+    if (!dropdown) return;
+
+    // Clear existing options except the first "New Custom" option
+    dropdown.innerHTML = '<option value="">New Custom Theme</option>';
+
+    // Add saved custom themes
+    for (const [id, theme] of Object.entries(this.savedThemes || {})) {
+      if (id.startsWith('custom-')) {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = theme.name || id;
+        if (id === this.currentTheme) {
+          option.selected = true;
+        }
+        dropdown.appendChild(option);
+      }
+    }
+  }
+
+  renderSavedThemesList() {
+    const list = document.getElementById('savedThemesList');
+    if (!list) return;
+
+    const customThemes = Object.entries(this.savedThemes || {})
+      .filter(([id]) => id.startsWith('custom-') && id !== 'custom-current');
+
+    if (customThemes.length === 0) {
+      list.innerHTML = '<div class="saved-themes-empty">No saved themes</div>';
+      return;
+    }
+
+    list.innerHTML = customThemes.map(([id, theme]) => {
+      const colors = theme.colors || {};
+      const isActive = id === this.currentTheme;
+      return `
+        <div class="saved-theme-item ${isActive ? 'is-active' : ''}" data-theme-id="${id}">
+          <div class="saved-theme-preview" style="background: ${colors.base || '#1e1e2e'};">
+            <div class="saved-theme-accent" style="background: ${colors.accent || '#89b4fa'};"></div>
+          </div>
+          <div class="saved-theme-info">
+            <div class="saved-theme-name">${this.escapeHtml(theme.name || id)}</div>
+            <div class="saved-theme-meta">${colors.base || 'N/A'}</div>
+          </div>
+          <button class="saved-theme-delete" data-theme-id="${id}" title="Delete">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    // Add click handlers
+    list.querySelectorAll('.saved-theme-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        if (!e.target.closest('.saved-theme-delete')) {
+          this.selectSavedTheme(item.dataset.themeId);
+        }
+      });
+    });
+
+    // Add delete handlers
+    list.querySelectorAll('.saved-theme-delete').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.deleteCustomTheme(btn.dataset.themeId);
+      });
+    });
+  }
+
+  selectSavedTheme(themeId) {
+    if (!themeId || !this.savedThemes[themeId]) return;
+
+    const theme = this.savedThemes[themeId];
+    this.currentTheme = themeId;
+    this.customThemeColors = theme.colors;
+    this.applyCustomThemeFromColors(theme.colors);
+    this.updateCustomColorPickers(theme.colors);
+    this.updateThemeSelectorUI(themeId);
+    this.updateCustomThemeDropdown();
+    this.renderSavedThemesList();
+  }
+
+  saveCustomTheme() {
+    const nameInput = document.getElementById('customThemeName');
+    const name = nameInput?.value?.trim() || `Custom Theme ${Object.keys(this.savedThemes || {}).length + 1}`;
+
+    // Get current colors from pickers
+    const colors = {
+      base: document.getElementById('customBase')?.value || '#1e1e2e',
+      text: document.getElementById('customText')?.value || '#cdd6f4',
+      accent: document.getElementById('customAccent')?.value || '#89b4fa',
+      surface0: document.getElementById('customSurface')?.value || '#313244',
+      surface1: document.getElementById('customSurface1')?.value || '#45475a',
+      overlay0: document.getElementById('customOverlay0')?.value || '#585b70',
+      overlay1: document.getElementById('customOverlay1')?.value || '#6c7086'
+    };
+
+    // Generate unique ID
+    let themeId = 'custom-' + Date.now();
+    while (this.savedThemes[themeId]) {
+      themeId = 'custom-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+    }
+
+    // Save theme
+    this.savedThemes[themeId] = { name, colors };
+    this.currentTheme = themeId;
+    this.customThemeColors = colors;
+
+    // Apply theme
+    this.applyCustomThemeFromColors(colors);
+    this.updateThemeSelectorUI(themeId);
+    this.updateCustomThemeDropdown();
+    this.renderSavedThemesList();
+
+    // Clear name input
+    if (nameInput) nameInput.value = '';
+
+    log.info(`Theme saved: ${name} (${themeId})`);
+  }
+
+  deleteCustomTheme(themeId) {
+    if (!themeId || !this.savedThemes[themeId]) return;
+
+    if (!confirm(`Delete theme "${this.savedThemes[themeId].name}"?`)) return;
+
+    delete this.savedThemes[themeId];
+
+    // If the deleted theme was active, switch to default
+    if (this.currentTheme === themeId) {
+      this.currentTheme = 'catppuccin-mocha';
+      this.applyTheme('catppuccin-mocha');
+      this.updateThemeSelectorUI('catppuccin-mocha');
+    }
+
+    this.updateCustomThemeDropdown();
+    this.renderSavedThemesList();
+
+    log.info(`Theme deleted: ${themeId}`);
+  }
+
+  importThemeFromJSON(jsonString) {
+    try {
+      const data = JSON.parse(jsonString);
+
+      // Validate structure
+      if (!data.name || !data.colors) {
+        throw new Error('Invalid theme format: missing "name" or "colors"');
+      }
+
+      // Validate colors
+      const requiredColors = ['base', 'text', 'accent', 'surface0'];
+      for (const color of requiredColors) {
+        if (!data.colors[color]) {
+          throw new Error(`Missing required color: ${color}`);
+        }
+      }
+
+      // Generate unique ID
+      let themeId = 'custom-' + Date.now();
+      while (this.savedThemes[themeId]) {
+        themeId = 'custom-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+      }
+
+      // Save theme
+      this.savedThemes[themeId] = {
+        name: data.name,
+        colors: data.colors
+      };
+
+      // Apply the imported theme
+      this.selectSavedTheme(themeId);
+
+      log.info(`Theme imported: ${data.name} (${themeId})`);
+      return { success: true, themeId, name: data.name };
+    } catch (error) {
+      log.error('Failed to import theme:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  exportCurrentTheme() {
+    // Get current colors
+    let colors;
+    if (this.currentTheme?.startsWith('custom-') && this.savedThemes[this.currentTheme]) {
+      colors = this.savedThemes[this.currentTheme].colors;
+    } else if (this.customThemeColors) {
+      colors = this.customThemeColors;
+    } else {
+      colors = {
+        base: document.getElementById('customBase')?.value || '#1e1e2e',
+        text: document.getElementById('customText')?.value || '#cdd6f4',
+        accent: document.getElementById('customAccent')?.value || '#89b4fa',
+        surface0: document.getElementById('customSurface')?.value || '#313244',
+        surface1: document.getElementById('customSurface1')?.value || '#45475a',
+        overlay0: document.getElementById('customOverlay0')?.value || '#585b70',
+        overlay1: document.getElementById('customOverlay1')?.value || '#6c7086'
+      };
+    }
+
+    const themeName = this.savedThemes[this.currentTheme]?.name || 'Exported Theme';
+
+    return {
+      name: themeName,
+      colors: colors
+    };
   }
 
   // Background image methods
@@ -1157,6 +1483,93 @@ class WebTerm {
         if (e.key === 'Enter') {
           urlApply.click();
         }
+      });
+    }
+  }
+
+  initThemeManagement() {
+    // Save theme button
+    const saveThemeBtn = document.getElementById('saveCustomThemeBtn');
+    if (saveThemeBtn) {
+      saveThemeBtn.addEventListener('click', () => {
+        this.saveCustomTheme();
+      });
+    }
+
+    // Custom theme dropdown
+    const customThemeSelect = document.getElementById('customThemeSelect');
+    if (customThemeSelect) {
+      customThemeSelect.addEventListener('change', (e) => {
+        const themeId = e.target.value;
+        if (themeId) {
+          this.selectSavedTheme(themeId);
+        }
+      });
+    }
+
+    // Import JSON textarea
+    const importThemeBtn = document.getElementById('importThemeBtn');
+    if (importThemeBtn) {
+      importThemeBtn.addEventListener('click', () => {
+        const textarea = document.getElementById('importThemeJSON');
+        if (textarea && textarea.value.trim()) {
+          const result = this.importThemeFromJSON(textarea.value.trim());
+          if (result.success) {
+            textarea.value = '';
+            alert(`Theme "${result.name}" imported successfully!`);
+          } else {
+            alert(`Import failed: ${result.error}`);
+          }
+        } else {
+          alert('Please paste JSON configuration');
+        }
+      });
+    }
+
+    // Import from file
+    const importFileBtn = document.getElementById('importThemeFileBtn');
+    const importFileInput = document.getElementById('importThemeFile');
+    if (importFileBtn && importFileInput) {
+      importFileBtn.addEventListener('click', () => {
+        importFileInput.click();
+      });
+
+      importFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const result = this.importThemeFromJSON(event.target.result);
+            if (result.success) {
+              alert(`Theme "${result.name}" imported successfully!`);
+            } else {
+              alert(`Import failed: ${result.error}`);
+            }
+          };
+          reader.readAsText(file);
+          importFileInput.value = '';
+        }
+      });
+    }
+
+    // Export theme button
+    const exportThemeBtn = document.getElementById('exportThemeBtn');
+    if (exportThemeBtn) {
+      exportThemeBtn.addEventListener('click', () => {
+        const theme = this.exportCurrentTheme();
+        const json = JSON.stringify(theme, null, 2);
+
+        // Copy to clipboard
+        navigator.clipboard.writeText(json).then(() => {
+          alert('Theme JSON copied to clipboard!');
+        }).catch(() => {
+          // Fallback: show in textarea
+          const textarea = document.getElementById('importThemeJSON');
+          if (textarea) {
+            textarea.value = json;
+            alert('Theme JSON pasted into import textarea');
+          }
+        });
       });
     }
   }

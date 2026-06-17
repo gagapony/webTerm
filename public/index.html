@@ -58,6 +58,66 @@
     .saved-connection-delete { width: 20px; height: 20px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: rgba(148, 163, 184, 0.6); cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .saved-connection-delete:hover { background: rgba(248, 113, 113, 0.2); color: #fca5a5; }
     .saved-connections-empty { color: var(--muted); font-size: 11px; text-align: center; padding: 20px; }
+
+    /* Theme Management */
+    .theme-save-row { display: flex; gap: 8px; align-items: flex-end; }
+    .theme-import-textarea { min-height: 80px; resize: vertical; font-family: monospace; font-size: 11px; }
+    .theme-import-controls { display: flex; flex-direction: column; gap: 8px; }
+    .theme-import-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .theme-export-section { margin-top: 12px; }
+    .theme-import-export-section { margin-top: 16px; }
+
+    .saved-themes-section { margin-top: 16px; }
+    .saved-themes-list { display: grid; gap: 6px; max-height: 200px; overflow-y: auto; }
+    .saved-themes-empty { color: var(--muted); font-size: 11px; text-align: center; padding: 12px; }
+
+    .saved-theme-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.4);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .saved-theme-item:hover { background: rgba(30, 64, 175, 0.2); border-color: rgba(96, 165, 250, 0.3); }
+    .saved-theme-item.is-active { background: rgba(30, 64, 175, 0.3); border-color: rgba(96, 165, 250, 0.5); }
+
+    .saved-theme-preview {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+    .saved-theme-accent {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+    }
+
+    .saved-theme-info { flex: 1; min-width: 0; }
+    .saved-theme-name { color: var(--text); font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .saved-theme-meta { color: var(--muted); font-size: 10px; }
+
+    .saved-theme-delete {
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: rgba(148, 163, 184, 0.6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .saved-theme-delete:hover { background: rgba(248, 113, 113, 0.2); color: #fca5a5; }
   </style>
 </head>
 <body>
@@ -330,8 +390,67 @@
                 <input type="color" class="toolbar-input color-picker" id="customAccent" value="#89b4fa">
               </div>
               <div class="compact-field">
-                <label class="toolbar-label">SURFACE</label>
+                <label class="toolbar-label">SURFACE 0</label>
                 <input type="color" class="toolbar-input color-picker" id="customSurface" value="#313244">
+              </div>
+              <div class="compact-field">
+                <label class="toolbar-label">SURFACE 1</label>
+                <input type="color" class="toolbar-input color-picker" id="customSurface1" value="#45475a">
+              </div>
+              <div class="compact-field">
+                <label class="toolbar-label">OVERLAY 0</label>
+                <input type="color" class="toolbar-input color-picker" id="customOverlay0" value="#585b70">
+              </div>
+              <div class="compact-field">
+                <label class="toolbar-label">OVERLAY 1</label>
+                <input type="color" class="toolbar-input color-picker" id="customOverlay1" value="#6c7086">
+              </div>
+            </div>
+          </div>
+
+          <!-- Theme Management -->
+          <div class="settings-section theme-management-section">
+            <h3 class="settings-section-title">Theme Management</h3>
+
+            <!-- Saved Theme Selector -->
+            <div class="compact-field">
+              <label class="toolbar-label">LOAD SAVED THEME</label>
+              <select class="toolbar-input" id="customThemeSelect">
+                <option value="">New Custom Theme</option>
+              </select>
+            </div>
+
+            <!-- Save Current Theme -->
+            <div class="theme-save-row">
+              <div class="compact-field" style="flex: 1;">
+                <label class="toolbar-label">THEME NAME</label>
+                <input type="text" class="toolbar-input" id="customThemeName" placeholder="My Custom Theme">
+              </div>
+              <button class="chrome-button" id="saveCustomThemeBtn" style="margin-top: 18px;">Save Theme</button>
+            </div>
+
+            <!-- Saved Themes List -->
+            <div class="saved-themes-section">
+              <label class="toolbar-label">SAVED THEMES</label>
+              <div class="saved-themes-list" id="savedThemesList">
+                <div class="saved-themes-empty">No saved themes</div>
+              </div>
+            </div>
+
+            <!-- Import/Export -->
+            <div class="theme-import-export-section">
+              <label class="toolbar-label">IMPORT THEME</label>
+              <div class="theme-import-controls">
+                <textarea class="toolbar-input theme-import-textarea" id="importThemeJSON" placeholder='{"name": "My Theme", "colors": {"base": "#1a1b26", "text": "#c0caf5", "accent": "#7aa2f7", "surface0": "#24283b"}}'></textarea>
+                <div class="theme-import-buttons">
+                  <button class="chrome-button" id="importThemeBtn">Import JSON</button>
+                  <button class="chrome-button" id="importThemeFileBtn">Import File</button>
+                  <input type="file" id="importThemeFile" accept=".json" hidden>
+                </div>
+              </div>
+
+              <div class="theme-export-section">
+                <button class="chrome-button" id="exportThemeBtn">Export Current Theme</button>
               </div>
             </div>
           </div>
