@@ -359,6 +359,7 @@ class WebTerm {
     if (modal) {
       modal.removeAttribute('hidden');
       modal.style.display = 'grid';
+      modal.dataset.open = 'true';
     }
   }
 
@@ -366,8 +367,11 @@ class WebTerm {
     log.info('hideSettingsModal called');
     const modal = document.getElementById('settingsModal');
     if (modal) {
-      modal.setAttribute('hidden', '');
-      modal.style.display = 'none';
+      modal.dataset.open = 'false';
+      setTimeout(() => {
+        modal.setAttribute('hidden', '');
+        modal.style.display = 'none';
+      }, 200);
     }
   }
 
