@@ -234,22 +234,143 @@
   color-scheme: dark;
   --utility-rail-width: 420px;
   --file-panel-width: var(--utility-rail-width);
-  --bg: #060b14;
-  --bg-top: #0e1b30;
-  --panel: #0a1222;
-  --panel-2: #0d1728;
-  --panel-3: #101b2d;
+
+  /* Catppuccin Mocha (Default) */
+  --ctp-rosewater: #f5e0dc;
+  --ctp-flamingo: #f2cdcd;
+  --ctp-pink: #f5c2e7;
+  --ctp-mauve: #cba6f7;
+  --ctp-red: #f38ba8;
+  --ctp-maroon: #eba0ac;
+  --ctp-peach: #fab387;
+  --ctp-yellow: #f9e2af;
+  --ctp-green: #a6e3a1;
+  --ctp-teal: #94e2d5;
+  --ctp-sky: #89dceb;
+  --ctp-sapphire: #74c7ec;
+  --ctp-blue: #89b4fa;
+  --ctp-lavender: #b4befe;
+  --ctp-text: #cdd6f4;
+  --ctp-subtext1: #bac2de;
+  --ctp-subtext0: #a6adc8;
+  --ctp-overlay2: #9399b2;
+  --ctp-overlay1: #7f849c;
+  --ctp-overlay0: #6c7086;
+  --ctp-surface2: #585b70;
+  --ctp-surface1: #45475a;
+  --ctp-surface0: #313244;
+  --ctp-base: #1e1e2e;
+  --ctp-mantle: #181825;
+  --ctp-crust: #11111b;
+
+  /* Theme-specific overrides */
+  --bg: var(--ctp-base);
+  --bg-top: var(--ctp-mantle);
+  --panel: var(--ctp-surface0);
+  --panel-2: var(--ctp-surface1);
+  --panel-3: var(--ctp-surface2);
   --line: rgba(148, 163, 184, 0.14);
   --line-strong: rgba(148, 163, 184, 0.28);
-  --text: #e6edf7;
-  --muted: #8fa4bf;
-  --accent: #55c3ff;
-  --accent-2: #2563eb;
-  --success: #22c55e;
-  --warn: #f59e0b;
-  --danger: #f87171;
-  --shadow: rgba(2, 6, 23, 0.42);
+  --text: var(--ctp-text);
+  --muted: var(--ctp-overlay1);
+  --accent: var(--ctp-blue);
+  --accent-2: var(--ctp-sapphire);
+  --success: var(--ctp-green);
+  --warn: var(--ctp-yellow);
+  --danger: var(--ctp-red);
+
+  /* Transparency & Blur */
+  --terminal-opacity: 0.85;
+  --blur-strength: 12px;
 }
+
+[data-theme="catppuccin-macchiato"] {
+  --ctp-rosewater: #f4dbd6;
+  --ctp-flamingo: #f0c6c6;
+  --ctp-pink: #f5bde6;
+  --ctp-mauve: #c6a0f6;
+  --ctp-red: #ed8796;
+  --ctp-maroon: #ee99a0;
+  --ctp-peach: #f5a97f;
+  --ctp-yellow: #eed49f;
+  --ctp-green: #a6da95;
+  --ctp-teal: #8bd5ca;
+  --ctp-sky: #91d7e3;
+  --ctp-sapphire: #7dc4e4;
+  --ctp-blue: #8aadf4;
+  --ctp-lavender: #b7bdf8;
+  --ctp-text: #cad3f5;
+  --ctp-subtext1: #b8c0e0;
+  --ctp-subtext0: #a5adcb;
+  --ctp-overlay2: #939ab7;
+  --ctp-overlay1: #8087a2;
+  --ctp-overlay0: #6e738d;
+  --ctp-surface2: #5b6078;
+  --ctp-surface1: #494d64;
+  --ctp-surface0: #363a4f;
+  --ctp-base: #24273a;
+  --ctp-mantle: #1e2030;
+  --ctp-crust: #181926;
+}
+
+[data-theme="catppuccin-frappe"] {
+  --ctp-rosewater: #f2d5cf;
+  --ctp-flamingo: #eebebe;
+  --ctp-pink: #f4b8e4;
+  --ctp-mauve: #ca9ee6;
+  --ctp-red: #e78284;
+  --ctp-maroon: #ea999c;
+  --ctp-peach: #ef9f76;
+  --ctp-yellow: #e5c890;
+  --ctp-green: #a6d189;
+  --ctp-teal: #81c8be;
+  --ctp-sky: #99d1db;
+  --ctp-sapphire: #85c1dc;
+  --ctp-blue: #8caaee;
+  --ctp-lavender: #babbf1;
+  --ctp-text: #c6d0f5;
+  --ctp-subtext1: #b5bfe2;
+  --ctp-subtext0: #a5adce;
+  --ctp-overlay2: #949cbb;
+  --ctp-overlay1: #838ba7;
+  --ctp-overlay0: #737994;
+  --ctp-surface2: #626880;
+  --ctp-surface1: #51576d;
+  --ctp-surface0: #414559;
+  --ctp-base: #303446;
+  --ctp-mantle: #292c3c;
+  --ctp-crust: #232634;
+}
+
+[data-theme="catppuccin-latte"] {
+  --ctp-rosewater: #dc8a78;
+  --ctp-flamingo: #dd7878;
+  --ctp-pink: #ea76cb;
+  --ctp-mauve: #8839ef;
+  --ctp-red: #d20f39;
+  --ctp-maroon: #e64553;
+  --ctp-peach: #fe640b;
+  --ctp-yellow: #df8e1d;
+  --ctp-green: #40a02b;
+  --ctp-teal: #179299;
+  --ctp-sky: #04a5e5;
+  --ctp-sapphire: #209fb5;
+  --ctp-blue: #1e66f5;
+  --ctp-lavender: #7287fd;
+  --ctp-text: #4c4f69;
+  --ctp-subtext1: #5c5f77;
+  --ctp-subtext0: #6c6f85;
+  --ctp-overlay2: #7c7f93;
+  --ctp-overlay1: #8c8fa1;
+  --ctp-overlay0: #9ca0b0;
+  --ctp-surface2: #acb0be;
+  --ctp-surface1: #bcc0cc;
+  --ctp-surface0: #ccd0da;
+  --ctp-base: #eff1f5;
+  --ctp-mantle: #e6e9ef;
+  --ctp-crust: #dce0e8;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -838,7 +959,7 @@ textarea:focus-visible {
     opacity 140ms ease;
 }
 .session-tab[data-indicator=live]::before {
-  background: #22c55e;
+  background: var(--success);
   box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.16), 0 0 14px rgba(34, 197, 94, 0.34);
   animation: session-tab-live-pulse 1.8s ease-in-out infinite;
 }
@@ -856,7 +977,7 @@ textarea:focus-visible {
   animation: none;
 }
 .session-tab[data-indicator=error]::before {
-  background: #f87171;
+  background: var(--danger);
   box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.14);
 }
 .session-tab:hover {
