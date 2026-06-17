@@ -242,24 +242,171 @@
           </svg>
         </button>
       </div>
+
+      <!-- Settings Tabs -->
+      <div class="settings-tabs">
+        <button class="settings-tab is-active" data-tab="appearance">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <span>Appearance</span>
+        </button>
+        <button class="settings-tab" data-tab="background">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          <span>Background</span>
+        </button>
+      </div>
+
       <div class="settings-body">
-        <div class="settings-grid">
-          <div class="compact-field">
-            <label class="toolbar-label">FONT SIZE</label>
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <input type="range" class="toolbar-input" id="fontSizeSlider" min="10" max="24" value="14" style="flex: 1; height: 6px;">
-              <span id="fontSizeValue" style="min-width: 40px; text-align: right;">14px</span>
+        <!-- Appearance Tab Content -->
+        <div class="settings-tab-content is-active" data-tab-content="appearance">
+          <!-- Theme Selection -->
+          <div class="settings-section">
+            <h3 class="settings-section-title">Theme</h3>
+            <div class="theme-grid">
+              <div class="theme-option is-active" data-theme="catppuccin-mocha">
+                <div class="theme-preview" style="background: #1e1e2e;">
+                  <div class="theme-preview-accent" style="background: #89b4fa;"></div>
+                </div>
+                <span>Mocha</span>
+              </div>
+              <div class="theme-option" data-theme="catppuccin-macchiato">
+                <div class="theme-preview" style="background: #24273a;">
+                  <div class="theme-preview-accent" style="background: #8aadf4;"></div>
+                </div>
+                <span>Macchiato</span>
+              </div>
+              <div class="theme-option" data-theme="catppuccin-frappe">
+                <div class="theme-preview" style="background: #303446;">
+                  <div class="theme-preview-accent" style="background: #8caaee;"></div>
+                </div>
+                <span>Frappe</span>
+              </div>
+              <div class="theme-option" data-theme="catppuccin-latte">
+                <div class="theme-preview" style="background: #eff1f5;">
+                  <div class="theme-preview-accent" style="background: #1e66f5;"></div>
+                </div>
+                <span>Latte</span>
+              </div>
+              <div class="theme-option" data-theme="custom">
+                <div class="theme-preview theme-preview-custom">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                  </svg>
+                </div>
+                <span>Custom</span>
+              </div>
             </div>
           </div>
-          <div class="compact-field">
-            <label class="toolbar-label">THEME</label>
-            <select class="toolbar-input" id="themeSelect">
-              <option value="default">Default Dark</option>
-              <option value="catppuccin-mocha">Catppuccin Mocha</option>
-            </select>
+
+          <!-- Custom Theme Colors (hidden by default) -->
+          <div class="settings-section custom-theme-section" hidden>
+            <h3 class="settings-section-title">Custom Colors</h3>
+            <div class="color-pickers-grid">
+              <div class="compact-field">
+                <label class="toolbar-label">BACKGROUND</label>
+                <input type="color" class="toolbar-input color-picker" id="customBase" value="#1e1e2e">
+              </div>
+              <div class="compact-field">
+                <label class="toolbar-label">TEXT</label>
+                <input type="color" class="toolbar-input color-picker" id="customText" value="#cdd6f4">
+              </div>
+              <div class="compact-field">
+                <label class="toolbar-label">ACCENT</label>
+                <input type="color" class="toolbar-input color-picker" id="customAccent" value="#89b4fa">
+              </div>
+              <div class="compact-field">
+                <label class="toolbar-label">SURFACE</label>
+                <input type="color" class="toolbar-input color-picker" id="customSurface" value="#313244">
+              </div>
+            </div>
+          </div>
+
+          <!-- Font Size -->
+          <div class="settings-section">
+            <h3 class="settings-section-title">Font</h3>
+            <div class="compact-field">
+              <label class="toolbar-label">FONT SIZE</label>
+              <div class="slider-container">
+                <input type="range" class="toolbar-input" id="fontSizeSlider" min="10" max="24" value="14">
+                <span class="slider-value" id="fontSizeValue">14px</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Background Tab Content -->
+        <div class="settings-tab-content" data-tab-content="background">
+          <!-- Preset Images -->
+          <div class="settings-section">
+            <h3 class="settings-section-title">Preset Images</h3>
+            <div class="bg-preset-grid" id="bgPresetGrid">
+              <!-- Populated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Uploaded Images -->
+          <div class="settings-section">
+            <h3 class="settings-section-title">Uploaded Images</h3>
+            <div class="bg-uploaded-grid" id="bgUploadedGrid">
+              <!-- Populated by JavaScript -->
+            </div>
+            <div class="bg-upload-area" id="bgUploadArea">
+              <input type="file" id="bgFileInput" accept="image/*" hidden>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <span>Upload Image</span>
+              <small>or drag & drop</small>
+            </div>
+          </div>
+
+          <!-- URL Input -->
+          <div class="settings-section">
+            <h3 class="settings-section-title">From URL</h3>
+            <div class="bg-url-input">
+              <input type="text" class="toolbar-input" id="bgUrlInput" placeholder="Enter image URL...">
+              <button class="chrome-button" id="bgUrlApply">Apply</button>
+            </div>
+          </div>
+
+          <!-- Transparency & Blur -->
+          <div class="settings-section">
+            <h3 class="settings-section-title">Effects</h3>
+            <div class="compact-field">
+              <label class="toolbar-label">TERMINAL OPACITY</label>
+              <div class="slider-container">
+                <input type="range" min="0" max="100" value="85" id="opacitySlider" class="toolbar-input">
+                <span class="slider-value" id="opacityValue">85%</span>
+              </div>
+            </div>
+            <div class="compact-field">
+              <label class="toolbar-label">BLUR STRENGTH</label>
+              <div class="slider-container">
+                <input type="range" min="0" max="20" value="12" id="blurSlider" class="toolbar-input">
+                <span class="slider-value" id="blurValue">12px</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
       <div class="settings-footer">
         <p class="settings-footer-note"></p>
         <div class="settings-footer-actions">

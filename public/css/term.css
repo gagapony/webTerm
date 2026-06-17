@@ -6366,6 +6366,263 @@ textarea:focus-visible {
     animation: none;
   }
 }
+
+/* Settings Tabs */
+.settings-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.settings-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-tab:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.settings-tab.is-active {
+  color: var(--accent);
+  background: var(--panel);
+  border-color: var(--line);
+}
+
+.settings-tab-content {
+  display: none;
+}
+
+.settings-tab-content.is-active {
+  display: block;
+}
+
+/* Theme Grid */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-option:hover {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.theme-option.is-active {
+  border-color: var(--accent);
+  background: rgba(137, 180, 250, 0.1);
+}
+
+.theme-preview {
+  width: 100%;
+  height: 40px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-preview-accent {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.theme-preview-custom {
+  background: linear-gradient(135deg, #1e1e2e, #89b4fa);
+}
+
+.theme-option span {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Color Pickers Grid */
+.color-pickers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.color-picker {
+  height: 40px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+/* Slider Container */
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider-container input[type="range"] {
+  flex: 1;
+  height: 6px;
+}
+
+.slider-value {
+  min-width: 40px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Background Grid */
+.bg-preset-grid,
+.bg-uploaded-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.bg-preset-item,
+.bg-uploaded-item {
+  position: relative;
+  aspect-ratio: 16/9;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bg-preset-item:hover,
+.bg-uploaded-item:hover {
+  border-color: var(--accent);
+}
+
+.bg-preset-item.is-active,
+.bg-uploaded-item.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(137, 180, 250, 0.3);
+}
+
+.bg-preset-item img,
+.bg-uploaded-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bg-preset-item span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.bg-delete-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(243, 139, 168, 0.8);
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.bg-uploaded-item:hover .bg-delete-btn {
+  opacity: 1;
+}
+
+/* Upload Area */
+.bg-upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  border: 2px dashed var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bg-upload-area:hover {
+  border-color: var(--accent);
+  background: rgba(137, 180, 250, 0.05);
+}
+
+.bg-upload-area svg {
+  color: var(--muted);
+}
+
+.bg-upload-area span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.bg-upload-area small {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* URL Input */
+.bg-url-input {
+  display: flex;
+  gap: 10px;
+}
+
+.bg-url-input input {
+  flex: 1;
+}
+
+/* Settings Section */
+.settings-section {
+  margin-bottom: 20px;
+}
+
+.settings-section-title {
+  margin: 0 0 12px 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
 /*! Bundled license information:
 
 @xterm/xterm/css/xterm.css:
