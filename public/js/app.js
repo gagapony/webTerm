@@ -1283,7 +1283,7 @@ class WebTerm {
     if (!background) {
       document.body.style.backgroundImage = '';
       document.body.classList.remove('has-background');
-      this.applyTerminalTheme();
+      if (typeof this.applyTerminalTheme === 'function') this.applyTerminalTheme();
       return;
     }
 
@@ -1293,7 +1293,7 @@ class WebTerm {
     document.body.style.backgroundPosition = 'center';
     document.body.style.backgroundAttachment = 'fixed';
     document.body.classList.add('has-background');
-    this.applyTerminalTheme();
+    if (typeof this.applyTerminalTheme === 'function') this.applyTerminalTheme();
   }
 
   async loadBackgrounds() {
