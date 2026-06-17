@@ -30,7 +30,14 @@ class WebTerm {
     this.initThemeSelector();
     this.initCustomThemePickers();
     this.initSliders();
+    this.initBackgroundUpload();
     this.loadSettings();
+
+    // Load backgrounds when settings modal opens
+    this.settingsBtn?.addEventListener('click', () => {
+      this.renderPresetBackgrounds();
+      this.loadBackgrounds();
+    });
   }
 
   async checkAuth() {
@@ -941,7 +948,7 @@ class WebTerm {
     localStorage.setItem('webterm-settings', JSON.stringify(settings));
   }
 
-  // Background image methods (stub - will be implemented in Task 5)
+  // Background image methods
   applyBackground(background) {
     if (!background) {
       document.body.style.backgroundImage = '';
@@ -953,6 +960,201 @@ class WebTerm {
     document.body.style.backgroundSize = 'cover';
     document.body.style.backgroundPosition = 'center';
     document.body.style.backgroundAttachment = 'fixed';
+  }
+
+  async loadBackgrounds() {
+    try {
+      const response = await fetch('/api/backgrounds');
+      if (response.ok) {
+        const backgrounds = await response.json();
+        this.renderUploadedBackgrounds(backgrounds);
+      }
+    } catch (error) {
+      console.error('Failed to load backgrounds:', error);
+    }
+  }
+
+  renderPresetBackgrounds() {
+    const grid = document.getElementById('bgPresetGrid');
+    if (!grid) return;
+
+    const presets = [
+      { id: 'mountain', name: 'Mountain', url: '/backgrounds/preset-mountain.jpg' },
+      { id: 'ocean', name: 'Ocean', url: '/backgrounds/preset-ocean.jpg' },
+      { id: 'forest', name: 'Forest', url: '/backgrounds/preset-forest.jpg' }
+    ];
+
+    grid.innerHTML = presets.map(preset => `
+      <div class="bg-preset-item" data-preset="${preset.id}" data-url="${preset.url}">
+        <img src="${preset.url}" alt="${preset.name}" loading="lazy">
+        <span>${preset.name}</span>
+      </div>
+    `).join('');
+
+    // Add click handlers
+    grid.querySelectorAll('.bg-preset-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const url = item.dataset.url;
+        this.selectBackground({ type: 'preset', value: url });
+
+        // Update active state
+        document.querySelectorAll('.bg-preset-item, .bg-uploaded-item').forEach(i => i.classList.remove('is-active'));
+        item.classList.add('is-active');
+      });
+    });
+  }
+
+  renderUploadedBackgrounds(backgrounds) {
+    const grid = document.getElementById('bgUploadedGrid');
+    if (!grid) return;
+
+    if (backgrounds.length === 0) {
+      grid.innerHTML = '<div class="bg-empty-message">No uploaded images</div>';
+      return;
+    }
+
+    grid.innerHTML = backgrounds.map(bg => `
+      <div class="bg-uploaded-item" data-id="${bg.id}" data-url="/backgrounds/${bg.filename}">
+        <img src="/backgrounds/${bg.filename}" alt="${bg.original_name}" loading="lazy">
+        <button class="bg-delete-btn" data-id="${bg.id}">×</button>
+      </div>
+    `).join('');
+
+    // Add click handlers
+    grid.querySelectorAll('.bg-uploaded-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('bg-delete-btn')) {
+          const url = item.dataset.url;
+          this.selectBackground({ type: 'uploaded', value: url });
+
+          // Update active state
+          document.querySelectorAll('.bg-preset-item, .bg-uploaded-item').forEach(i => i.classList.remove('is-active'));
+          item.classList.add('is-active');
+        }
+      });
+    });
+
+    // Add delete handlers
+    grid.querySelectorAll('.bg-delete-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        await this.deleteBackground(id);
+      });
+    });
+  }
+
+  selectBackground(background) {
+    this.currentBackground = background;
+    this.applyBackground(background);
+  }
+
+  async uploadBackground(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch('/api/backgrounds/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        this.loadBackgrounds();
+        return result;
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Upload failed');
+        return null;
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Upload failed');
+      return null;
+    }
+  }
+
+  async deleteBackground(id) {
+    if (!confirm('Delete this background image?')) return;
+
+    try {
+      const response = await fetch(`/api/backgrounds/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        this.loadBackgrounds();
+
+        // Reset if currently selected
+        if (this.currentBackground && this.currentBackground.value && this.currentBackground.value.includes(id)) {
+          this.currentBackground = null;
+          this.applyBackground(null);
+        }
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+    }
+  }
+
+  initBackgroundUpload() {
+    const uploadArea = document.getElementById('bgUploadArea');
+    const fileInput = document.getElementById('bgFileInput');
+
+    if (uploadArea && fileInput) {
+      // Click to upload
+      uploadArea.addEventListener('click', () => {
+        fileInput.click();
+      });
+
+      // File input change
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          this.uploadBackground(file);
+        }
+      });
+
+      // Drag and drop
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('is-dragover');
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('is-dragover');
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('is-dragover');
+
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+          this.uploadBackground(file);
+        }
+      });
+    }
+
+    // URL input
+    const urlInput = document.getElementById('bgUrlInput');
+    const urlApply = document.getElementById('bgUrlApply');
+
+    if (urlInput && urlApply) {
+      urlApply.addEventListener('click', () => {
+        const url = urlInput.value.trim();
+        if (url) {
+          this.selectBackground({ type: 'url', value: url });
+          urlInput.value = '';
+        }
+      });
+
+      urlInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          urlApply.click();
+        }
+      });
+    }
   }
 }
 

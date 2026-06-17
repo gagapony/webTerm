@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="mountain1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f3460;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a2e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="mountain2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#533483;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f3460;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#sky)"/>
+  <polygon points="0,350 200,150 400,350" fill="url(#mountain1)"/>
+  <polygon points="200,350 450,100 700,350" fill="url(#mountain2)"/>
+  <polygon points="500,350 700,180 800,350" fill="url(#mountain1)"/>
+  <circle cx="650" cy="80" r="40" fill="#e94560" opacity="0.8"/>
+  <text x="400" y="400" text-anchor="middle" fill="#e94560" font-family="sans-serif" font-size="24" font-weight="bold">Mountain</text>
+</svg>

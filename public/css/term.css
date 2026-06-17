@@ -6599,6 +6599,19 @@ textarea:focus-visible {
   color: var(--muted);
 }
 
+.bg-upload-area.is-dragover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.bg-empty-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 /* URL Input */
 .bg-url-input {
   display: flex;
