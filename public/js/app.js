@@ -944,6 +944,7 @@ class WebTerm {
         if (opacityValue) opacityValue.textContent = `${opacity}%`;
         document.documentElement.style.setProperty('--terminal-opacity', opacity / 100);
         this.currentOpacity = opacity / 100;
+        this.applyTerminalTheme();
       });
     }
 
@@ -1135,6 +1136,16 @@ class WebTerm {
     // Transparent background when background image is active
     if (document.body.classList.contains('has-background')) {
       theme = { ...theme, background: 'transparent' };
+    } else {
+      // Apply opacity to terminal background so it matches the topbar
+      const opacity = this.currentOpacity !== undefined ? this.currentOpacity : 0.85;
+      const bg = theme.background;
+      if (bg && bg.startsWith('#') && bg.length === 7) {
+        const r = parseInt(bg.slice(1, 3), 16);
+        const g = parseInt(bg.slice(3, 5), 16);
+        const b = parseInt(bg.slice(5, 7), 16);
+        theme = { ...theme, background: `rgba(${r},${g},${b},${opacity})` };
+      }
     }
 
     return theme;

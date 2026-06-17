@@ -3685,7 +3685,8 @@ textarea:focus-visible {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--muted) 72%, transparent) color-mix(in srgb, var(--bg) 86%, transparent);
 }
-body.has-background .terminal-viewport .xterm-viewport {
+/* Always transparent so terminal RGBA background blends with frame */
+.terminal-viewport .xterm-viewport {
   background: transparent !important;
 }
 body.has-background .terminal-frame {
