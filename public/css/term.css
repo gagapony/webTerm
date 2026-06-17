@@ -263,14 +263,14 @@
   --ctp-mantle: #181825;
   --ctp-crust: #11111b;
 
-  /* Theme-specific overrides */
+  /* Semantic variable mappings */
   --bg: var(--ctp-base);
   --bg-top: var(--ctp-mantle);
   --panel: var(--ctp-surface0);
   --panel-2: var(--ctp-surface1);
   --panel-3: var(--ctp-surface2);
-  --line: rgba(148, 163, 184, 0.14);
-  --line-strong: rgba(148, 163, 184, 0.28);
+  --line: color-mix(in srgb, var(--ctp-overlay1) 14%, transparent);
+  --line-strong: color-mix(in srgb, var(--ctp-overlay1) 28%, transparent);
   --text: var(--ctp-text);
   --muted: var(--ctp-overlay1);
   --accent: var(--ctp-blue);
@@ -278,7 +278,7 @@
   --success: var(--ctp-green);
   --warn: var(--ctp-yellow);
   --danger: var(--ctp-red);
-  --shadow: rgba(2, 6, 23, 0.42);
+  --shadow: color-mix(in srgb, var(--ctp-crust) 42%, transparent);
 
   /* Transparency & Blur */
   --terminal-opacity: 0.85;
@@ -383,12 +383,12 @@ body {
   background:
     radial-gradient(
       circle at top,
-      rgba(27, 54, 96, 0.88) 0%,
-      rgba(9, 17, 31, 0) 34%),
+      color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+      transparent 34%),
     linear-gradient(
       180deg,
-      #08101d 0%,
-      #040811 100%);
+      var(--bg) 0%,
+      var(--bg-top) 100%);
   color: var(--text);
   font-family:
     "SFMono-Regular",
@@ -415,8 +415,8 @@ input[type=password],
 input[type=text],
 select,
 textarea {
-  border: 1px solid rgba(71, 85, 105, 0.86);
-  background: rgba(10, 19, 35, 0.94);
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
   color: var(--text);
 }
 input[type=number] {
@@ -432,7 +432,7 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
 }
 select option {
-  background: #0a1323;
+  background: var(--bg-top);
   color: var(--text);
 }
 button {
@@ -450,8 +450,8 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   outline: none;
-  border-color: rgba(85, 195, 255, 0.76);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+  border-color: color-mix(in srgb, var(--accent) 76%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .ui-icon {
   width: 14px;
@@ -489,11 +489,11 @@ textarea:focus-visible {
   z-index: 10000;
   max-width: min(260px, calc(100vw - 16px));
   padding: 5px 8px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid var(--line);
   border-radius: 7px;
-  background: rgba(6, 11, 20, 0.96);
-  color: rgba(241, 245, 249, 0.94);
-  box-shadow: 0 12px 26px rgba(2, 6, 23, 0.34);
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 12px 26px var(--shadow);
   font-size: 11px;
   font-weight: 700;
   line-height: 1.25;
@@ -525,11 +525,11 @@ textarea:focus-visible {
   background:
     linear-gradient(
       180deg,
-      rgba(10, 18, 32, 0.97),
-      rgba(7, 12, 22, 0.95)),
-    rgba(8, 15, 28, 0.96);
+      color-mix(in srgb, var(--bg) 97%, transparent),
+      color-mix(in srgb, var(--bg-top) 95%, transparent)),
+    var(--bg);
   backdrop-filter: blur(14px);
-  box-shadow: 0 4px 14px rgba(2, 6, 23, 0.18);
+  box-shadow: 0 4px 14px var(--shadow);
 }
 .topbar-row {
   width: 100%;
@@ -582,10 +582,10 @@ textarea:focus-visible {
   flex-wrap: wrap;
   gap: 4px;
   padding: 4px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.74);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  background: color-mix(in srgb, var(--panel) 74%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 3%, transparent);
 }
 .workspace-chip {
   min-width: 0;
@@ -611,18 +611,18 @@ textarea:focus-visible {
   background:
     linear-gradient(
       135deg,
-      rgba(37, 99, 235, 0.96),
-      rgba(14, 165, 233, 0.92));
-  color: #f8fbff;
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
+      color-mix(in srgb, var(--accent) 96%, transparent),
+      color-mix(in srgb, var(--accent-2) 92%, transparent));
+  color: var(--text);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 24%, transparent);
 }
 .workspace-chip .ui-icon {
   width: 13px;
   height: 13px;
 }
 .workspace-chip[data-available=false]:not(.is-active) {
-  color: rgba(143, 164, 191, 0.68);
-  background: rgba(15, 23, 42, 0.36);
+  color: color-mix(in srgb, var(--muted) 68%, transparent);
+  background: color-mix(in srgb, var(--panel) 36%, transparent);
 }
 .workspace-chip.is-icon-only {
   width: 30px;
@@ -672,17 +672,17 @@ textarea:focus-visible {
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  border: 1px solid var(--line);
   border-radius: 8px;
   background:
     linear-gradient(
       180deg,
-      rgba(15, 23, 42, 0.74),
-      rgba(8, 13, 24, 0.64)),
-    rgba(15, 23, 42, 0.62);
+      color-mix(in srgb, var(--panel) 74%, transparent),
+      color-mix(in srgb, var(--panel-2) 64%, transparent)),
+    var(--panel);
   color: var(--text);
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 8px 20px rgba(2, 6, 23, 0.16);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 3.5%, transparent), 0 8px 20px var(--shadow);
   transition:
     border-color 140ms ease,
     background-color 140ms ease,
@@ -695,13 +695,13 @@ textarea:focus-visible {
 .connection-topology:hover,
 .connection-topology:focus-visible {
   transform: translateY(-1px);
-  border-color: rgba(96, 165, 250, 0.3);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
   background:
     linear-gradient(
       180deg,
-      rgba(30, 41, 59, 0.78),
-      rgba(8, 13, 24, 0.68)),
-    rgba(15, 23, 42, 0.68);
+      color-mix(in srgb, var(--panel-2) 78%, transparent),
+      color-mix(in srgb, var(--panel-2) 68%, transparent)),
+    var(--panel);
   outline: none;
 }
 .topology-button-icon {
@@ -711,7 +711,7 @@ textarea:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #cbd5e1;
+  color: var(--text);
   line-height: 0;
 }
 .topology-button-icon .ui-icon {
@@ -719,24 +719,24 @@ textarea:focus-visible {
   height: 16px;
 }
 .connection-topology[data-state=connected] {
-  border-color: rgba(34, 197, 94, 0.22);
+  border-color: color-mix(in srgb, var(--success) 22%, transparent);
 }
 .connection-topology[data-state=connected] .topology-button-icon {
-  color: #bbf7d0;
+  color: var(--success);
 }
 .connection-topology[data-state=degraded] {
-  border-color: rgba(245, 158, 11, 0.24);
+  border-color: color-mix(in srgb, var(--warn) 24%, transparent);
 }
 .connection-topology[data-state=degraded] .topology-button-icon {
-  color: #fde68a;
+  color: var(--warn);
 }
 .connection-topology[data-state=offline],
 .connection-topology[data-state=unconfigured] {
-  border-color: rgba(248, 113, 113, 0.22);
+  border-color: color-mix(in srgb, var(--danger) 22%, transparent);
 }
 .connection-topology[data-state=offline] .topology-button-icon,
 .connection-topology[data-state=unconfigured] .topology-button-icon {
-  color: #fecaca;
+  color: var(--danger);
 }
 .topology-node {
   position: relative;
@@ -747,9 +747,9 @@ textarea:focus-visible {
   height: 24px;
   min-width: 42px;
   padding: 0 7px;
-  border: 1px solid rgba(148, 163, 184, 0.08);
+  border: 1px solid color-mix(in srgb, var(--line) 8%, transparent);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.32);
+  background: color-mix(in srgb, var(--panel) 32%, transparent);
   color: var(--muted);
   font-size: 10px;
   font-weight: 760;
@@ -768,64 +768,64 @@ textarea:focus-visible {
   height: 5px;
   flex: 0 0 auto;
   border-radius: 999px;
-  background: rgba(148, 163, 184, 0.56);
-  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1);
+  background: color-mix(in srgb, var(--muted) 56%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--line) 10%, transparent);
 }
 .topology-node[data-state=connected] {
-  color: #bbf7d0;
-  border-color: rgba(34, 197, 94, 0.18);
-  background: rgba(20, 83, 45, 0.15);
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 18%, transparent);
+  background: color-mix(in srgb, var(--success) 15%, transparent);
 }
 .topology-node[data-state=connected] .topology-dot {
   background: var(--success);
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.16), 0 0 14px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 16%, transparent), 0 0 14px color-mix(in srgb, var(--success) 30%, transparent);
 }
 .core-link-row[data-state=connected] .topology-dot,
 .topology-graph-node[data-state=connected] .topology-dot {
   background: var(--success);
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.16), 0 0 14px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 16%, transparent), 0 0 14px color-mix(in srgb, var(--success) 30%, transparent);
 }
 .topology-node[data-state=degraded] {
-  color: #fde68a;
-  border-color: rgba(245, 158, 11, 0.2);
-  background: rgba(120, 53, 15, 0.14);
+  color: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 20%, transparent);
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
 }
 .topology-node[data-state=degraded] .topology-dot {
   background: var(--warn);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.14);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--warn) 14%, transparent);
 }
 .topology-graph-node[data-state=degraded] .topology-dot {
   background: var(--warn);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.14);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--warn) 14%, transparent);
 }
 .topology-node[data-state=offline],
 .topology-node[data-state=unconfigured] {
-  color: #fecaca;
-  border-color: rgba(248, 113, 113, 0.18);
-  background: rgba(127, 29, 29, 0.12);
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 18%, transparent);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 .topology-node[data-state=unconfigured] {
-  color: rgba(203, 213, 225, 0.86);
-  border-color: rgba(148, 163, 184, 0.16);
-  background: rgba(15, 23, 42, 0.2);
+  color: color-mix(in srgb, var(--text) 86%, transparent);
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--panel) 20%, transparent);
 }
 .topology-node[data-state=offline] .topology-dot {
   background: var(--danger);
-  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.14);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 14%, transparent);
 }
 .topology-node[data-state=unconfigured] .topology-dot {
-  background: rgba(148, 163, 184, 0.72);
-  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1);
+  background: color-mix(in srgb, var(--muted) 72%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--line) 10%, transparent);
 }
 .core-link-row[data-state=offline] .topology-dot,
 .topology-graph-node[data-state=offline] .topology-dot {
   background: var(--danger);
-  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.14);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 14%, transparent);
 }
 .core-link-row[data-state=unconfigured] .topology-dot,
 .topology-graph-node[data-state=unconfigured] .topology-dot {
-  background: rgba(148, 163, 184, 0.72);
-  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1);
+  background: color-mix(in srgb, var(--muted) 72%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--line) 10%, transparent);
 }
 .topology-link {
   width: 22px;
@@ -837,7 +837,7 @@ textarea:focus-visible {
   justify-content: center;
   border: 1px solid transparent;
   background: transparent;
-  color: rgba(148, 163, 184, 0.64);
+  color: color-mix(in srgb, var(--muted) 64%, transparent);
   line-height: 1;
 }
 .topology-link-icon {
@@ -853,21 +853,21 @@ textarea:focus-visible {
 }
 .topology-link-action:hover {
   transform: translateY(-1px);
-  color: #e0f2fe;
+  color: var(--text);
 }
 .topology-link-action:focus-visible {
-  outline: 2px solid rgba(96, 165, 250, 0.58);
+  outline: 2px solid color-mix(in srgb, var(--accent) 58%, transparent);
   outline-offset: 2px;
 }
 .topology-link-action[data-state=connected] {
-  color: #86efac;
+  color: var(--success);
 }
 .topology-link-action[data-state=degraded] {
-  color: #fde68a;
+  color: var(--warn);
 }
 .topology-link-action[data-state=offline],
 .topology-link-action[data-state=unconfigured] {
-  color: #fca5a5;
+  color: var(--danger);
 }
 .toolbar-actions {
   display: inline-flex;
@@ -887,9 +887,9 @@ textarea:focus-visible {
   gap: 10px;
   min-height: 40px;
   padding: 4px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(7, 13, 24, 0.5);
+  background: color-mix(in srgb, var(--bg-top) 50%, transparent);
 }
 .session-tabs-main {
   min-width: 0;
@@ -934,10 +934,10 @@ textarea:focus-visible {
   height: 32px;
   padding: 0 6px 0 12px;
   border-radius: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  background: rgba(15, 23, 42, 0.68);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
+  background: color-mix(in srgb, var(--panel) 68%, transparent);
   color: var(--text);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 2%, transparent);
   position: relative;
   transition:
     transform 120ms ease,
@@ -952,8 +952,8 @@ textarea:focus-visible {
   height: 6px;
   flex: 0 0 auto;
   border-radius: 999px;
-  background: rgba(148, 163, 184, 0.56);
-  box-shadow: 0 0 0 0 rgba(148, 163, 184, 0);
+  background: color-mix(in srgb, var(--muted) 56%, transparent);
+  box-shadow: 0 0 0 0 transparent;
   transition:
     background-color 140ms ease,
     box-shadow 160ms ease,
@@ -962,50 +962,50 @@ textarea:focus-visible {
 }
 .session-tab[data-indicator=live]::before {
   background: var(--success);
-  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.16), 0 0 14px rgba(34, 197, 94, 0.34);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 16%, transparent), 0 0 14px color-mix(in srgb, var(--success) 34%, transparent);
   animation: session-tab-live-pulse 1.8s ease-in-out infinite;
 }
 .session-tab[data-indicator=watching]::before {
-  background: #38bdf8;
-  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12);
+  background: var(--accent-2);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-2) 12%, transparent);
 }
 .session-tab[data-indicator=disconnected]::before {
-  background: rgba(148, 163, 184, 0.72);
-  box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.12);
+  background: color-mix(in srgb, var(--muted) 72%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--line) 12%, transparent);
 }
 .session-tab[data-indicator=closed]::before {
-  background: rgba(148, 163, 184, 0.48);
+  background: color-mix(in srgb, var(--muted) 48%, transparent);
   box-shadow: none;
   animation: none;
 }
 .session-tab[data-indicator=error]::before {
   background: var(--danger);
-  box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.14);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 14%, transparent);
 }
 .session-tab:hover {
   transform: translateY(-1px);
 }
 .session-tab.is-active {
-  border-color: rgba(96, 165, 250, 0.3);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
   background:
     linear-gradient(
       135deg,
-      rgba(29, 78, 216, 0.92),
-      rgba(8, 145, 178, 0.86));
-  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+      color-mix(in srgb, var(--accent) 92%, transparent),
+      color-mix(in srgb, var(--accent-2) 86%, transparent));
+  box-shadow: 0 10px 20px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 .session-tab[data-mode=control]:not(.is-active) {
-  border-color: rgba(34, 197, 94, 0.22);
+  border-color: color-mix(in srgb, var(--success) 22%, transparent);
 }
 .session-tab[data-mode=observe]:not(.is-active) {
-  border-color: rgba(96, 165, 250, 0.22);
+  border-color: color-mix(in srgb, var(--accent) 22%, transparent);
 }
 .session-tab[data-closed=true] {
   opacity: 0.78;
 }
 .session-tab.is-pane-active:not(.is-active) {
-  background: rgba(15, 23, 42, 0.86);
-  border-color: rgba(96, 165, 250, 0.2);
+  background: color-mix(in srgb, var(--panel) 86%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 .session-tab.is-dragging {
   opacity: 0.42;
@@ -1019,7 +1019,7 @@ textarea:focus-visible {
   width: 2px;
   border-radius: 999px;
   background: var(--accent);
-  box-shadow: 0 0 14px rgba(85, 195, 255, 0.58);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 58%, transparent);
 }
 .session-tab[data-drop-placement=before]::after {
   left: -4px;
@@ -1035,21 +1035,21 @@ textarea:focus-visible {
   pointer-events: none;
   opacity: 0.9;
   transform-origin: top left;
-  box-shadow: 0 16px 34px rgba(2, 6, 23, 0.42);
+  box-shadow: 0 16px 34px var(--shadow);
 }
 .session-tab[data-closed=true]::before {
-  background: rgba(148, 163, 184, 0.48);
+  background: color-mix(in srgb, var(--muted) 48%, transparent);
   box-shadow: none;
   animation: none;
 }
 @keyframes session-tab-live-pulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.16), 0 0 12px rgba(34, 197, 94, 0.28);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 16%, transparent), 0 0 12px color-mix(in srgb, var(--success) 28%, transparent);
   }
   50% {
     transform: scale(1.12);
-    box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.2), 0 0 18px rgba(34, 197, 94, 0.4);
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--success) 20%, transparent), 0 0 18px color-mix(in srgb, var(--success) 40%, transparent);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1072,7 +1072,7 @@ textarea:focus-visible {
 .session-tab-kind-icon {
   width: 13px;
   height: 13px;
-  color: rgba(226, 232, 240, 0.86);
+  color: color-mix(in srgb, var(--text) 86%, transparent);
 }
 .session-tab-title {
   font-size: 12px;
@@ -1082,7 +1082,7 @@ textarea:focus-visible {
   text-overflow: ellipsis;
 }
 .session-tab-meta {
-  color: rgba(226, 232, 240, 0.76);
+  color: color-mix(in srgb, var(--text) 76%, transparent);
   font-size: 10px;
   white-space: nowrap;
   overflow: hidden;
@@ -1099,10 +1099,10 @@ textarea:focus-visible {
   height: 20px;
   min-width: 34px;
   padding: 0 7px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(7, 13, 24, 0.2);
-  color: rgba(226, 232, 240, 0.72);
+  background: color-mix(in srgb, var(--bg-top) 20%, transparent);
+  color: color-mix(in srgb, var(--text) 72%, transparent);
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -1125,15 +1125,15 @@ textarea:focus-visible {
   transform: scale(1);
 }
 .session-tab[data-recording=active] .session-tab-record {
-  border-color: rgba(248, 113, 113, 0.46);
-  background: rgba(127, 29, 29, 0.48);
-  color: #fecaca;
-  box-shadow: 0 0 16px rgba(248, 113, 113, 0.18);
+  border-color: color-mix(in srgb, var(--danger) 46%, transparent);
+  background: color-mix(in srgb, var(--danger) 48%, transparent);
+  color: var(--danger);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--danger) 18%, transparent);
 }
 .session-tab[data-recording=saved] .session-tab-record {
-  border-color: rgba(34, 197, 94, 0.28);
-  background: rgba(20, 83, 45, 0.28);
-  color: #bbf7d0;
+  border-color: color-mix(in srgb, var(--success) 28%, transparent);
+  background: color-mix(in srgb, var(--success) 28%, transparent);
+  color: var(--success);
 }
 .session-tab-close {
   flex: 0 0 auto;
@@ -1142,7 +1142,7 @@ textarea:focus-visible {
   padding: 0;
   border: 0;
   border-radius: 999px;
-  background: rgba(7, 13, 24, 0.22);
+  background: color-mix(in srgb, var(--bg-top) 22%, transparent);
   color: inherit;
   font-size: 14px;
   line-height: 1;
@@ -1160,7 +1160,7 @@ textarea:focus-visible {
   transform: scale(1);
 }
 .session-tab-close:hover {
-  background: rgba(7, 13, 24, 0.38);
+  background: color-mix(in srgb, var(--bg-top) 38%, transparent);
 }
 .session-tab-close .ui-icon {
   width: 12px;
@@ -1174,15 +1174,15 @@ textarea:focus-visible {
   z-index: 40;
   width: 190px;
   padding: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid var(--line);
   border-radius: 16px;
   background:
     linear-gradient(
       180deg,
-      rgba(12, 20, 35, 0.98),
-      rgba(7, 12, 22, 0.97)),
-    rgba(7, 12, 22, 0.97);
-  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.5);
+      color-mix(in srgb, var(--bg) 98%, transparent),
+      color-mix(in srgb, var(--bg-top) 97%, transparent)),
+    var(--bg-top);
+  box-shadow: 0 18px 44px var(--shadow);
   backdrop-filter: blur(16px);
   opacity: 0;
   transform: translateY(6px) scale(0.98);
@@ -1226,7 +1226,7 @@ textarea:focus-visible {
   color: var(--ui-button-color);
 }
 .recording-menu-button:hover:not(:disabled) {
-  background: rgba(96, 165, 250, 0.12);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 .recording-menu-button:disabled {
   opacity: 0.42;
@@ -1238,8 +1238,8 @@ textarea:focus-visible {
   text-align: center;
 }
 .toolbar-button {
-  --ui-button-border: rgba(148, 163, 184, 0.2);
-  --ui-button-bg: rgba(15, 23, 42, 0.82);
+  --ui-button-border: var(--line-strong);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 82%, transparent);
   --ui-button-color: var(--text);
   height: 32px;
   padding: 0 11px;
@@ -1263,19 +1263,19 @@ textarea:focus-visible {
 .ui-button.is-primary,
 .toolbar-button.is-primary,
 .chrome-button.is-primary {
-  --ui-button-border: rgba(96, 165, 250, 0.3);
+  --ui-button-border: color-mix(in srgb, var(--accent) 30%, transparent);
   --ui-button-bg:
     linear-gradient(
       135deg,
-      rgba(37, 99, 235, 0.98),
-      rgba(14, 165, 233, 0.94));
-  --ui-button-color: #eff6ff;
+      color-mix(in srgb, var(--accent) 98%, transparent),
+      color-mix(in srgb, var(--accent-2) 94%, transparent));
+  --ui-button-color: var(--text);
 }
 .ui-button.is-secondary,
 .toolbar-button.is-secondary,
 .chrome-button.is-secondary {
-  --ui-button-border: rgba(148, 163, 184, 0.2);
-  --ui-button-bg: rgba(15, 23, 42, 0.82);
+  --ui-button-border: var(--line-strong);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 82%, transparent);
   --ui-button-color: var(--text);
 }
 .ui-button.is-subtle,
@@ -1293,14 +1293,14 @@ textarea:focus-visible {
   padding: 0;
 }
 .chrome-button.is-accent {
-  --ui-button-border: rgba(96, 165, 250, 0.3);
+  --ui-button-border: color-mix(in srgb, var(--accent) 30%, transparent);
   --ui-button-bg:
     linear-gradient(
       135deg,
-      rgba(37, 99, 235, 0.98),
-      rgba(14, 165, 233, 0.94));
-  --ui-button-color: #eff6ff;
-  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.24);
+      color-mix(in srgb, var(--accent) 98%, transparent),
+      color-mix(in srgb, var(--accent-2) 94%, transparent));
+  --ui-button-color: var(--text);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 24%, transparent);
 }
 .terminal-shell {
   min-height: 0;
@@ -1336,10 +1336,10 @@ textarea:focus-visible {
   background:
     linear-gradient(
       180deg,
-      rgba(13, 21, 36, 0.98),
-      rgba(6, 11, 20, 0.98)),
-    rgba(6, 11, 20, 0.98);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 22px 50px var(--shadow);
+      color-mix(in srgb, var(--bg) 98%, transparent),
+      color-mix(in srgb, var(--bg-top) 98%, transparent)),
+    var(--bg-top);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 3%, transparent), 0 22px 50px var(--shadow);
   transition:
     filter 180ms ease,
     transform 180ms ease,
@@ -1351,9 +1351,9 @@ textarea:focus-visible {
   background:
     radial-gradient(
       circle at top right,
-      rgba(37, 99, 235, 0.09),
-      rgba(37, 99, 235, 0) 30%),
-    rgba(2, 6, 23, 0.94);
+      color-mix(in srgb, var(--accent) 9%, transparent),
+      transparent 30%),
+    color-mix(in srgb, var(--bg-top) 94%, transparent);
 }
 .utility-rail-launcher {
   min-width: 0;
@@ -1364,15 +1364,15 @@ textarea:focus-visible {
   align-items: center;
   gap: 6px;
   padding: 7px 4px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 16px;
   background:
     linear-gradient(
       180deg,
-      rgba(11, 19, 34, 0.78),
-      rgba(7, 12, 22, 0.68)),
-    rgba(7, 12, 22, 0.68);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 14px 28px rgba(2, 6, 23, 0.22);
+      color-mix(in srgb, var(--bg) 78%, transparent),
+      color-mix(in srgb, var(--bg-top) 68%, transparent)),
+    var(--bg-top);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 2.5%, transparent), 0 14px 28px var(--shadow);
   position: fixed;
   top: 50%;
   right: 10px;
@@ -1392,10 +1392,10 @@ textarea:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 11px;
   background: transparent;
-  color: rgba(143, 164, 191, 0.9);
+  color: var(--muted);
   transition:
     color 140ms ease,
     border-color 140ms ease,
@@ -1404,17 +1404,17 @@ textarea:focus-visible {
     box-shadow 140ms ease;
 }
 .utility-rail-launcher-button:hover:not(:disabled) {
-  color: #dbeafe;
-  border-color: rgba(96, 165, 250, 0.24);
-  background: rgba(30, 64, 175, 0.14);
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
   transform: translateY(-1px);
 }
 .utility-rail-launcher-button.is-active,
 .utility-rail-launcher-button[aria-pressed=true] {
   color: var(--accent);
-  border-color: rgba(85, 195, 255, 0.34);
-  background: rgba(14, 165, 233, 0.12);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 10px 22px rgba(14, 165, 233, 0.1);
+  border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+  background: color-mix(in srgb, var(--accent-2) 12%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 3.5%, transparent), 0 10px 22px color-mix(in srgb, var(--accent-2) 10%, transparent);
 }
 .utility-rail-launcher-button .ui-icon {
   width: 15px;
@@ -1442,10 +1442,10 @@ textarea:focus-visible {
   background:
     linear-gradient(
       180deg,
-      rgba(85, 195, 255, 0.32),
-      rgba(148, 163, 184, 0.2)),
-    rgba(15, 23, 42, 0.64);
-  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.07), 0 10px 24px rgba(2, 6, 23, 0.2);
+      color-mix(in srgb, var(--accent) 32%, transparent),
+      color-mix(in srgb, var(--muted) 20%, transparent)),
+    color-mix(in srgb, var(--panel) 64%, transparent);
+  box-shadow: inset 1px 0 0 color-mix(in srgb, var(--text) 7%, transparent), 0 10px 24px var(--shadow);
   opacity: 0.62;
   transition:
     width 140ms ease,
@@ -1460,13 +1460,13 @@ textarea:focus-visible {
   background:
     linear-gradient(
       180deg,
-      rgba(85, 195, 255, 0.56),
-      rgba(148, 163, 184, 0.28)),
-    rgba(15, 23, 42, 0.72);
-  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.1), 0 12px 28px rgba(14, 165, 233, 0.12);
+      color-mix(in srgb, var(--accent) 56%, transparent),
+      color-mix(in srgb, var(--muted) 28%, transparent)),
+    color-mix(in srgb, var(--panel) 72%, transparent);
+  box-shadow: inset 1px 0 0 color-mix(in srgb, var(--text) 10%, transparent), 0 12px 28px color-mix(in srgb, var(--accent-2) 12%, transparent);
 }
 .utility-rail-spine:focus-visible {
-  outline: 2px solid rgba(85, 195, 255, 0.34);
+  outline: 2px solid color-mix(in srgb, var(--accent) 34%, transparent);
   outline-offset: 4px;
 }
 .utility-rail-peek {
@@ -1490,16 +1490,16 @@ textarea:focus-visible {
 .utility-rail-peek-track {
   width: 7px;
   height: 58px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid var(--line);
   border-right: 0;
   border-radius: 999px 0 0 999px;
   background:
     linear-gradient(
       180deg,
-      rgba(14, 165, 233, 0.28),
-      rgba(30, 41, 59, 0.58)),
-    rgba(15, 23, 42, 0.72);
-  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.08), 0 12px 28px rgba(2, 6, 23, 0.24);
+      color-mix(in srgb, var(--accent-2) 28%, transparent),
+      color-mix(in srgb, var(--panel-2) 58%, transparent)),
+    color-mix(in srgb, var(--panel) 72%, transparent);
+  box-shadow: inset 1px 0 0 color-mix(in srgb, var(--text) 8%, transparent), 0 12px 28px var(--shadow);
   transition:
     width 140ms ease,
     border-color 140ms ease,
@@ -1509,17 +1509,17 @@ textarea:focus-visible {
 .utility-rail-peek:hover .utility-rail-peek-track,
 .utility-rail-peek:focus-visible .utility-rail-peek-track {
   width: 10px;
-  border-color: rgba(85, 195, 255, 0.42);
+  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
   background:
     linear-gradient(
       180deg,
-      rgba(14, 165, 233, 0.44),
-      rgba(30, 41, 59, 0.66)),
-    rgba(15, 23, 42, 0.78);
-  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.11), 0 14px 34px rgba(14, 165, 233, 0.12);
+      color-mix(in srgb, var(--accent-2) 44%, transparent),
+      color-mix(in srgb, var(--panel-2) 66%, transparent)),
+    color-mix(in srgb, var(--panel) 78%, transparent);
+  box-shadow: inset 1px 0 0 color-mix(in srgb, var(--text) 11%, transparent), 0 14px 34px color-mix(in srgb, var(--accent-2) 12%, transparent);
 }
 .utility-rail-peek:focus-visible {
-  outline: 2px solid rgba(85, 195, 255, 0.36);
+  outline: 2px solid color-mix(in srgb, var(--accent) 36%, transparent);
   outline-offset: 4px;
 }
 .file-panel[hidden] {
@@ -1531,16 +1531,16 @@ textarea:focus-visible {
   min-height: 0;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 18px;
   overflow: hidden;
   background:
     linear-gradient(
       180deg,
-      rgba(10, 17, 30, 0.98),
-      rgba(7, 12, 22, 0.96)),
-    rgba(7, 12, 22, 0.96);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 18px 34px rgba(2, 6, 23, 0.28);
+      color-mix(in srgb, var(--bg) 98%, transparent),
+      color-mix(in srgb, var(--bg-top) 96%, transparent)),
+    var(--bg-top);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 2%, transparent), 0 18px 34px var(--shadow);
   z-index: 6;
 }
 .terminal-shell[data-utility-open=true][data-utility-layout=focus] .file-panel {
@@ -1550,7 +1550,7 @@ textarea:focus-visible {
   left: 50%;
   width: min(1080px, calc(100% - 32px));
   transform: translateX(-50%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 28px 64px rgba(2, 6, 23, 0.5);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 4%, transparent), 0 28px 64px var(--shadow);
   backdrop-filter: blur(22px);
 }
 .terminal-shell[data-utility-open=true][data-utility-layout=max] .file-panel {
@@ -1559,7 +1559,7 @@ textarea:focus-visible {
   width: auto;
   transform: none;
   border-radius: 18px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 28px 64px rgba(2, 6, 23, 0.5);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 4%, transparent), 0 28px 64px var(--shadow);
   backdrop-filter: blur(22px);
 }
 .file-panel-resize {
@@ -1577,8 +1577,8 @@ textarea:focus-visible {
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px 12px 18px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-  background: rgba(10, 18, 32, 0.64);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
+  background: color-mix(in srgb, var(--bg) 64%, transparent);
 }
 .utility-rail-header-copy {
   min-width: 0;
@@ -1591,9 +1591,9 @@ textarea:focus-visible {
   align-items: center;
   gap: 3px;
   padding: 3px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 12px;
-  background: rgba(15, 23, 42, 0.36);
+  background: color-mix(in srgb, var(--panel) 36%, transparent);
 }
 .utility-rail-mode-button {
   width: 28px;
@@ -1606,21 +1606,21 @@ textarea:focus-visible {
   border: 1px solid transparent;
   border-radius: 9px;
   background: transparent;
-  color: rgba(143, 164, 191, 0.9);
+  color: var(--muted);
   transition:
     color 140ms ease,
     border-color 140ms ease,
     background-color 140ms ease;
 }
 .utility-rail-mode-button:hover:not(:disabled) {
-  color: #dbeafe;
-  background: rgba(30, 64, 175, 0.14);
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 .utility-rail-mode-button.is-active,
 .utility-rail-mode-button[aria-pressed=true] {
   color: var(--accent);
-  border-color: rgba(85, 195, 255, 0.26);
-  background: rgba(14, 165, 233, 0.12);
+  border-color: color-mix(in srgb, var(--accent) 26%, transparent);
+  background: color-mix(in srgb, var(--accent-2) 12%, transparent);
 }
 .utility-rail-mode-button .ui-icon {
   width: 14px;
@@ -1659,7 +1659,7 @@ textarea:focus-visible {
 }
 .agent-panel-header {
   padding: 16px 18px 12px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
 }
 .agent-panel-copy {
   min-width: 0;
@@ -1700,7 +1700,7 @@ textarea:focus-visible {
   justify-content: space-between;
   gap: 16px;
   padding: 14px 16px 12px 18px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
 }
 .file-panel-copy,
 .monitor-panel-copy {
@@ -1729,17 +1729,17 @@ textarea:focus-visible {
   min-width: 0;
   height: 28px;
   padding: 0 11px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.38);
-  color: rgba(226, 232, 240, 0.84);
+  background: color-mix(in srgb, var(--panel) 38%, transparent);
+  color: color-mix(in srgb, var(--text) 84%, transparent);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.01em;
 }
 .file-panel-header-action:hover:not(:disabled) {
-  border-color: rgba(96, 165, 250, 0.24);
-  background: rgba(30, 64, 175, 0.18);
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .file-panel-header-action:disabled {
   opacity: 0.46;
@@ -1764,8 +1764,8 @@ textarea:focus-visible {
   gap: 10px;
   flex-wrap: wrap;
   padding: 8px 14px 8px 18px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
-  background: rgba(8, 14, 26, 0.34);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 8%, transparent);
+  background: color-mix(in srgb, var(--bg-top) 34%, transparent);
 }
 .file-breadcrumb {
   min-width: 0;
@@ -1781,16 +1781,16 @@ textarea:focus-visible {
   height: 22px;
   padding: 0 7px;
   border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  background: rgba(15, 23, 42, 0.38);
-  color: rgba(226, 232, 240, 0.78);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
+  background: color-mix(in srgb, var(--panel) 38%, transparent);
+  color: color-mix(in srgb, var(--text) 78%, transparent);
   font-size: 10px;
   font-weight: 600;
 }
 .file-breadcrumb-segment:hover:not(:disabled),
 .file-breadcrumb-segment.is-active {
-  border-color: rgba(96, 165, 250, 0.24);
-  background: rgba(30, 64, 175, 0.18);
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .file-panel-selection {
   display: inline-flex;
@@ -1800,7 +1800,7 @@ textarea:focus-visible {
   flex: 0 0 auto;
 }
 .file-panel-selection-label {
-  color: rgba(148, 163, 184, 0.82);
+  color: color-mix(in srgb, var(--muted) 82%, transparent);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.03em;
@@ -1818,10 +1818,10 @@ textarea:focus-visible {
   display: grid;
   gap: 2px;
   padding: 6px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: rgba(7, 12, 22, 0.96);
-  box-shadow: 0 18px 32px rgba(2, 6, 23, 0.36);
+  background: color-mix(in srgb, var(--bg-top) 96%, transparent);
+  box-shadow: 0 18px 32px var(--shadow);
   z-index: 4;
 }
 .file-panel-menu-panel.is-context {
@@ -1860,18 +1860,18 @@ textarea:focus-visible {
   outline: none;
 }
 .file-panel-menu-item:disabled {
-  color: rgba(148, 163, 184, 0.48);
+  color: color-mix(in srgb, var(--muted) 48%, transparent);
 }
 .file-panel-menu-item.is-danger {
-  color: #fca5a5;
+  color: var(--danger);
 }
 .file-panel-menu-item.is-danger:hover:not(:disabled),
 .file-panel-menu-item.is-danger:focus-visible {
-  background: rgba(127, 29, 29, 0.28);
+  background: color-mix(in srgb, var(--danger) 28%, transparent);
 }
 .file-panel-menu-label {
   padding: 4px 10px 2px;
-  color: rgba(148, 163, 184, 0.72);
+  color: color-mix(in srgb, var(--muted) 72%, transparent);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1883,7 +1883,7 @@ textarea:focus-visible {
 .file-panel-menu-separator {
   height: 1px;
   margin: 5px 4px;
-  background: rgba(148, 163, 184, 0.12);
+  background: color-mix(in srgb, var(--line) 12%, transparent);
 }
 .file-panel-menu-separator[hidden] {
   display: none;
@@ -1894,10 +1894,10 @@ textarea:focus-visible {
   display: grid;
   place-items: center;
   padding: 20px;
-  border: 1px dashed rgba(125, 211, 252, 0.24);
+  border: 1px dashed color-mix(in srgb, var(--accent-2) 24%, transparent);
   border-radius: 16px;
-  background: rgba(6, 10, 18, 0.84);
-  color: rgba(226, 232, 240, 0.78);
+  background: color-mix(in srgb, var(--bg-top) 84%, transparent);
+  color: color-mix(in srgb, var(--text) 78%, transparent);
   font-size: 12px;
   font-weight: 600;
   line-height: 1.5;
@@ -1914,9 +1914,9 @@ textarea:focus-visible {
 }
 .file-dropzone[data-active=true] {
   opacity: 1;
-  border-color: rgba(125, 211, 252, 0.52);
-  background: rgba(7, 18, 33, 0.92);
-  color: #e0f2fe;
+  border-color: color-mix(in srgb, var(--accent-2) 52%, transparent);
+  background: color-mix(in srgb, var(--bg-top) 92%, transparent);
+  color: var(--text);
 }
 .file-panel-body {
   position: relative;
@@ -1962,14 +1962,14 @@ textarea:focus-visible {
   transition: border-color 120ms ease, background-color 120ms ease;
 }
 .file-tree-row:hover {
-  background: rgba(15, 23, 42, 0.34);
+  background: color-mix(in srgb, var(--panel) 34%, transparent);
 }
 .file-tree-row.is-selected {
-  border-color: rgba(96, 165, 250, 0.2);
-  background: rgba(30, 64, 175, 0.16);
+  border-color: color-mix(in srgb, var(--accent) 20%, transparent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
 }
 .file-tree-row.is-special {
-  background: rgba(71, 85, 105, 0.08);
+  background: color-mix(in srgb, var(--muted) 8%, transparent);
 }
 .file-tree-row.is-loading .file-tree-name {
   color: var(--muted);
@@ -2015,7 +2015,7 @@ textarea:focus-visible {
   align-items: center;
   justify-content: center;
   flex: 0 0 14px;
-  color: rgba(191, 219, 254, 0.72);
+  color: color-mix(in srgb, var(--accent-2) 72%, transparent);
 }
 .file-tree-icon svg {
   display: block;
@@ -2046,8 +2046,8 @@ textarea:focus-visible {
   min-height: 180px;
   overflow: hidden;
   padding: 14px 16px 16px 18px;
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
-  background: #070c16;
+  border-top: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
+  background: var(--bg-top);
 }
 .file-preview-pane[hidden] {
   display: none;
@@ -2098,10 +2098,10 @@ textarea:focus-visible {
   width: 28px;
   height: 28px;
   padding: 0;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.34);
-  color: rgba(226, 232, 240, 0.86);
+  background: color-mix(in srgb, var(--panel) 34%, transparent);
+  color: color-mix(in srgb, var(--text) 86%, transparent);
   font-size: 18px;
   line-height: 1;
 }
@@ -2110,17 +2110,17 @@ textarea:focus-visible {
   height: 12px;
 }
 .file-preview-context-button:hover {
-  border-color: rgba(96, 165, 250, 0.24);
-  background: rgba(30, 64, 175, 0.18);
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .file-preview-mode-group {
   display: inline-flex;
   align-items: center;
   gap: 2px;
   padding: 2px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.34);
+  background: color-mix(in srgb, var(--panel) 34%, transparent);
 }
 .file-preview-mode-button {
   min-width: 0;
@@ -2128,28 +2128,28 @@ textarea:focus-visible {
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: rgba(191, 219, 254, 0.8);
+  color: color-mix(in srgb, var(--accent-2) 80%, transparent);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.02em;
   -webkit-text-fill-color: currentColor;
 }
 .file-preview-mode-button:hover:not(:disabled) {
-  background: rgba(30, 64, 175, 0.16);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
 }
 .file-preview-mode-button.is-active,
 .file-preview-mode-button:disabled {
-  background: rgba(30, 64, 175, 0.28);
-  color: #eff6ff;
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  color: var(--text);
   opacity: 1;
 }
 .file-preview-action {
   min-width: 0;
   padding: 6px 10px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.56);
-  color: #dbeafe;
+  background: color-mix(in srgb, var(--panel) 56%, transparent);
+  color: var(--text);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -2169,21 +2169,21 @@ textarea:focus-visible {
   height: 13px;
 }
 .file-preview-action:hover:not(:disabled) {
-  border-color: rgba(96, 165, 250, 0.34);
-  background: rgba(30, 41, 59, 0.84);
+  border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+  background: color-mix(in srgb, var(--panel-2) 84%, transparent);
 }
 .file-preview-action:disabled {
   cursor: default;
   opacity: 0.46;
 }
 .file-preview-action.is-primary {
-  border-color: rgba(96, 165, 250, 0.32);
-  background: rgba(30, 64, 175, 0.22);
-  color: #eff6ff;
+  border-color: color-mix(in srgb, var(--accent) 32%, transparent);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text);
 }
 .file-preview-action.is-quiet {
   padding: 5px 9px;
-  background: rgba(15, 23, 42, 0.38);
+  background: color-mix(in srgb, var(--panel) 38%, transparent);
 }
 .file-preview-action.is-quiet.is-icon-only {
   padding: 0;
@@ -2213,10 +2213,10 @@ textarea:focus-visible {
   min-height: 220px;
   margin: 0;
   padding: 14px 16px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(9, 15, 28, 0.94);
-  color: #dbeafe;
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  color: var(--text);
   font-size: 12px;
   line-height: 1.6;
   tab-size: 2;
@@ -2242,13 +2242,13 @@ textarea:focus-visible {
 }
 .file-preview-warning {
   margin: 0 0 10px;
-  color: #fde68a;
+  color: var(--warn);
   font-size: 11px;
   line-height: 1.55;
 }
 .file-preview-error {
   margin: 0 0 10px;
-  color: #fecaca;
+  color: var(--danger);
   font-size: 11px;
   line-height: 1.55;
 }
@@ -2274,9 +2274,9 @@ textarea:focus-visible {
   display: grid;
   gap: 8px;
   padding: 12px 14px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 14px;
-  background: rgba(9, 15, 28, 0.88);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
 }
 .file-preview-summary-row {
   display: grid;
@@ -2285,21 +2285,21 @@ textarea:focus-visible {
   align-items: start;
 }
 .file-preview-summary-label {
-  color: rgba(148, 163, 184, 0.76);
+  color: color-mix(in srgb, var(--muted) 76%, transparent);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 .file-preview-summary-value {
-  color: #dbeafe;
+  color: var(--text);
   font-size: 12px;
   line-height: 1.55;
   word-break: break-word;
 }
 .file-preview-summary-note {
   margin: 2px 0 0;
-  color: rgba(191, 219, 254, 0.7);
+  color: color-mix(in srgb, var(--accent-2) 70%, transparent);
   font-size: 11px;
   line-height: 1.5;
 }
@@ -2309,9 +2309,9 @@ textarea:focus-visible {
 .file-probe-section {
   display: grid;
   gap: 0;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 14px;
-  background: rgba(9, 15, 28, 0.88);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
   overflow: hidden;
 }
 .file-probe-section-heading {
@@ -2322,8 +2322,8 @@ textarea:focus-visible {
   width: 100%;
   min-height: 38px;
   padding: 0 14px;
-  background: rgba(15, 23, 42, 0.36);
-  color: #dbeafe;
+  background: color-mix(in srgb, var(--panel) 36%, transparent);
+  color: var(--text);
   text-align: left;
 }
 .file-probe-section-title {
@@ -2332,7 +2332,7 @@ textarea:focus-visible {
   letter-spacing: 0.02em;
 }
 .file-probe-section-state {
-  color: rgba(148, 163, 184, 0.82);
+  color: color-mix(in srgb, var(--muted) 82%, transparent);
   font-size: 10px;
   font-weight: 600;
   white-space: nowrap;
@@ -2360,10 +2360,10 @@ textarea:focus-visible {
   min-width: 0;
   height: 30px;
   padding: 0 10px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(9, 15, 28, 0.92);
-  color: #dbeafe;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  color: var(--text);
   font-size: 11px;
 }
 .file-preview-hex-input.is-jump {
@@ -2371,12 +2371,12 @@ textarea:focus-visible {
 }
 .file-preview-hex-input:focus-visible {
   outline: none;
-  border-color: rgba(96, 165, 250, 0.3);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 .file-preview-hex-status {
   justify-self: end;
-  color: rgba(148, 163, 184, 0.82);
+  color: color-mix(in srgb, var(--muted) 82%, transparent);
   font-size: 10px;
   font-weight: 600;
   white-space: nowrap;
@@ -2385,10 +2385,10 @@ textarea:focus-visible {
   display: grid;
   gap: 2px;
   padding: 10px 12px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 14px;
-  background: rgba(9, 15, 28, 0.92);
-  color: #dbeafe;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  color: var(--text);
   font-family:
     "SFMono-Regular",
     "JetBrains Mono",
@@ -2410,37 +2410,37 @@ textarea:focus-visible {
   min-width: max-content;
 }
 .file-preview-hex-row.is-match {
-  background: rgba(30, 64, 175, 0.12);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 .file-preview-hex-row.is-active {
-  background: rgba(59, 130, 246, 0.16);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
 }
 .file-preview-hex-header {
   padding-bottom: 8px;
   margin-bottom: 4px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-  color: rgba(148, 163, 184, 0.82);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
+  color: color-mix(in srgb, var(--muted) 82%, transparent);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 .file-preview-hex-offset {
-  color: rgba(148, 163, 184, 0.84);
+  color: color-mix(in srgb, var(--muted) 84%, transparent);
 }
 .file-preview-hex-bytes {
   white-space: pre;
-  color: #dbeafe;
+  color: var(--text);
 }
 .file-preview-hex-ascii {
   white-space: pre;
-  color: rgba(191, 219, 254, 0.72);
+  color: color-mix(in srgb, var(--accent-2) 72%, transparent);
   padding-left: 8px;
-  border-left: 1px solid rgba(148, 163, 184, 0.12);
+  border-left: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
 }
 .file-panel-footer {
   padding: 8px 16px 12px 18px;
-  border-top: 1px solid rgba(148, 163, 184, 0.08);
+  border-top: 1px solid color-mix(in srgb, var(--line) 8%, transparent);
 }
 .utility-rail-view-files .file-panel-footer[hidden] {
   display: none;
@@ -2451,7 +2451,7 @@ textarea:focus-visible {
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px 10px 18px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.09);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 9%, transparent);
 }
 .monitor-panel-toolbar {
   display: flex;
@@ -2460,7 +2460,7 @@ textarea:focus-visible {
   gap: 10px;
   flex-wrap: wrap;
   padding: 10px 16px 10px 18px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.07);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 7%, transparent);
 }
 .monitor-panel-actions,
 .monitor-frequency,
@@ -2478,14 +2478,14 @@ textarea:focus-visible {
   gap: 3px;
   min-height: 32px;
   padding: 3px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 999px;
-  background: rgba(2, 6, 23, 0.28);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  background: color-mix(in srgb, var(--bg-top) 28%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 3.5%, transparent);
 }
 .monitor-frequency-prefix {
   padding: 0 7px 0 9px;
-  color: rgba(148, 163, 184, 0.72);
+  color: color-mix(in srgb, var(--muted) 72%, transparent);
   font-size: 10px;
   font-weight: 760;
   line-height: 24px;
@@ -2508,9 +2508,9 @@ textarea:focus-visible {
 }
 .monitor-frequency-button.is-active,
 .monitor-frequency-button:hover:not(:disabled) {
-  border-color: rgba(96, 165, 250, 0.28);
-  background: rgba(30, 64, 175, 0.24);
-  color: #e0f2fe;
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  color: var(--text);
 }
 .monitor-frequency-custom {
   display: inline-flex;
@@ -2520,8 +2520,8 @@ textarea:focus-visible {
   padding: 0 8px 0 10px;
   border: 1px solid transparent;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.42);
-  color: rgba(148, 163, 184, 0.86);
+  background: color-mix(in srgb, var(--panel) 42%, transparent);
+  color: color-mix(in srgb, var(--muted) 86%, transparent);
   font-size: 10px;
   font-weight: 760;
   transition:
@@ -2539,13 +2539,13 @@ textarea:focus-visible {
   padding: 0;
   border: 0;
   background: transparent;
-  color: #e0f2fe;
+  color: var(--text);
   font: inherit;
   text-align: right;
   outline: none;
 }
 .monitor-frequency-input::placeholder {
-  color: rgba(148, 163, 184, 0.62);
+  color: color-mix(in srgb, var(--muted) 62%, transparent);
   opacity: 1;
   text-align: left;
 }
@@ -2558,9 +2558,9 @@ textarea:focus-visible {
 }
 .monitor-frequency-custom.is-active,
 .monitor-frequency-custom:focus-within {
-  border-color: rgba(96, 165, 250, 0.34);
-  background: rgba(30, 64, 175, 0.22);
-  color: #e0f2fe;
+  border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text);
 }
 .monitor-frequency-custom.is-disabled {
   opacity: 0.56;
@@ -2569,20 +2569,20 @@ textarea:focus-visible {
 .monitor-collection-controls {
   min-height: 32px;
   padding: 3px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 999px;
-  background: rgba(2, 6, 23, 0.2);
+  background: color-mix(in srgb, var(--bg-top) 20%, transparent);
 }
 .monitor-collection-controls.is-disabled {
   opacity: 0.56;
   pointer-events: none;
 }
 .monitor-collection-controls.is-summary {
-  background: rgba(2, 6, 23, 0.18);
+  background: color-mix(in srgb, var(--bg-top) 18%, transparent);
 }
 .monitor-collection-label {
   padding: 0 6px 0 9px;
-  color: rgba(148, 163, 184, 0.72);
+  color: color-mix(in srgb, var(--muted) 72%, transparent);
   font-size: 10px;
   font-weight: 760;
   line-height: 24px;
@@ -2600,26 +2600,26 @@ textarea:focus-visible {
   display: inline-flex;
   align-items: center;
   padding: 0 10px;
-  color: rgba(148, 163, 184, 0.82);
-  background: rgba(15, 23, 42, 0.36);
+  color: color-mix(in srgb, var(--muted) 82%, transparent);
+  background: color-mix(in srgb, var(--panel) 36%, transparent);
 }
 .monitor-collection-chip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   padding: 0 7px 0 10px;
-  border: 1px solid rgba(96, 165, 250, 0.28);
-  background: rgba(30, 64, 175, 0.22);
-  color: #e0f2fe;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text);
 }
 .monitor-collection-chip:hover {
-  border-color: rgba(125, 211, 252, 0.44);
-  background: rgba(30, 64, 175, 0.34);
+  border-color: color-mix(in srgb, var(--accent-2) 44%, transparent);
+  background: color-mix(in srgb, var(--accent) 34%, transparent);
 }
 .monitor-chip-close {
   width: 12px;
   height: 12px;
-  color: rgba(224, 242, 254, 0.72);
+  color: color-mix(in srgb, var(--text) 72%, transparent);
 }
 .monitor-local-collection-toggle {
   position: relative;
@@ -2630,10 +2630,10 @@ textarea:focus-visible {
   min-width: 0;
   height: 26px;
   padding: 0 9px 0 7px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.38);
-  color: rgba(203, 213, 225, 0.86);
+  background: color-mix(in srgb, var(--panel) 38%, transparent);
+  color: color-mix(in srgb, var(--text) 86%, transparent);
   font-size: 10px;
   font-weight: 760;
   cursor: pointer;
@@ -2653,20 +2653,20 @@ textarea:focus-visible {
 }
 .monitor-local-collection-toggle:hover,
 .monitor-local-collection-toggle.is-active {
-  border-color: rgba(96, 165, 250, 0.36);
-  background: rgba(30, 64, 175, 0.22);
-  color: #e0f2fe;
+  border-color: color-mix(in srgb, var(--accent) 36%, transparent);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text);
 }
 .monitor-local-collection-toggle.is-active .monitor-collection-box {
-  border-color: rgba(96, 165, 250, 0.74);
-  background: rgba(37, 99, 235, 0.62);
+  border-color: color-mix(in srgb, var(--accent) 74%, transparent);
+  background: color-mix(in srgb, var(--accent) 62%, transparent);
 }
 .monitor-local-collection-toggle.is-active .monitor-collection-box::after {
   opacity: 1;
   transform: rotate(45deg) scale(1);
 }
 .monitor-local-collection-toggle:has(input:focus-visible) {
-  outline: 2px solid rgba(96, 165, 250, 0.42);
+  outline: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
   outline-offset: 2px;
 }
 .monitor-collection-pill {
@@ -2681,7 +2681,7 @@ textarea:focus-visible {
   border: 1px solid transparent;
   border-radius: 999px;
   background: transparent;
-  color: rgba(148, 163, 184, 0.86);
+  color: color-mix(in srgb, var(--muted) 86%, transparent);
   font-size: 10px;
   font-weight: 740;
   cursor: pointer;
@@ -2700,10 +2700,10 @@ textarea:focus-visible {
   position: relative;
   width: 13px;
   height: 13px;
-  border: 1px solid rgba(148, 163, 184, 0.48);
+  border: 1px solid color-mix(in srgb, var(--muted) 48%, transparent);
   border-radius: 3px;
-  background: rgba(15, 23, 42, 0.62);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  background: color-mix(in srgb, var(--panel) 62%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 4%, transparent);
   flex: 0 0 auto;
 }
 .monitor-collection-box::after {
@@ -2713,7 +2713,7 @@ textarea:focus-visible {
   top: 1px;
   width: 4px;
   height: 7px;
-  border: solid #e0f2fe;
+  border: solid var(--text);
   border-width: 0 2px 2px 0;
   opacity: 0;
   transform: rotate(45deg) scale(0.72);
@@ -2724,27 +2724,27 @@ textarea:focus-visible {
 }
 .monitor-collection-pill.is-active,
 .monitor-collection-pill:hover {
-  border-color: rgba(96, 165, 250, 0.28);
-  background: rgba(30, 64, 175, 0.22);
-  color: #e0f2fe;
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text);
 }
 .monitor-collection-pill.is-active .monitor-collection-box {
-  border-color: rgba(96, 165, 250, 0.74);
-  background: rgba(37, 99, 235, 0.62);
+  border-color: color-mix(in srgb, var(--accent) 74%, transparent);
+  background: color-mix(in srgb, var(--accent) 62%, transparent);
 }
 .monitor-collection-pill.is-active .monitor-collection-box::after {
   opacity: 1;
   transform: rotate(45deg) scale(1);
 }
 .monitor-collection-pill:has(input:focus-visible) {
-  outline: 2px solid rgba(96, 165, 250, 0.42);
+  outline: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
   outline-offset: 2px;
 }
 .monitor-history-button.is-active,
 .monitor-history-button[aria-expanded=true] {
-  border-color: rgba(96, 165, 250, 0.28);
-  background: rgba(30, 64, 175, 0.24);
-  color: #e0f2fe;
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  color: var(--text);
 }
 .monitor-history-popover {
   position: absolute;
@@ -2752,13 +2752,13 @@ textarea:focus-visible {
   right: 0;
   z-index: 8;
   width: min(360px, calc(100vw - 32px));
-  box-shadow: 0 22px 54px rgba(2, 6, 23, 0.48);
+  box-shadow: 0 22px 54px var(--shadow);
 }
 .monitor-history-popover[hidden] {
   display: none;
 }
 .monitor-history-popover .monitor-history-settings {
-  background: rgba(7, 12, 22, 0.98);
+  background: color-mix(in srgb, var(--bg-top) 98%, transparent);
 }
 .monitor-panel-body {
   min-height: 0;
@@ -2788,18 +2788,18 @@ textarea:focus-visible {
   gap: 14px;
   align-items: center;
   padding: 16px;
-  border: 1px solid rgba(148, 163, 184, 0.13);
+  border: 1px solid color-mix(in srgb, var(--line) 13%, transparent);
   border-radius: 20px;
   background:
     radial-gradient(
       circle at top right,
-      rgba(56, 189, 248, 0.14),
+      color-mix(in srgb, var(--accent-2) 14%, transparent),
       transparent 38%),
     linear-gradient(
       135deg,
-      rgba(15, 23, 42, 0.92),
-      rgba(10, 16, 30, 0.76));
-  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.2);
+      color-mix(in srgb, var(--panel) 92%, transparent),
+      color-mix(in srgb, var(--bg) 76%, transparent));
+  box-shadow: 0 18px 44px var(--shadow);
 }
 .monitor-hero-copy,
 .monitor-drilldown-title {
@@ -2820,12 +2820,12 @@ textarea:focus-visible {
 .monitor-hero-copy small,
 .monitor-drilldown-title small,
 .monitor-section-empty {
-  color: rgba(148, 163, 184, 0.86);
+  color: color-mix(in srgb, var(--muted) 86%, transparent);
   font-size: 11px;
   line-height: 1.45;
 }
 .monitor-eyebrow {
-  color: rgba(125, 211, 252, 0.8);
+  color: color-mix(in srgb, var(--accent-2) 80%, transparent);
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -2841,12 +2841,12 @@ textarea:focus-visible {
   display: grid;
   gap: 4px;
   padding: 9px 10px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
   border-radius: 14px;
-  background: rgba(2, 6, 23, 0.24);
+  background: color-mix(in srgb, var(--bg-top) 24%, transparent);
 }
 .monitor-kv-label {
-  color: rgba(148, 163, 184, 0.82);
+  color: color-mix(in srgb, var(--muted) 82%, transparent);
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -2871,9 +2871,9 @@ textarea:focus-visible {
   align-items: center;
   width: 100%;
   padding: 11px 12px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
   border-radius: 16px;
-  background: rgba(15, 23, 42, 0.48);
+  background: color-mix(in srgb, var(--panel) 48%, transparent);
   color: var(--text);
   cursor: pointer;
   text-align: left;
@@ -2885,13 +2885,13 @@ textarea:focus-visible {
 .monitor-metric-row:hover,
 .monitor-panel-card:hover {
   transform: translateY(-1px);
-  border-color: rgba(125, 211, 252, 0.28);
-  background: rgba(15, 23, 42, 0.66);
+  border-color: color-mix(in srgb, var(--accent-2) 28%, transparent);
+  background: color-mix(in srgb, var(--panel) 66%, transparent);
 }
 .monitor-metric-row:focus-visible,
 .monitor-panel-card:focus-visible,
 .monitor-collection-chip:focus-visible {
-  outline: 2px solid rgba(96, 165, 250, 0.42);
+  outline: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
   outline-offset: 2px;
 }
 .monitor-metric-copy {
@@ -2912,14 +2912,14 @@ textarea:focus-visible {
 .monitor-panel-card small,
 .monitor-compact-section small {
   overflow: hidden;
-  color: rgba(148, 163, 184, 0.84);
+  color: color-mix(in srgb, var(--muted) 84%, transparent);
   font-size: 11px;
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .monitor-metric-value {
-  color: #e0f2fe;
+  color: var(--text);
   font-size: 18px;
   font-weight: 780;
   letter-spacing: -0.04em;
@@ -2933,7 +2933,7 @@ textarea:focus-visible {
   height: 180px;
 }
 .monitor-chart-grid {
-  stroke: rgba(148, 163, 184, 0.12);
+  stroke: color-mix(in srgb, var(--line) 12%, transparent);
   stroke-width: 1;
 }
 .monitor-chart-hit {
@@ -2955,9 +2955,9 @@ textarea:focus-visible {
   align-content: start;
   gap: 7px;
   padding: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
   border-radius: 8px;
-  background: rgba(2, 6, 23, 0.28);
+  background: color-mix(in srgb, var(--bg-top) 28%, transparent);
 }
 .monitor-chart-legend-item {
   min-width: 0;
@@ -2971,12 +2971,12 @@ textarea:focus-visible {
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--line) 8%, transparent);
 }
 .monitor-chart-legend-item span {
   min-width: 0;
   overflow: hidden;
-  color: rgba(203, 213, 225, 0.88);
+  color: color-mix(in srgb, var(--text) 88%, transparent);
   font-size: 10px;
   font-weight: 760;
   text-overflow: ellipsis;
@@ -2984,7 +2984,7 @@ textarea:focus-visible {
 }
 .monitor-chart-legend-item strong {
   grid-column: 2;
-  color: #e2e8f0;
+  color: var(--text);
   font-size: 13px;
   font-weight: 820;
   line-height: 1.15;
@@ -3003,10 +3003,10 @@ textarea:focus-visible {
   min-width: 176px;
   max-width: min(260px, calc(100% - 16px));
   padding: 9px 10px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(7, 12, 22, 0.96);
-  box-shadow: 0 16px 36px rgba(2, 6, 23, 0.42);
+  background: color-mix(in srgb, var(--bg-top) 96%, transparent);
+  box-shadow: 0 16px 36px var(--shadow);
   color: var(--text);
   pointer-events: none;
   transform: translateX(-50%);
@@ -3014,7 +3014,7 @@ textarea:focus-visible {
 .monitor-chart-tooltip strong {
   display: block;
   margin-bottom: 7px;
-  color: #cbd5e1;
+  color: var(--text);
   font-size: 10px;
   font-weight: 800;
 }
@@ -3023,7 +3023,7 @@ textarea:focus-visible {
   grid-template-columns: auto minmax(0, 1fr);
   gap: 7px;
   align-items: center;
-  color: rgba(226, 232, 240, 0.92);
+  color: color-mix(in srgb, var(--text) 92%, transparent);
   font-size: 11px;
   line-height: 1.45;
   white-space: nowrap;
@@ -3039,9 +3039,9 @@ textarea:focus-visible {
   display: grid;
   gap: 12px;
   padding: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.11);
+  border: 1px solid color-mix(in srgb, var(--line) 11%, transparent);
   border-radius: 18px;
-  background: rgba(10, 16, 30, 0.58);
+  background: color-mix(in srgb, var(--bg) 58%, transparent);
 }
 .monitor-panel-grid {
   display: grid;
@@ -3057,14 +3057,14 @@ textarea:focus-visible {
   display: grid;
   gap: 9px;
   padding: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.11);
+  border: 1px solid color-mix(in srgb, var(--line) 11%, transparent);
   border-radius: 18px;
   background:
     linear-gradient(
       180deg,
-      rgba(15, 23, 42, 0.7),
-      rgba(10, 16, 30, 0.58)),
-    rgba(10, 16, 30, 0.7);
+      color-mix(in srgb, var(--panel) 70%, transparent),
+      color-mix(in srgb, var(--bg) 58%, transparent)),
+    var(--bg);
   color: var(--text);
   cursor: pointer;
   text-align: left;
@@ -3080,7 +3080,7 @@ textarea:focus-visible {
   gap: 12px;
 }
 .monitor-panel-card-top strong {
-  color: #e0f2fe;
+  color: var(--text);
   font-size: 22px;
   font-weight: 780;
   letter-spacing: -0.04em;
@@ -3179,9 +3179,9 @@ textarea:focus-visible {
 .monitor-memory-signal,
 .monitor-signal {
   min-width: 0;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
   border-radius: 12px;
-  background: rgba(2, 6, 23, 0.26);
+  background: color-mix(in srgb, var(--bg-top) 26%, transparent);
 }
 .monitor-memory-legend-item {
   display: grid;
@@ -3197,25 +3197,25 @@ textarea:focus-visible {
   width: 7px;
   height: 7px;
   border-radius: 999px;
-  background: rgba(148, 163, 184, 0.7);
+  background: color-mix(in srgb, var(--muted) 70%, transparent);
 }
 .monitor-memory-legend-item strong {
   grid-column: 2;
-  color: #e2e8f0;
+  color: var(--text);
   font-size: 11px;
   font-weight: 800;
 }
 .monitor-memory-legend-item.is-pressure i {
-  background: rgba(167, 139, 250, 0.92);
+  background: color-mix(in srgb, var(--accent) 92%, transparent);
 }
 .monitor-memory-legend-item.is-available i {
-  background: rgba(45, 212, 191, 0.92);
+  background: color-mix(in srgb, var(--success) 92%, transparent);
 }
 .monitor-memory-legend-item.is-reclaim i {
-  background: rgba(96, 165, 250, 0.92);
+  background: color-mix(in srgb, var(--accent) 92%, transparent);
 }
 .monitor-memory-legend-item.is-writeback i {
-  background: rgba(251, 191, 36, 0.92);
+  background: color-mix(in srgb, var(--warn) 92%, transparent);
 }
 .monitor-memory-signal {
   display: grid;
@@ -3229,36 +3229,36 @@ textarea:focus-visible {
 }
 .monitor-memory-signal-label,
 .monitor-signal-label {
-  color: rgba(148, 163, 184, 0.82);
+  color: color-mix(in srgb, var(--muted) 82%, transparent);
   font-size: 10px;
   font-weight: 760;
   text-transform: uppercase;
 }
 .monitor-memory-signal strong,
 .monitor-signal strong {
-  color: #e2e8f0;
+  color: var(--text);
   font-size: 18px;
   font-weight: 820;
 }
 .monitor-memory-signal small,
 .monitor-signal small {
   overflow: hidden;
-  color: rgba(203, 213, 225, 0.76);
+  color: color-mix(in srgb, var(--text) 76%, transparent);
   font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .monitor-memory-signal.is-ok,
 .monitor-signal.is-ok {
-  border-color: rgba(45, 212, 191, 0.2);
+  border-color: color-mix(in srgb, var(--success) 20%, transparent);
 }
 .monitor-memory-signal.is-watch,
 .monitor-signal.is-watch {
-  border-color: rgba(251, 191, 36, 0.26);
+  border-color: color-mix(in srgb, var(--warn) 26%, transparent);
 }
 .monitor-memory-signal.is-busy,
 .monitor-signal.is-busy {
-  border-color: rgba(248, 113, 113, 0.26);
+  border-color: color-mix(in srgb, var(--danger) 26%, transparent);
 }
 .monitor-signal.is-muted {
   opacity: 0.68;
@@ -3272,15 +3272,15 @@ textarea:focus-visible {
   font-weight: 700;
 }
 .monitor-history-toggle input {
-  accent-color: #38bdf8;
+  accent-color: var(--accent-2);
 }
 .monitor-history-path {
   width: 100%;
   height: 34px;
   padding: 0 11px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: rgba(2, 6, 23, 0.32);
+  background: color-mix(in srgb, var(--bg-top) 32%, transparent);
   color: var(--text);
   font-size: 12px;
 }
@@ -3296,10 +3296,10 @@ textarea:focus-visible {
   justify-self: start;
   height: 30px;
   padding: 0 12px;
-  border: 1px solid rgba(125, 211, 252, 0.22);
+  border: 1px solid color-mix(in srgb, var(--accent-2) 22%, transparent);
   border-radius: 999px;
-  background: rgba(14, 165, 233, 0.16);
-  color: #e0f2fe;
+  background: color-mix(in srgb, var(--accent-2) 16%, transparent);
+  color: var(--text);
   font-size: 11px;
   font-weight: 800;
 }
@@ -3317,13 +3317,13 @@ textarea:focus-visible {
   align-items: center;
   padding: 8px 10px;
   border-radius: 12px;
-  background: rgba(15, 23, 42, 0.44);
-  color: rgba(226, 232, 240, 0.92);
+  background: color-mix(in srgb, var(--panel) 44%, transparent);
+  color: color-mix(in srgb, var(--text) 92%, transparent);
   font-size: 11px;
 }
 .monitor-table-row.is-header {
   background: transparent;
-  color: rgba(148, 163, 184, 0.78);
+  color: color-mix(in srgb, var(--muted) 78%, transparent);
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -3351,7 +3351,7 @@ textarea:focus-visible {
   text-transform: inherit;
 }
 .monitor-table-sort[data-active=true] {
-  color: #e0f2fe;
+  color: var(--text);
 }
 .monitor-sort-label {
   min-width: 0;
@@ -3384,9 +3384,9 @@ textarea:focus-visible {
   width: 100%;
   height: 34px;
   padding: 0 11px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: rgba(2, 6, 23, 0.32);
+  background: color-mix(in srgb, var(--bg-top) 32%, transparent);
   color: var(--text);
   font-size: 12px;
 }
@@ -3423,7 +3423,7 @@ textarea:focus-visible {
 }
 .monitor-table-empty {
   padding: 10px;
-  color: rgba(148, 163, 184, 0.78);
+  color: color-mix(in srgb, var(--muted) 78%, transparent);
   font-size: 11px;
 }
 .monitor-drilldown {
@@ -3559,8 +3559,8 @@ textarea:focus-visible {
   position: relative;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  background: rgba(2, 6, 23, 0.28);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
+  background: color-mix(in srgb, var(--bg-top) 28%, transparent);
   overflow: hidden;
   transition:
     border-color 160ms ease,
@@ -3569,20 +3569,20 @@ textarea:focus-visible {
     transform 180ms ease;
 }
 .terminal-pane[data-focused=true] {
-  border-color: rgba(85, 195, 255, 0.48);
-  box-shadow: inset 0 0 0 1px rgba(85, 195, 255, 0.08);
+  border-color: color-mix(in srgb, var(--accent) 48%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 8%, transparent);
 }
 .terminal-pane[data-focus-mode=true] {
   z-index: 2;
-  border-color: rgba(85, 195, 255, 0.62);
+  border-color: color-mix(in srgb, var(--accent) 62%, transparent);
   border-radius: 0;
   background:
     radial-gradient(
       circle at 82% 0%,
-      rgba(14, 165, 233, 0.12),
-      rgba(14, 165, 233, 0) 32%),
-    rgba(2, 6, 23, 0.44);
-  box-shadow: inset 0 0 0 1px rgba(85, 195, 255, 0.12), 0 18px 44px rgba(2, 6, 23, 0.32);
+      color-mix(in srgb, var(--accent-2) 12%, transparent),
+      transparent 32%),
+    color-mix(in srgb, var(--bg-top) 44%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent), 0 18px 44px var(--shadow);
 }
 .terminal-pane-tabs {
   min-width: 0;
@@ -3593,15 +3593,15 @@ textarea:focus-visible {
   padding: 5px 6px;
   overflow-x: auto;
   scrollbar-width: thin;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-  background: rgba(5, 10, 20, 0.84);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
+  background: color-mix(in srgb, var(--bg-top) 84%, transparent);
 }
 .terminal-pane-tabs .session-tab {
   max-width: 240px;
 }
 .terminal-pane[data-focus-mode=true] .terminal-pane-tabs {
   min-height: 42px;
-  background: rgba(5, 10, 20, 0.9);
+  background: color-mix(in srgb, var(--bg-top) 90%, transparent);
 }
 .terminal-pane[data-focus-mode=true] .session-tab {
   max-width: min(360px, calc(100vw - 52px));
@@ -3620,8 +3620,8 @@ textarea:focus-visible {
   z-index: 5;
   pointer-events: none;
   opacity: 0;
-  background: rgba(85, 195, 255, 0.08);
-  outline: 1px solid rgba(85, 195, 255, 0.54);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--accent) 54%, transparent);
   outline-offset: -1px;
   transition: opacity 100ms ease;
 }
@@ -3681,30 +3681,30 @@ textarea:focus-visible {
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: rgba(116, 149, 188, 0.72) rgba(10, 18, 34, 0.86);
+  scrollbar-color: color-mix(in srgb, var(--muted) 72%, transparent) color-mix(in srgb, var(--bg) 86%, transparent);
 }
 .terminal-viewport .xterm-viewport::-webkit-scrollbar {
   width: 14px;
 }
 .terminal-viewport .xterm-viewport::-webkit-scrollbar-track {
-  background: rgba(10, 18, 34, 0.86);
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
   border-radius: 999px;
 }
 .terminal-viewport .xterm-viewport::-webkit-scrollbar-thumb {
-  border: 3px solid rgba(10, 18, 34, 0.86);
+  border: 3px solid color-mix(in srgb, var(--bg) 86%, transparent);
   border-radius: 999px;
   background:
     linear-gradient(
       180deg,
-      rgba(142, 164, 191, 0.78),
-      rgba(88, 115, 147, 0.78));
+      color-mix(in srgb, var(--muted) 78%, transparent),
+      color-mix(in srgb, var(--panel-3) 78%, transparent));
 }
 .terminal-viewport .xterm-viewport::-webkit-scrollbar-thumb:hover {
   background:
     linear-gradient(
       180deg,
-      rgba(187, 247, 255, 0.86),
-      rgba(96, 165, 250, 0.84));
+      color-mix(in srgb, var(--text) 86%, transparent),
+      color-mix(in srgb, var(--accent) 84%, transparent));
 }
 .terminal-viewport .xterm-screen {
   padding-right: 6px;
@@ -3719,10 +3719,10 @@ textarea:focus-visible {
   gap: 6px;
   max-width: calc(100% - 40px);
   padding: 6px;
-  border: 1px solid rgba(96, 165, 250, 0.16);
+  border: 1px solid color-mix(in srgb, var(--accent) 16%, transparent);
   border-radius: 999px;
-  background: rgba(6, 10, 18, 0.88);
-  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.28);
+  background: color-mix(in srgb, var(--bg-top) 88%, transparent);
+  box-shadow: 0 12px 28px var(--shadow);
   backdrop-filter: blur(10px);
   transition:
     opacity 160ms ease,
@@ -3738,7 +3738,7 @@ textarea:focus-visible {
   display: none;
 }
 .history-title {
-  color: rgba(226, 232, 240, 0.78);
+  color: color-mix(in srgb, var(--text) 78%, transparent);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -3756,9 +3756,9 @@ textarea:focus-visible {
   height: 24px;
   padding: 0 8px;
   border-radius: 999px;
-  border: 1px solid rgba(96, 165, 250, 0.14);
-  background: rgba(30, 64, 175, 0.16);
-  color: #e0f2fe;
+  border: 1px solid color-mix(in srgb, var(--accent) 14%, transparent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--text);
   font-size: 12px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -3776,14 +3776,14 @@ textarea:focus-visible {
   white-space: nowrap;
   font-size: 16px;
   line-height: 1;
-  color: #e0f2fe;
+  color: var(--text);
   background:
     linear-gradient(
       180deg,
-      rgba(37, 99, 235, 0.92),
-      rgba(14, 165, 233, 0.9));
-  border-color: rgba(147, 197, 253, 0.24);
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
+      color-mix(in srgb, var(--accent) 92%, transparent),
+      color-mix(in srgb, var(--accent-2) 90%, transparent));
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 .toolbar-button.jump:disabled {
   opacity: 0.55;
@@ -3803,7 +3803,7 @@ textarea:focus-visible {
 .settings-scrim {
   position: absolute;
   inset: 0;
-  background: rgba(2, 6, 23, 0.62);
+  background: color-mix(in srgb, var(--bg-top) 62%, transparent);
   backdrop-filter: blur(8px);
   opacity: 0;
   transition: opacity 160ms ease;
@@ -3817,15 +3817,15 @@ textarea:focus-visible {
   display: grid;
   grid-template-rows: auto 1fr auto;
   overflow: hidden;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid var(--line);
   border-radius: 24px;
   background:
     linear-gradient(
       180deg,
-      rgba(11, 18, 32, 0.98),
-      rgba(7, 12, 22, 0.96)),
-    rgba(7, 12, 22, 0.96);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 30px 80px rgba(2, 6, 23, 0.5);
+      color-mix(in srgb, var(--bg) 98%, transparent),
+      color-mix(in srgb, var(--bg-top) 96%, transparent)),
+    var(--bg-top);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 4%, transparent), 0 30px 80px var(--shadow);
   opacity: 0;
   transform: translateY(18px) scale(0.985);
   transition: opacity 160ms ease, transform 180ms ease;
@@ -3846,7 +3846,7 @@ textarea:focus-visible {
   justify-content: space-between;
   gap: 16px;
   padding: 18px 20px 14px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
 }
 .settings-copy {
   min-width: 0;
@@ -3881,10 +3881,10 @@ textarea:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.58);
-  color: rgba(226, 232, 240, 0.82);
+  background: color-mix(in srgb, var(--panel) 58%, transparent);
+  color: color-mix(in srgb, var(--text) 82%, transparent);
   transition:
     border-color 140ms ease,
     background-color 140ms ease,
@@ -3893,9 +3893,9 @@ textarea:focus-visible {
 }
 .settings-close-button:hover {
   transform: translateY(-1px);
-  border-color: rgba(96, 165, 250, 0.24);
-  background: rgba(30, 64, 175, 0.18);
-  color: #eff6ff;
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--text);
 }
 .topology-insight-modal[hidden] {
   display: none;
@@ -3911,7 +3911,7 @@ textarea:focus-visible {
 .topology-insight-scrim {
   position: absolute;
   inset: 0;
-  background: rgba(2, 6, 23, 0.54);
+  background: color-mix(in srgb, var(--bg-top) 54%, transparent);
   backdrop-filter: blur(7px);
   opacity: 0;
   transition: opacity 150ms ease;
@@ -3924,15 +3924,15 @@ textarea:focus-visible {
   grid-template-rows: auto minmax(0, 1fr);
   max-height: min(760px, calc(100vh - 48px));
   overflow: hidden;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid color-mix(in srgb, var(--line) 20%, transparent);
   border-radius: 8px;
   background:
     linear-gradient(
       180deg,
-      rgba(11, 18, 32, 0.98),
-      rgba(6, 10, 18, 0.98)),
-    rgba(7, 12, 22, 0.98);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 28px 70px rgba(2, 6, 23, 0.52);
+      color-mix(in srgb, var(--bg) 98%, transparent),
+      color-mix(in srgb, var(--bg-top) 98%, transparent)),
+    var(--bg-top);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 5%, transparent), 0 28px 70px var(--shadow);
   opacity: 0;
   transform: translateY(14px) scale(0.985);
   transition: opacity 150ms ease, transform 170ms ease;
@@ -3960,7 +3960,7 @@ textarea:focus-visible {
   padding: 8px;
 }
 .topology-insight-modal[data-fullscreen=true] .topology-insight-scrim {
-  background: rgba(2, 6, 23, 0.6);
+  background: color-mix(in srgb, var(--bg-top) 60%, transparent);
   backdrop-filter: blur(9px);
 }
 .topology-insight-modal[data-fullscreen=true] .topology-insight-dialog,
@@ -3971,7 +3971,7 @@ textarea:focus-visible {
   height: 100%;
   max-height: none;
   border-radius: 18px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 28px 64px rgba(2, 6, 23, 0.5);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 4%, transparent), 0 28px 64px var(--shadow);
   backdrop-filter: blur(22px);
 }
 .topology-insight-header {
@@ -3980,7 +3980,7 @@ textarea:focus-visible {
   justify-content: space-between;
   gap: 14px;
   padding: 16px 18px 14px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
 }
 .topology-insight-header-actions {
   flex: 0 0 auto;
@@ -4058,9 +4058,9 @@ textarea:focus-visible {
   display: grid;
   gap: 10px;
   padding: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.13);
+  border: 1px solid color-mix(in srgb, var(--line) 13%, transparent);
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.36);
+  background: color-mix(in srgb, var(--panel) 36%, transparent);
 }
 .topology-graph-node[data-clickable=true] {
   cursor: pointer;
@@ -4072,23 +4072,23 @@ textarea:focus-visible {
 .topology-graph-node[data-clickable=true]:hover,
 .topology-graph-node[data-clickable=true]:focus-visible {
   transform: translateY(-1px);
-  border-color: rgba(96, 165, 250, 0.32);
-  background: rgba(15, 23, 42, 0.48);
+  border-color: color-mix(in srgb, var(--accent) 32%, transparent);
+  background: color-mix(in srgb, var(--panel) 48%, transparent);
   outline: none;
 }
 .topology-graph-node[data-state=connected] {
-  border-color: rgba(34, 197, 94, 0.22);
+  border-color: color-mix(in srgb, var(--success) 22%, transparent);
 }
 .topology-graph-node[data-state=degraded] {
-  border-color: rgba(245, 158, 11, 0.24);
+  border-color: color-mix(in srgb, var(--warn) 24%, transparent);
 }
 .topology-graph-node[data-state=offline],
 .topology-graph-node[data-state=unconfigured] {
-  border-color: rgba(248, 113, 113, 0.2);
+  border-color: color-mix(in srgb, var(--danger) 20%, transparent);
 }
 .topology-graph-node[data-state=unconfigured] {
-  border-color: rgba(148, 163, 184, 0.16);
-  background: rgba(15, 23, 42, 0.28);
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--panel) 28%, transparent);
 }
 .topology-graph-node-header {
   display: grid;
@@ -4108,10 +4108,10 @@ textarea:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(148, 163, 184, 0.13);
+  border: 1px solid color-mix(in srgb, var(--line) 13%, transparent);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.46);
-  color: rgba(226, 232, 240, 0.68);
+  background: color-mix(in srgb, var(--panel) 46%, transparent);
+  color: color-mix(in srgb, var(--text) 68%, transparent);
   cursor: pointer;
   transition:
     border-color 140ms ease,
@@ -4126,23 +4126,23 @@ textarea:focus-visible {
 .topology-node-edit:hover,
 .topology-node-edit:focus-visible {
   transform: translateY(-1px);
-  border-color: rgba(96, 165, 250, 0.36);
-  background: rgba(30, 64, 175, 0.24);
-  color: #dbeafe;
+  border-color: color-mix(in srgb, var(--accent) 36%, transparent);
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  color: var(--text);
   outline: none;
 }
 .topology-node-delete:hover,
 .topology-node-delete:focus-visible {
   transform: translateY(-1px);
-  border-color: rgba(248, 113, 113, 0.34);
-  background: rgba(127, 29, 29, 0.24);
-  color: #fecaca;
+  border-color: color-mix(in srgb, var(--danger) 34%, transparent);
+  background: color-mix(in srgb, var(--danger) 24%, transparent);
+  color: var(--danger);
   outline: none;
 }
 .topology-graph-icon {
   width: 20px;
   height: 20px;
-  color: #cbd5e1;
+  color: var(--text);
 }
 .topology-graph-node-copy {
   min-width: 0;
@@ -4199,10 +4199,10 @@ textarea:focus-visible {
   justify-self: start;
   min-height: 28px;
   padding: 0 10px;
-  border: 1px solid rgba(96, 165, 250, 0.22);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
   border-radius: 8px;
-  background: rgba(30, 64, 175, 0.18);
-  color: #dbeafe;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--text);
   cursor: pointer;
   font-size: 11px;
   font-weight: 760;
@@ -4218,8 +4218,8 @@ textarea:focus-visible {
 }
 .topology-graph-action:hover,
 .topology-graph-action:focus-visible {
-  border-color: rgba(96, 165, 250, 0.38);
-  background: rgba(30, 64, 175, 0.28);
+  border-color: color-mix(in srgb, var(--accent) 38%, transparent);
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
   outline: none;
 }
 .topology-graph-action.onboarding-topology-anchor,
@@ -4227,16 +4227,16 @@ textarea:focus-visible {
 .topology-graph-details dd.onboarding-topology-anchor,
 .connection-topology.onboarding-topology-anchor {
   z-index: 4;
-  border-color: rgba(96, 165, 250, 0.72);
-  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.2), 0 0 0 6px rgba(37, 99, 235, 0.14);
+  border-color: color-mix(in srgb, var(--accent) 72%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent), 0 0 0 6px color-mix(in srgb, var(--accent) 14%, transparent);
   animation: onboarding-anchor-pulse 1800ms ease-out 2;
 }
 @keyframes onboarding-anchor-pulse {
   0% {
-    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.24), 0 0 0 0 rgba(37, 99, 235, 0.28);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 24%, transparent), 0 0 0 0 color-mix(in srgb, var(--accent) 28%, transparent);
   }
   100% {
-    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.18), 0 0 0 10px rgba(37, 99, 235, 0);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 0 10px transparent;
   }
 }
 .topology-graph-links {
@@ -4248,7 +4248,7 @@ textarea:focus-visible {
 }
 .topology-graph-link {
   fill: none;
-  stroke: rgba(148, 163, 184, 0.42);
+  stroke: color-mix(in srgb, var(--muted) 42%, transparent);
   stroke-width: 1.7;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -4256,24 +4256,24 @@ textarea:focus-visible {
   vector-effect: non-scaling-stroke;
 }
 .topology-graph-link[data-state=connected] {
-  stroke: rgba(125, 211, 252, 0.36);
-  filter: drop-shadow(0 0 5px rgba(34, 197, 94, 0.1));
+  stroke: color-mix(in srgb, var(--accent-2) 36%, transparent);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--success) 10%, transparent));
 }
 .topology-graph-link[data-state=degraded] {
-  stroke: rgba(253, 230, 138, 0.38);
-  filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.1));
+  stroke: color-mix(in srgb, var(--warn) 38%, transparent);
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--warn) 10%, transparent));
 }
 .topology-graph-link[data-state=offline],
 .topology-graph-link[data-state=unconfigured] {
-  stroke: rgba(248, 113, 113, 0.42);
+  stroke: color-mix(in srgb, var(--danger) 42%, transparent);
   stroke-dasharray: 4 8;
 }
 .topology-graph-link[data-state=unconfigured] {
-  stroke: rgba(148, 163, 184, 0.3);
+  stroke: color-mix(in srgb, var(--muted) 30%, transparent);
 }
 .topology-graph-link-flow {
   fill: none;
-  stroke: rgba(186, 230, 253, 0.82);
+  stroke: color-mix(in srgb, var(--accent-2) 82%, transparent);
   stroke-width: 2.2;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -4283,32 +4283,32 @@ textarea:focus-visible {
   vector-effect: non-scaling-stroke;
   pointer-events: none;
   animation: topology-link-flow 1.9s linear infinite;
-  filter: drop-shadow(0 0 4px rgba(125, 211, 252, 0.24));
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent-2) 24%, transparent));
 }
 .topology-graph-link-flow[data-state=degraded] {
-  stroke: rgba(254, 240, 138, 0.76);
+  stroke: color-mix(in srgb, var(--warn) 76%, transparent);
   opacity: 0.62;
   animation-duration: 2.4s;
-  filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.22));
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--warn) 22%, transparent));
 }
 .topology-graph-link-flow[data-activity=heartbeat] {
-  stroke: rgba(186, 230, 253, 0.58);
+  stroke: color-mix(in srgb, var(--accent-2) 58%, transparent);
   stroke-width: 1.8;
   stroke-dasharray: 0.055 0.26;
   opacity: 0.46;
   animation-duration: 3.6s;
-  filter: drop-shadow(0 0 3px rgba(125, 211, 252, 0.14));
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent-2) 14%, transparent));
 }
 .topology-graph-link-flow[data-activity=control] {
   animation-duration: 1.9s;
 }
 .topology-graph-link-flow[data-activity=transfer] {
-  stroke: rgba(125, 211, 252, 0.9);
+  stroke: color-mix(in srgb, var(--accent-2) 90%, transparent);
   stroke-width: 2.5;
   stroke-dasharray: 0.095 0.16;
   opacity: 0.82;
   animation-duration: 1.35s;
-  filter: drop-shadow(0 0 6px rgba(125, 211, 252, 0.32));
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent-2) 32%, transparent));
 }
 @keyframes topology-link-flow {
   to {
@@ -4329,9 +4329,9 @@ textarea:focus-visible {
   flex-wrap: wrap;
 }
 .topology-add-button {
-  --ui-button-border: rgba(96, 165, 250, 0.32);
-  --ui-button-bg: rgba(15, 23, 42, 0.34);
-  --ui-button-color: #bfdbfe;
+  --ui-button-border: color-mix(in srgb, var(--accent) 32%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 34%, transparent);
+  --ui-button-color: var(--text);
   min-width: 0;
   min-height: 30px;
   padding: 0 10px;
@@ -4362,9 +4362,9 @@ textarea:focus-visible {
 .topology-add-button:hover,
 .topology-add-button:focus-visible {
   transform: translateY(-1px);
-  border-color: rgba(96, 165, 250, 0.5);
-  background: rgba(30, 64, 175, 0.22);
-  color: #dbeafe;
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--text);
   outline: none;
 }
 .topology-form-page,
@@ -4374,9 +4374,9 @@ textarea:focus-visible {
   display: grid;
   gap: 10px;
   padding: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.13);
+  border: 1px solid color-mix(in srgb, var(--line) 13%, transparent);
   border-radius: 8px;
-  background: rgba(8, 13, 24, 0.38);
+  background: color-mix(in srgb, var(--bg-top) 38%, transparent);
 }
 .topology-form-grid,
 .topology-core-inline-editor {
@@ -4430,7 +4430,7 @@ textarea:focus-visible {
 .topology-edge-tftp-editor,
 .topology-edge-runtime-editor {
   padding-top: 2px;
-  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  border-top: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
 }
 .topology-detail-section:first-child,
 .topology-edge-identity-editor:first-child {
@@ -4536,16 +4536,16 @@ textarea:focus-visible {
   align-items: center;
   gap: 8px;
   padding: 7px 9px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--line);
   border-radius: 7px;
-  background: rgba(15, 23, 42, 0.46);
+  background: color-mix(in srgb, var(--panel) 46%, transparent);
   color: var(--text);
   text-align: left;
 }
 .topology-core-registry-option:hover,
 .topology-core-registry-option:focus-visible {
-  border-color: rgba(96, 165, 250, 0.36);
-  background: rgba(30, 41, 59, 0.72);
+  border-color: color-mix(in srgb, var(--accent) 36%, transparent);
+  background: color-mix(in srgb, var(--panel-2) 72%, transparent);
 }
 .topology-core-registry-option.is-disabled {
   cursor: default;
@@ -4554,14 +4554,14 @@ textarea:focus-visible {
 }
 .topology-core-registry-option.is-disabled:hover,
 .topology-core-registry-option.is-disabled:focus-visible {
-  border-color: rgba(148, 163, 184, 0.14);
-  background: rgba(15, 23, 42, 0.46);
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--panel) 46%, transparent);
 }
 .topology-core-registry-option[data-state=error] strong {
-  color: #fecaca;
+  color: var(--danger);
 }
 .topology-core-registry-option[data-state=loading] strong {
-  color: #bfdbfe;
+  color: var(--text);
 }
 .topology-core-registry-option strong,
 .topology-core-registry-option span {
@@ -4609,7 +4609,7 @@ textarea:focus-visible {
   display: grid;
   place-items: center;
   padding: 18px;
-  background: rgba(2, 6, 23, 0.48);
+  background: color-mix(in srgb, var(--bg-top) 48%, transparent);
   backdrop-filter: blur(8px);
 }
 .topology-confirm-dialog {
@@ -4617,15 +4617,15 @@ textarea:focus-visible {
   display: grid;
   gap: 14px;
   padding: 16px;
-  border: 1px solid rgba(248, 113, 113, 0.24);
+  border: 1px solid color-mix(in srgb, var(--danger) 24%, transparent);
   border-radius: 8px;
   background:
     linear-gradient(
       180deg,
-      rgba(17, 24, 39, 0.98),
-      rgba(7, 12, 22, 0.98)),
-    rgba(15, 23, 42, 0.98);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.42);
+      color-mix(in srgb, var(--bg) 98%, transparent),
+      color-mix(in srgb, var(--bg-top) 98%, transparent)),
+    var(--panel);
+  box-shadow: 0 24px 64px color-mix(in srgb, var(--bg-top) 42%, transparent);
 }
 .topology-confirm-copy {
   min-width: 0;
@@ -4633,7 +4633,7 @@ textarea:focus-visible {
   gap: 3px;
 }
 .topology-confirm-copy strong {
-  color: #fecaca;
+  color: var(--danger);
   font-size: 12px;
   font-weight: 800;
 }
@@ -4666,7 +4666,7 @@ textarea:focus-visible {
 .topology-form-error,
 .topology-inline-error {
   margin: 0;
-  color: #fecaca;
+  color: var(--danger);
   font-size: 11px;
   line-height: 1.35;
   overflow-wrap: anywhere;
@@ -4675,8 +4675,8 @@ textarea:focus-visible {
   min-height: 34px;
   display: flex;
   align-items: center;
-  color: rgba(226, 232, 240, 0.82);
-  background: rgba(15, 23, 42, 0.46);
+  color: color-mix(in srgb, var(--text) 82%, transparent);
+  background: color-mix(in srgb, var(--panel) 46%, transparent);
   border-style: dashed;
 }
 .readonly-target[hidden] {
@@ -4685,9 +4685,9 @@ textarea:focus-visible {
 .toolbar-button.is-danger,
 .chrome-button.is-danger,
 .ui-button.is-danger {
-  --ui-button-border: rgba(248, 113, 113, 0.22);
-  --ui-button-bg: rgba(127, 29, 29, 0.18);
-  --ui-button-color: #fecaca;
+  --ui-button-border: color-mix(in srgb, var(--danger) 22%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--danger) 18%, transparent);
+  --ui-button-color: var(--danger);
   border-color: var(--ui-button-border);
   background: var(--ui-button-bg);
   color: var(--ui-button-color);
@@ -4696,8 +4696,8 @@ textarea:focus-visible {
 .toolbar-button.is-danger:focus-visible,
 .chrome-button.is-danger:hover,
 .chrome-button.is-danger:focus-visible {
-  border-color: rgba(248, 113, 113, 0.38);
-  background: rgba(127, 29, 29, 0.28);
+  border-color: color-mix(in srgb, var(--danger) 38%, transparent);
+  background: color-mix(in srgb, var(--danger) 28%, transparent);
 }
 .topology-insight-row {
   display: grid;
@@ -4706,9 +4706,9 @@ textarea:focus-visible {
   gap: 12px;
   min-height: 34px;
   padding: 8px 10px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
   border-radius: 7px;
-  background: rgba(15, 23, 42, 0.38);
+  background: color-mix(in srgb, var(--panel) 38%, transparent);
 }
 .topology-insight-label {
   color: var(--muted);
@@ -4729,7 +4729,7 @@ textarea:focus-visible {
   padding: 0;
   border: 0;
   background: transparent;
-  color: #bfdbfe;
+  color: var(--text);
   cursor: pointer;
   font: inherit;
   font-weight: 750;
@@ -4739,16 +4739,16 @@ textarea:focus-visible {
 }
 .topology-insight-action:hover,
 .topology-insight-action:focus-visible {
-  color: #dbeafe;
+  color: var(--text);
 }
 .topology-insight-value[data-tone=success] {
-  color: #bbf7d0;
+  color: var(--success);
 }
 .topology-insight-value[data-tone=warn] {
-  color: #fde68a;
+  color: var(--warn);
 }
 .topology-insight-value[data-tone=error] {
-  color: #fecaca;
+  color: var(--danger);
 }
 .topology-request-toolbar {
   display: flex;
@@ -4763,10 +4763,10 @@ textarea:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.52);
-  color: rgba(226, 232, 240, 0.9);
+  background: color-mix(in srgb, var(--panel) 52%, transparent);
+  color: color-mix(in srgb, var(--text) 90%, transparent);
   cursor: pointer;
   transition:
     border-color 140ms ease,
@@ -4780,8 +4780,8 @@ textarea:focus-visible {
 }
 .topology-request-tool:hover,
 .topology-request-tool:focus-visible {
-  border-color: rgba(96, 165, 250, 0.3);
-  background: rgba(30, 64, 175, 0.18);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .topology-request-tool:disabled {
   cursor: progress;
@@ -4804,9 +4804,9 @@ textarea:focus-visible {
   min-width: 0;
   margin: 0;
   padding: 8px 9px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
   border-radius: 7px;
-  background: rgba(15, 23, 42, 0.38);
+  background: color-mix(in srgb, var(--panel) 38%, transparent);
 }
 .topology-request-header {
   display: flex;
@@ -4816,7 +4816,7 @@ textarea:focus-visible {
   min-width: 0;
 }
 .topology-request-method {
-  color: #dbeafe;
+  color: var(--text);
   font-size: 10px;
   font-weight: 850;
   letter-spacing: 0;
@@ -4932,7 +4932,7 @@ textarea:focus-visible {
 .core-settings-grid {
   margin-bottom: 14px;
   padding-bottom: 14px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
 }
 .core-links-panel {
   display: grid;
@@ -4969,7 +4969,7 @@ textarea:focus-visible {
 .core-links-empty {
   margin: 0;
   padding: 10px 12px;
-  border: 1px dashed rgba(148, 163, 184, 0.2);
+  border: 1px dashed color-mix(in srgb, var(--line) 20%, transparent);
   border-radius: 8px;
   color: var(--muted);
   font-size: 12px;
@@ -4982,16 +4982,16 @@ textarea:focus-visible {
   display: grid;
   gap: 10px;
   padding: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.32);
+  background: color-mix(in srgb, var(--panel) 32%, transparent);
 }
 .core-link-row[data-state=connected] {
-  border-color: rgba(34, 197, 94, 0.22);
+  border-color: color-mix(in srgb, var(--success) 22%, transparent);
 }
 .core-link-row[data-state=offline],
 .core-link-row[data-state=unconfigured] {
-  border-color: rgba(248, 113, 113, 0.18);
+  border-color: color-mix(in srgb, var(--danger) 18%, transparent);
 }
 .core-link-placeholder {
   opacity: 0.72;
@@ -5047,16 +5047,16 @@ textarea:focus-visible {
   align-items: center;
   gap: 8px;
   padding: 0 10px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
   border-radius: 8px;
   color: var(--text);
-  background: rgba(15, 23, 42, 0.24);
+  background: color-mix(in srgb, var(--panel) 24%, transparent);
   font-size: 12px;
   font-weight: 700;
 }
 .core-link-error {
   margin: 0;
-  color: #fecaca;
+  color: var(--danger);
   font-size: 11px;
   line-height: 1.35;
   overflow-wrap: anywhere;
@@ -5088,18 +5088,18 @@ textarea:focus-visible {
   display: grid;
   gap: 4px;
   padding: 10px 12px 11px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(15, 23, 42, 0.52);
+  background: color-mix(in srgb, var(--panel) 52%, transparent);
   transition:
     border-color 140ms ease,
     background-color 140ms ease,
     box-shadow 140ms ease;
 }
 .compact-field:focus-within {
-  border-color: rgba(85, 195, 255, 0.44);
-  background: rgba(16, 27, 47, 0.78);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  border-color: color-mix(in srgb, var(--accent) 44%, transparent);
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 .toolbar-input {
   width: 100%;
@@ -5128,10 +5128,10 @@ textarea:focus-visible {
     linear-gradient(
       45deg,
       transparent 50%,
-      rgba(143, 164, 191, 0.92) 50%),
+      var(--muted) 50%),
     linear-gradient(
       135deg,
-      rgba(143, 164, 191, 0.92) 50%,
+      var(--muted) 50%,
       transparent 50%);
   background-position: calc(100% - 10px) calc(50% - 1px), calc(100% - 6px) calc(50% - 1px);
   background-size: 4px 4px, 4px 4px;
@@ -5159,9 +5159,9 @@ textarea:focus-visible {
 }
 .session-advanced {
   margin-top: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
   border-radius: 16px;
-  background: rgba(15, 23, 42, 0.34);
+  background: color-mix(in srgb, var(--panel) 34%, transparent);
   overflow: hidden;
 }
 .session-advanced summary {
@@ -5181,8 +5181,8 @@ textarea:focus-visible {
   width: 7px;
   height: 7px;
   flex: 0 0 auto;
-  border-right: 1.5px solid rgba(219, 234, 254, 0.78);
-  border-bottom: 1.5px solid rgba(219, 234, 254, 0.78);
+  border-right: 1.5px solid color-mix(in srgb, var(--text) 78%, transparent);
+  border-bottom: 1.5px solid color-mix(in srgb, var(--text) 78%, transparent);
   transform: rotate(45deg);
   transition: transform 140ms ease;
 }
@@ -5246,7 +5246,7 @@ textarea:focus-visible {
 .recordings-panel {
   margin-top: 18px;
   padding-top: 16px;
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  border-top: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
 }
 .recordings-header {
   display: flex;
@@ -5298,8 +5298,8 @@ textarea:focus-visible {
   width: auto;
   height: 28px;
   padding: 0 10px;
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  background: rgba(15, 23, 42, 0.52);
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 52%, transparent);
   white-space: nowrap;
 }
 .recordings-action.is-icon-only {
@@ -5307,10 +5307,10 @@ textarea:focus-visible {
   padding: 0;
 }
 .recordings-action-danger {
-  color: #fecaca;
+  color: var(--danger);
 }
 .recordings-action-danger:hover:not(:disabled) {
-  background: rgba(127, 29, 29, 0.26);
+  background: color-mix(in srgb, var(--danger) 26%, transparent);
 }
 .recordings-list {
   display: grid;
@@ -5322,9 +5322,9 @@ textarea:focus-visible {
   align-items: center;
   gap: 12px;
   padding: 10px 11px;
-  border: 1px solid rgba(148, 163, 184, 0.11);
+  border: 1px solid color-mix(in srgb, var(--line) 11%, transparent);
   border-radius: 14px;
-  background: rgba(15, 23, 42, 0.38);
+  background: color-mix(in srgb, var(--panel) 38%, transparent);
 }
 .recording-history-main {
   min-width: 0;
@@ -5351,7 +5351,7 @@ textarea:focus-visible {
   width: auto;
   height: 26px;
   padding: 0 8px;
-  color: rgba(226, 232, 240, 0.86);
+  color: color-mix(in srgb, var(--text) 86%, transparent);
   font-size: 10px;
   white-space: nowrap;
 }
@@ -5373,8 +5373,8 @@ textarea:focus-visible {
   justify-content: space-between;
   gap: 16px;
   padding: 14px 20px 18px;
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
-  background: rgba(7, 12, 22, 0.72);
+  border-top: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
+  background: color-mix(in srgb, var(--bg-top) 72%, transparent);
 }
 .settings-footer[hidden] {
   display: none;
@@ -5735,16 +5735,16 @@ textarea:focus-visible {
   max-width: 420px;
   padding: 28px 32px;
   text-align: center;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid var(--line);
   border-radius: 14px;
-  background: rgba(15, 23, 42, 0.86);
-  box-shadow: 0 18px 48px rgba(2, 6, 23, 0.5);
+  background: color-mix(in srgb, var(--panel) 86%, transparent);
+  box-shadow: 0 18px 48px var(--shadow);
 }
 .onboarding-empty-card h2 {
   margin: 0;
   font-size: 17px;
   font-weight: 600;
-  color: rgba(226, 232, 240, 0.96);
+  color: color-mix(in srgb, var(--text) 96%, transparent);
 }
 .onboarding-empty-step {
   margin: 0;
@@ -5752,13 +5752,13 @@ textarea:focus-visible {
   font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
-  color: rgba(125, 211, 252, 0.9);
+  color: color-mix(in srgb, var(--accent-2) 90%, transparent);
 }
 .onboarding-empty-card p {
   margin: 0;
   font-size: 12.5px;
   line-height: 1.55;
-  color: rgba(148, 163, 184, 0.92);
+  color: color-mix(in srgb, var(--muted) 92%, transparent);
 }
 .onboarding-empty-primary {
   margin-top: 4px;
@@ -5771,21 +5771,21 @@ textarea:focus-visible {
   padding: 2px 0;
   font: inherit;
   font-size: 12px;
-  color: rgba(96, 165, 250, 0.92);
+  color: color-mix(in srgb, var(--accent) 92%, transparent);
   cursor: pointer;
 }
 .onboarding-link-button:hover,
 .onboarding-link-button:focus-visible {
-  color: rgba(147, 197, 253, 1);
+  color: var(--text);
   text-decoration: underline;
 }
 .onboarding-muted {
-  color: rgba(148, 163, 184, 0.78);
+  color: color-mix(in srgb, var(--muted) 78%, transparent);
 }
 .onboarding-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.62);
+  background: color-mix(in srgb, var(--bg-top) 62%, transparent);
   backdrop-filter: blur(6px);
 }
 .onboarding-panel-root {
@@ -5806,10 +5806,10 @@ textarea:focus-visible {
   max-height: min(86vh, 720px);
   overflow-y: auto;
   padding: 20px 22px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid color-mix(in srgb, var(--line) 20%, transparent);
   border-radius: 14px;
-  background: rgba(15, 23, 42, 0.97);
-  box-shadow: 0 24px 64px rgba(2, 6, 23, 0.6);
+  background: color-mix(in srgb, var(--panel) 97%, transparent);
+  box-shadow: 0 24px 64px var(--shadow);
 }
 .onboarding-panel:focus {
   outline: none;
@@ -5824,12 +5824,12 @@ textarea:focus-visible {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: rgba(226, 232, 240, 0.96);
+  color: color-mix(in srgb, var(--text) 96%, transparent);
 }
 .onboarding-panel-progress {
   margin: 4px 0 0;
   font-size: 12px;
-  color: rgba(148, 163, 184, 0.85);
+  color: color-mix(in srgb, var(--muted) 85%, transparent);
 }
 .onboarding-checklist {
   display: flex;
@@ -5837,9 +5837,9 @@ textarea:focus-visible {
   gap: 8px;
 }
 .onboarding-checklist-item {
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  border: 1px solid var(--line);
   border-radius: 10px;
-  background: rgba(2, 6, 23, 0.5);
+  background: color-mix(in srgb, var(--bg-top) 50%, transparent);
 }
 .onboarding-checklist-item summary {
   display: flex;
@@ -5847,7 +5847,7 @@ textarea:focus-visible {
   gap: 10px;
   padding: 11px 14px;
   font-size: 13px;
-  color: rgba(226, 232, 240, 0.94);
+  color: color-mix(in srgb, var(--text) 94%, transparent);
   cursor: pointer;
   list-style: none;
 }
@@ -5860,22 +5860,22 @@ textarea:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(148, 163, 184, 0.4);
+  border: 1px solid color-mix(in srgb, var(--muted) 40%, transparent);
   border-radius: 50%;
   font-size: 11px;
-  color: rgba(74, 222, 128, 0.95);
+  color: color-mix(in srgb, var(--success) 95%, transparent);
 }
 .onboarding-checklist-item[data-done=true] .onboarding-checklist-marker {
-  border-color: rgba(74, 222, 128, 0.6);
-  background: rgba(74, 222, 128, 0.12);
+  border-color: color-mix(in srgb, var(--success) 60%, transparent);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
 }
 .onboarding-checklist-item[data-done=true] .onboarding-checklist-title {
-  color: rgba(148, 163, 184, 0.85);
+  color: color-mix(in srgb, var(--muted) 85%, transparent);
 }
 .onboarding-checklist-done-note {
   margin-left: auto;
   font-size: 11.5px;
-  color: rgba(74, 222, 128, 0.9);
+  color: color-mix(in srgb, var(--success) 90%, transparent);
 }
 .onboarding-checklist-body {
   display: flex;
@@ -5888,7 +5888,7 @@ textarea:focus-visible {
   margin: 0;
   font-size: 12px;
   line-height: 1.55;
-  color: rgba(148, 163, 184, 0.92);
+  color: color-mix(in srgb, var(--muted) 92%, transparent);
 }
 .onboarding-panel-action {
   min-width: 120px;
@@ -5900,9 +5900,9 @@ textarea:focus-visible {
 .onboarding-command-block {
   position: relative;
   width: 100%;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(2, 6, 23, 0.85);
+  background: color-mix(in srgb, var(--bg-top) 85%, transparent);
 }
 .onboarding-command-block pre {
   margin: 0;
@@ -5910,25 +5910,25 @@ textarea:focus-visible {
   overflow-x: auto;
   font-size: 11.5px;
   line-height: 1.6;
-  color: rgba(226, 232, 240, 0.92);
+  color: color-mix(in srgb, var(--text) 92%, transparent);
 }
 .onboarding-copy-button {
   position: absolute;
   top: 6px;
   right: 6px;
   padding: 3px 9px;
-  border: 1px solid rgba(148, 163, 184, 0.3);
+  border: 1px solid color-mix(in srgb, var(--muted) 30%, transparent);
   border-radius: 6px;
-  background: rgba(15, 23, 42, 0.9);
+  background: color-mix(in srgb, var(--panel) 90%, transparent);
   font: inherit;
   font-size: 11px;
-  color: rgba(203, 213, 225, 0.92);
+  color: color-mix(in srgb, var(--text) 92%, transparent);
   cursor: pointer;
 }
 .onboarding-copy-button:hover,
 .onboarding-copy-button:focus-visible {
-  border-color: rgba(96, 165, 250, 0.5);
-  color: rgba(226, 232, 240, 1);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  color: var(--text);
 }
 .onboarding-tour-root {
   position: fixed;
@@ -5936,14 +5936,14 @@ textarea:focus-visible {
   z-index: 70;
 }
 .onboarding-tour-scrim {
-  background: rgba(2, 6, 23, 0.5);
+  background: color-mix(in srgb, var(--bg-top) 50%, transparent);
 }
 .onboarding-tour-ring {
   position: fixed;
   z-index: 1;
-  border: 2px solid rgba(96, 165, 250, 0.9);
+  border: 2px solid color-mix(in srgb, var(--accent) 90%, transparent);
   border-radius: 10px;
-  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.22);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
   pointer-events: none;
   transition:
     top 160ms ease,
@@ -5962,10 +5962,10 @@ textarea:focus-visible {
   gap: 8px;
   width: min(380px, calc(100vw - 32px));
   padding: 16px 18px;
-  border: 1px solid rgba(148, 163, 184, 0.22);
+  border: 1px solid color-mix(in srgb, var(--line) 22%, transparent);
   border-radius: 12px;
-  background: rgba(15, 23, 42, 0.97);
-  box-shadow: 0 18px 48px rgba(2, 6, 23, 0.6);
+  background: color-mix(in srgb, var(--panel) 97%, transparent);
+  box-shadow: 0 18px 48px var(--shadow);
 }
 .onboarding-tour-card[data-placement=center] {
   top: 50%;
@@ -5977,19 +5977,19 @@ textarea:focus-visible {
   font-size: 11px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(148, 163, 184, 0.75);
+  color: color-mix(in srgb, var(--muted) 75%, transparent);
 }
 .onboarding-tour-card h3 {
   margin: 0;
   font-size: 14.5px;
   font-weight: 600;
-  color: rgba(226, 232, 240, 0.96);
+  color: color-mix(in srgb, var(--text) 96%, transparent);
 }
 .onboarding-tour-card p {
   margin: 0;
   font-size: 12px;
   line-height: 1.55;
-  color: rgba(148, 163, 184, 0.92);
+  color: color-mix(in srgb, var(--muted) 92%, transparent);
 }
 .onboarding-tour-controls {
   display: flex;
@@ -6009,21 +6009,21 @@ textarea:focus-visible {
   gap: 10px;
   margin-bottom: 14px;
   padding: 14px 16px;
-  border: 1px solid rgba(96, 165, 250, 0.24);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
   border-radius: 12px;
-  background: rgba(37, 99, 235, 0.08);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 .onboarding-topology-intro h3 {
   margin: 0;
   font-size: 13.5px;
   font-weight: 600;
-  color: rgba(226, 232, 240, 0.96);
+  color: color-mix(in srgb, var(--text) 96%, transparent);
 }
 .onboarding-topology-intro-summary {
   margin: 0;
   font-size: 12px;
   line-height: 1.55;
-  color: rgba(148, 163, 184, 0.92);
+  color: color-mix(in srgb, var(--muted) 92%, transparent);
 }
 .onboarding-topology-step-card {
   display: flex;
@@ -6031,10 +6031,10 @@ textarea:focus-visible {
   gap: 12px;
   margin-bottom: 14px;
   padding: 14px 16px;
-  border: 1px solid rgba(96, 165, 250, 0.26);
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
   border-radius: 10px;
-  background: rgba(15, 23, 42, 0.76);
-  box-shadow: 0 16px 36px rgba(2, 6, 23, 0.22);
+  background: color-mix(in srgb, var(--panel) 76%, transparent);
+  box-shadow: 0 16px 36px var(--shadow);
 }
 .onboarding-topology-step-card header {
   display: flex;
@@ -6044,7 +6044,7 @@ textarea:focus-visible {
 }
 .onboarding-topology-step-card h3 {
   margin: 2px 0 0;
-  color: rgba(226, 232, 240, 0.98);
+  color: color-mix(in srgb, var(--text) 98%, transparent);
   font-size: 14px;
   font-weight: 650;
 }
@@ -6066,9 +6066,9 @@ textarea:focus-visible {
 .onboarding-topology-step-list li {
   min-width: 0;
   padding: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.5);
+  background: color-mix(in srgb, var(--panel) 50%, transparent);
   counter-increment: onboarding-step;
 }
 .onboarding-topology-step-list li::before {
@@ -6080,21 +6080,21 @@ textarea:focus-visible {
   height: 18px;
   margin-bottom: 7px;
   border-radius: 999px;
-  background: rgba(96, 165, 250, 0.18);
-  color: rgba(147, 197, 253, 0.96);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: color-mix(in srgb, var(--accent) 96%, transparent);
   font-size: 10px;
   font-weight: 800;
 }
 .onboarding-topology-step-list strong {
   display: block;
   margin-bottom: 5px;
-  color: rgba(226, 232, 240, 0.96);
+  color: color-mix(in srgb, var(--text) 96%, transparent);
   font-size: 12px;
   font-weight: 650;
 }
 .onboarding-topology-step-list p {
   margin: 0;
-  color: rgba(148, 163, 184, 0.94);
+  color: color-mix(in srgb, var(--muted) 94%, transparent);
   font-size: 11.5px;
   line-height: 1.45;
 }
@@ -6123,10 +6123,10 @@ textarea:focus-visible {
   z-index: 5;
   width: min(330px, 32vw);
   padding: 10px 42px 10px 12px;
-  border: 1px solid rgba(96, 165, 250, 0.34);
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, transparent);
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.94);
-  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.34);
+  background: color-mix(in srgb, var(--panel) 94%, transparent);
+  box-shadow: 0 18px 44px var(--shadow);
   pointer-events: auto;
   animation: onboarding-callout-in 180ms ease-out both;
 }
@@ -6187,7 +6187,7 @@ textarea:focus-visible {
 .onboarding-topology-callout-step {
   display: block;
   margin-bottom: 4px;
-  color: rgba(96, 165, 250, 0.92);
+  color: color-mix(in srgb, var(--accent) 92%, transparent);
   font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
@@ -6195,12 +6195,12 @@ textarea:focus-visible {
 .onboarding-topology-callout strong {
   display: block;
   margin-bottom: 4px;
-  color: rgba(226, 232, 240, 0.98);
+  color: color-mix(in srgb, var(--text) 98%, transparent);
   font-size: 12.5px;
 }
 .onboarding-topology-callout p {
   margin: 0;
-  color: rgba(148, 163, 184, 0.94);
+  color: color-mix(in srgb, var(--muted) 94%, transparent);
   font-size: 11.5px;
   line-height: 1.45;
 }
@@ -6209,10 +6209,10 @@ textarea:focus-visible {
   z-index: 52;
   width: min(260px, calc(100vw - 24px));
   padding: 10px 12px;
-  border: 1px solid rgba(96, 165, 250, 0.34);
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, transparent);
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.96);
-  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.34);
+  background: color-mix(in srgb, var(--panel) 96%, transparent);
+  box-shadow: 0 18px 44px var(--shadow);
   pointer-events: auto;
   animation: onboarding-callout-in 180ms ease-out both;
 }
@@ -6242,12 +6242,12 @@ textarea:focus-visible {
 .onboarding-main-callout strong {
   display: block;
   margin-bottom: 4px;
-  color: rgba(226, 232, 240, 0.98);
+  color: color-mix(in srgb, var(--text) 98%, transparent);
   font-size: 12.5px;
 }
 .onboarding-main-callout p {
   margin: 0;
-  color: rgba(148, 163, 184, 0.94);
+  color: color-mix(in srgb, var(--muted) 94%, transparent);
   font-size: 11.5px;
   line-height: 1.45;
 }
@@ -6285,10 +6285,10 @@ textarea:focus-visible {
 .onboarding-topology-intro li {
   font-size: 12px;
   line-height: 1.55;
-  color: rgba(148, 163, 184, 0.92);
+  color: color-mix(in srgb, var(--muted) 92%, transparent);
 }
 .onboarding-topology-intro li strong {
-  color: rgba(203, 213, 225, 0.96);
+  color: color-mix(in srgb, var(--text) 96%, transparent);
 }
 @media (max-width: 900px) {
   .toolbar-actions .onboarding-help-button.is-icon-only {
