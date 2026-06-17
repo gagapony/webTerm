@@ -18,6 +18,19 @@ class WebTerm {
     this.bindElements();
     this.bindEvents();
     this.checkAuth();
+
+    // Initialize settings
+    this.currentTheme = 'catppuccin-mocha';
+    this.currentFontSize = 14;
+    this.currentOpacity = 0.85;
+    this.currentBlurStrength = 12;
+    this.currentBackground = null;
+
+    this.initSettingsTabs();
+    this.initThemeSelector();
+    this.initCustomThemePickers();
+    this.initSliders();
+    this.loadSettings();
   }
 
   async checkAuth() {
@@ -144,6 +157,7 @@ class WebTerm {
     settingsCancel?.addEventListener('click', () => this.hideSettingsModal());
     settingsSave?.addEventListener('click', () => {
       log.info('Settings saved');
+      this.saveSettings();
       this.hideSettingsModal();
     });
 
@@ -718,6 +732,226 @@ class WebTerm {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+  }
+
+  initSettingsTabs() {
+    const tabs = document.querySelectorAll('.settings-tab');
+    const contents = document.querySelectorAll('.settings-tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const targetTab = tab.dataset.tab;
+
+        // Update tab active states
+        tabs.forEach(t => {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+
+        // Update content visibility
+        contents.forEach(content => {
+          content.classList.toggle('is-active', content.dataset.tabContent === targetTab);
+        });
+      });
+    });
+  }
+
+  initThemeSelector() {
+    const themeOptions = document.querySelectorAll('.theme-option');
+    const customThemeSection = document.querySelector('.custom-theme-section');
+
+    themeOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const theme = option.dataset.theme;
+
+        // Update active state
+        themeOptions.forEach(o => o.classList.remove('is-active'));
+        option.classList.add('is-active');
+
+        // Show/hide custom theme section
+        if (customThemeSection) {
+          customThemeSection.hidden = theme !== 'custom';
+        }
+
+        // Apply theme
+        this.applyTheme(theme);
+      });
+    });
+  }
+
+  applyTheme(theme) {
+    if (theme === 'custom') {
+      const base = document.getElementById('customBase')?.value || '#1e1e2e';
+      const text = document.getElementById('customText')?.value || '#cdd6f4';
+      const accent = document.getElementById('customAccent')?.value || '#89b4fa';
+      const surface = document.getElementById('customSurface')?.value || '#313244';
+
+      document.documentElement.style.setProperty('--ctp-base', base);
+      document.documentElement.style.setProperty('--ctp-text', text);
+      document.documentElement.style.setProperty('--ctp-accent', accent);
+      document.documentElement.style.setProperty('--ctp-surface0', surface);
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', theme);
+      // Reset custom properties
+      document.documentElement.style.removeProperty('--ctp-base');
+      document.documentElement.style.removeProperty('--ctp-text');
+      document.documentElement.style.removeProperty('--ctp-accent');
+      document.documentElement.style.removeProperty('--ctp-surface0');
+    }
+
+    this.currentTheme = theme;
+  }
+
+  initCustomThemePickers() {
+    const pickers = ['customBase', 'customText', 'customAccent', 'customSurface'];
+
+    pickers.forEach(id => {
+      const picker = document.getElementById(id);
+      if (picker) {
+        picker.addEventListener('input', () => {
+          if (this.currentTheme === 'custom') {
+            this.applyTheme('custom');
+          }
+        });
+      }
+    });
+  }
+
+  initSliders() {
+    // Font size slider
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    const fontSizeValue = document.getElementById('fontSizeValue');
+
+    if (fontSizeSlider) {
+      fontSizeSlider.addEventListener('input', (e) => {
+        const size = e.target.value;
+        if (fontSizeValue) fontSizeValue.textContent = `${size}px`;
+        document.documentElement.style.setProperty('--font-size', `${size}px`);
+
+        // Update all terminals
+        this.terminals.forEach(t => {
+          if (t.terminal) t.terminal.options.fontSize = parseInt(size);
+        });
+
+        this.currentFontSize = parseInt(size);
+      });
+    }
+
+    // Opacity slider
+    const opacitySlider = document.getElementById('opacitySlider');
+    const opacityValue = document.getElementById('opacityValue');
+
+    if (opacitySlider) {
+      opacitySlider.addEventListener('input', (e) => {
+        const opacity = e.target.value;
+        if (opacityValue) opacityValue.textContent = `${opacity}%`;
+        document.documentElement.style.setProperty('--terminal-opacity', opacity / 100);
+        this.currentOpacity = opacity / 100;
+      });
+    }
+
+    // Blur slider
+    const blurSlider = document.getElementById('blurSlider');
+    const blurValue = document.getElementById('blurValue');
+
+    if (blurSlider) {
+      blurSlider.addEventListener('input', (e) => {
+        const blur = e.target.value;
+        if (blurValue) blurValue.textContent = `${blur}px`;
+        document.documentElement.style.setProperty('--blur-strength', `${blur}px`);
+        this.currentBlurStrength = parseInt(blur);
+      });
+    }
+  }
+
+  loadSettings() {
+    const saved = localStorage.getItem('webterm-settings');
+    if (saved) {
+      const settings = JSON.parse(saved);
+
+      // Apply theme
+      if (settings.theme) {
+        this.applyTheme(settings.theme);
+
+        // Update UI
+        const themeOption = document.querySelector(`[data-theme="${settings.theme}"]`);
+        if (themeOption) {
+          document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('is-active'));
+          themeOption.classList.add('is-active');
+        }
+
+        // Show custom section if needed
+        const customThemeSection = document.querySelector('.custom-theme-section');
+        if (customThemeSection) {
+          customThemeSection.hidden = settings.theme !== 'custom';
+        }
+      }
+
+      // Apply custom colors
+      if (settings.customColors) {
+        const { base, text, accent, surface0 } = settings.customColors;
+        if (document.getElementById('customBase')) document.getElementById('customBase').value = base;
+        if (document.getElementById('customText')) document.getElementById('customText').value = text;
+        if (document.getElementById('customAccent')) document.getElementById('customAccent').value = accent;
+        if (document.getElementById('customSurface')) document.getElementById('customSurface').value = surface0;
+      }
+
+      // Apply font size
+      if (settings.fontSize) {
+        this.currentFontSize = settings.fontSize;
+        document.documentElement.style.setProperty('--font-size', `${settings.fontSize}px`);
+        const fontSizeSlider = document.getElementById('fontSizeSlider');
+        const fontSizeValue = document.getElementById('fontSizeValue');
+        if (fontSizeSlider) fontSizeSlider.value = settings.fontSize;
+        if (fontSizeValue) fontSizeValue.textContent = `${settings.fontSize}px`;
+      }
+
+      // Apply opacity
+      if (settings.terminalOpacity !== undefined) {
+        this.currentOpacity = settings.terminalOpacity;
+        document.documentElement.style.setProperty('--terminal-opacity', settings.terminalOpacity);
+        const opacitySlider = document.getElementById('opacitySlider');
+        const opacityValue = document.getElementById('opacityValue');
+        if (opacitySlider) opacitySlider.value = settings.terminalOpacity * 100;
+        if (opacityValue) opacityValue.textContent = `${Math.round(settings.terminalOpacity * 100)}%`;
+      }
+
+      // Apply blur
+      if (settings.blurStrength !== undefined) {
+        this.currentBlurStrength = settings.blurStrength;
+        document.documentElement.style.setProperty('--blur-strength', `${settings.blurStrength}px`);
+        const blurSlider = document.getElementById('blurSlider');
+        const blurValue = document.getElementById('blurValue');
+        if (blurSlider) blurSlider.value = settings.blurStrength;
+        if (blurValue) blurValue.textContent = `${settings.blurStrength}px`;
+      }
+
+      // Apply background
+      if (settings.backgroundImage) {
+        this.applyBackground(settings.backgroundImage);
+      }
+    }
+  }
+
+  saveSettings() {
+    const settings = {
+      theme: this.currentTheme || 'catppuccin-mocha',
+      customColors: this.currentTheme === 'custom' ? {
+        base: document.getElementById('customBase')?.value || '#1e1e2e',
+        text: document.getElementById('customText')?.value || '#cdd6f4',
+        accent: document.getElementById('customAccent')?.value || '#89b4fa',
+        surface0: document.getElementById('customSurface')?.value || '#313244'
+      } : null,
+      fontSize: this.currentFontSize || 14,
+      backgroundImage: this.currentBackground || null,
+      terminalOpacity: this.currentOpacity !== undefined ? this.currentOpacity : 0.85,
+      blurStrength: this.currentBlurStrength || 12
+    };
+
+    localStorage.setItem('webterm-settings', JSON.stringify(settings));
   }
 }
 
