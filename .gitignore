@@ -7,6 +7,7 @@ dist/
 
 # Database
 data/webterm.db
+data/webterm.db-shm
 data/webterm.db-journal
 data/webterm.db-wal
 

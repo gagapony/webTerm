@@ -95,18 +95,6 @@ async function handleMessage(ws: WebSocket, message: WSMessage): Promise<void> {
       break;
     }
 
-    case 'recording:start': {
-      if (!message.sessionId) return;
-      sessionManager.startRecording(message.sessionId);
-      break;
-    }
-
-    case 'recording:stop': {
-      if (!message.sessionId) return;
-      sessionManager.stopRecording(message.sessionId);
-      break;
-    }
-
     case 'close': {
       if (!message.sessionId) return;
       sessionManager.closeSession(message.sessionId);

@@ -3,7 +3,6 @@ import { WebSocket } from 'ws';
 import { SSHSession, SSHOptions } from '../protocols/ssh';
 import { TelnetSession, TelnetOptions } from '../protocols/telnet';
 import { LocalSession, LocalOptions } from '../protocols/local';
-import { LogRecorder } from './log-recorder';
 import { store } from './connection-store';
 import { logger } from '../utils/logger';
 
@@ -11,7 +10,6 @@ interface ActiveSession {
   id: string;
   protocol: 'ssh' | 'telnet' | 'local';
   session: SSHSession | TelnetSession | LocalSession;
-  recorder: LogRecorder;
   ws: WebSocket;
   cols: number;
   rows: number;
@@ -58,13 +56,10 @@ class SessionManager {
           throw new Error(`Unknown protocol: ${protocol}`);
       }
 
-      const recorder = new LogRecorder();
-
       const activeSession: ActiveSession = {
         id: sessionId,
         protocol,
         session,
-        recorder,
         ws,
         cols,
         rows,
@@ -78,11 +73,6 @@ class SessionManager {
             sessionId,
             data,
           }));
-        }
-
-        // Record output
-        if (recorder.isActive()) {
-          recorder.writeOutput(data);
         }
       });
 
@@ -133,11 +123,6 @@ class SessionManager {
     if (!session) return;
 
     session.session.write(data);
-
-    // Record input
-    if (session.recorder.isActive()) {
-      session.recorder.writeInput(data);
-    }
   }
 
   handleResize(sessionId: string, cols: number, rows: number): void {
@@ -149,53 +134,9 @@ class SessionManager {
     session.session.resize(cols, rows);
   }
 
-  startRecording(sessionId: string): boolean {
-    const session = this.sessions.get(sessionId);
-    if (!session) return false;
-
-    session.recorder.start(sessionId, session.cols, session.rows);
-
-    if (session.ws.readyState === WebSocket.OPEN) {
-      session.ws.send(JSON.stringify({
-        type: 'recording:status',
-        sessionId,
-        active: true,
-      }));
-    }
-
-    logger.info(`Recording started for session: ${sessionId}`);
-    return true;
-  }
-
-  stopRecording(sessionId: string): string | null {
-    const session = this.sessions.get(sessionId);
-    if (!session) return null;
-
-    const logPath = session.recorder.stop();
-
-    // Update database
-    store.updateSessionStatus(sessionId, 'active', logPath);
-
-    if (session.ws.readyState === WebSocket.OPEN) {
-      session.ws.send(JSON.stringify({
-        type: 'recording:status',
-        sessionId,
-        active: false,
-      }));
-    }
-
-    logger.info(`Recording stopped for session: ${sessionId}, saved to: ${logPath}`);
-    return logPath;
-  }
-
   closeSession(sessionId: string): void {
     const session = this.sessions.get(sessionId);
     if (!session) return;
-
-    // Stop recording if active
-    if (session.recorder.isActive()) {
-      this.stopRecording(sessionId);
-    }
 
     // Close the session
     session.session.close();
@@ -210,11 +151,6 @@ class SessionManager {
   private handleSessionClose(sessionId: string): void {
     const session = this.sessions.get(sessionId);
     if (!session) return;
-
-    // Stop recording if active
-    if (session.recorder.isActive()) {
-      this.stopRecording(sessionId);
-    }
 
     // Notify client
     if (session.ws.readyState === WebSocket.OPEN) {
