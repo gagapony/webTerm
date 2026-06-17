@@ -1014,8 +1014,8 @@ class WebTerm {
     }
 
     grid.innerHTML = backgrounds.map(bg => `
-      <div class="bg-uploaded-item" data-id="${bg.id}" data-url="/backgrounds/${bg.filename}">
-        <img src="/backgrounds/${bg.filename}" alt="${bg.original_name}" loading="lazy">
+      <div class="bg-uploaded-item" data-id="${bg.id}" data-url="/backgrounds/${this.escapeHtml(bg.filename)}">
+        <img src="/backgrounds/${this.escapeHtml(bg.filename)}" alt="${this.escapeHtml(bg.original_name)}" loading="lazy">
         <button class="bg-delete-btn" data-id="${bg.id}">×</button>
       </div>
     `).join('');
