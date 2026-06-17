@@ -7,6 +7,7 @@ import { config } from './config';
 import { sessionMiddleware } from './middleware/session';
 import { initializeDefaultUser } from './middleware/auth';
 import apiRoutes from './routes/api';
+import backgroundsRouter from './routes/backgrounds';
 import { setupWebSocket } from './routes/ws';
 import { sessionManager } from './services/session-manager';
 import { logger } from './utils/logger';
@@ -29,6 +30,10 @@ async function main() {
 
   // API routes
   app.use('/api', apiRoutes);
+  app.use('/api/backgrounds', backgroundsRouter);
+
+  // Serve uploaded backgrounds
+  app.use('/backgrounds', express.static(path.join(__dirname, '../data/backgrounds')));
 
   // WebSocket server
   const wss = new WebSocketServer({ server });

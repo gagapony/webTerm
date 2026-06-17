@@ -10,6 +10,7 @@
     "postinstall": "cp -f node_modules/@xterm/xterm/css/xterm.css public/lib/xterm.css && cp -f node_modules/@xterm/xterm/lib/xterm.js public/lib/xterm.js && cp -f node_modules/@xterm/addon-fit/lib/addon-fit.js public/lib/addon-fit.js && cp -f node_modules/@xterm/addon-web-links/lib/addon-web-links.js public/lib/addon-web-links.js"
   },
   "dependencies": {
+    "@types/multer": "^2.1.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/addon-web-links": "^0.11.0",
     "@xterm/xterm": "^5.5.0",
@@ -18,6 +19,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
+    "multer": "^2.2.0",
     "node-pty": "^1.1.0",
     "ssh2": "^1.15.0",
     "telnet-client": "^2.2.1",
