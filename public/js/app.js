@@ -494,16 +494,7 @@ class WebTerm {
   }
 
   createTerminal(sessionId, protocol) {
-    const themeName = this.currentTheme || 'catppuccin-mocha';
-    let terminalTheme;
-    if ((themeName === 'custom' || themeName.startsWith('custom-')) && this.customThemeColors) {
-      terminalTheme = this.deriveXtermTheme(this.customThemeColors);
-    } else {
-      terminalTheme = XTERM_THEMES[themeName] || XTERM_THEMES['catppuccin-mocha'];
-    }
-    if (document.body.classList.contains('has-background')) {
-      terminalTheme = { ...terminalTheme, background: 'transparent' };
-    }
+    const terminalTheme = this._resolveTheme();
 
     const terminal = new Terminal({
       theme: terminalTheme,
@@ -842,6 +833,8 @@ class WebTerm {
   }
 
   applyTheme(theme) {
+    this.currentTheme = theme;
+
     if (theme === 'custom') {
       const base = document.getElementById('customBase')?.value || '#1e1e2e';
       const text = document.getElementById('customText')?.value || '#cdd6f4';
@@ -871,7 +864,6 @@ class WebTerm {
       document.documentElement.style.removeProperty('--ctp-overlay1');
     }
 
-    this.currentTheme = theme;
     this.applyTerminalTheme();
   }
 
@@ -1108,7 +1100,7 @@ class WebTerm {
     };
   }
 
-  applyTerminalTheme() {
+  _resolveTheme() {
     const themeName = this.currentTheme || 'catppuccin-mocha';
     let theme;
 
@@ -1122,6 +1114,12 @@ class WebTerm {
     if (document.body.classList.contains('has-background')) {
       theme = { ...theme, background: 'transparent' };
     }
+
+    return theme;
+  }
+
+  applyTerminalTheme() {
+    const theme = this._resolveTheme();
 
     // Apply to all active terminals
     this.terminals.forEach(t => {
