@@ -6482,8 +6482,39 @@ body.has-background .topbar {
 /* Color Pickers Grid */
 .color-pickers-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.color-pickers-group {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+}
+
+.color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-hex {
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--muted);
+  min-width: 64px;
+}
+
+.font-preview {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-family: 'MonaspiceAr NFM Medium', monospace;
+  font-size: 13px;
+  color: var(--text);
+  letter-spacing: 0.02em;
 }
 
 .color-picker {

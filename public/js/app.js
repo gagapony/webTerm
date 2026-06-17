@@ -868,12 +868,22 @@ class WebTerm {
   }
 
   initCustomThemePickers() {
-    const pickers = ['customBase', 'customText', 'customAccent', 'customSurface', 'customSurface1', 'customOverlay0', 'customOverlay1'];
+    const pickers = [
+      { id: 'customBase', hexId: 'customBaseHex' },
+      { id: 'customText', hexId: 'customTextHex' },
+      { id: 'customAccent', hexId: 'customAccentHex' },
+      { id: 'customSurface', hexId: 'customSurfaceHex' },
+      { id: 'customSurface1', hexId: 'customSurface1Hex' },
+      { id: 'customOverlay0', hexId: 'customOverlay0Hex' },
+      { id: 'customOverlay1', hexId: 'customOverlay1Hex' },
+    ];
 
-    pickers.forEach(id => {
+    pickers.forEach(({ id, hexId }) => {
       const picker = document.getElementById(id);
+      const hexSpan = document.getElementById(hexId);
       if (picker) {
-        picker.addEventListener('input', () => {
+        picker.addEventListener('input', (e) => {
+          if (hexSpan) hexSpan.textContent = e.target.value;
           if (this.currentTheme?.startsWith('custom') || this.currentTheme === 'custom') {
             // Update custom theme colors
             this.customThemeColors = {
@@ -1664,13 +1674,30 @@ class WebTerm {
         navigator.clipboard.writeText(json).then(() => {
           alert('Theme JSON copied to clipboard!');
         }).catch(() => {
-          // Fallback: show in textarea
-          const textarea = document.getElementById('importThemeJSON');
-          if (textarea) {
-            textarea.value = json;
-            alert('Theme JSON pasted into import textarea');
-          }
+          // Fallback: download as file
+          const blob = new Blob([json], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'theme.json';
+          a.click();
+          URL.revokeObjectURL(url);
         });
+      });
+    }
+
+    // Delete theme button
+    const deleteThemeBtn = document.getElementById('deleteThemeBtn');
+    if (deleteThemeBtn) {
+      deleteThemeBtn.addEventListener('click', () => {
+        const select = document.getElementById('customThemeSelect');
+        if (select && select.value && this.savedThemes[select.value]) {
+          const themeId = select.value;
+          delete this.savedThemes[themeId];
+          this.renderSavedThemesList();
+          this.updateCustomThemeDropdown();
+          this.saveSettings();
+        }
       });
     }
   }

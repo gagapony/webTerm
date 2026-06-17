@@ -60,7 +60,8 @@
     .saved-connections-empty { color: var(--muted); font-size: 11px; text-align: center; padding: 20px; }
 
     /* Theme Management */
-    .theme-save-row { display: flex; gap: 8px; align-items: flex-end; }
+    .theme-save-row { display: flex; gap: 6px; align-items: center; }
+    .saved-themes-row { display: flex; gap: 6px; align-items: center; margin-bottom: 10px; }
     .theme-import-textarea { min-height: 80px; resize: vertical; font-family: monospace; font-size: 11px; }
     .theme-import-controls { display: flex; flex-direction: column; gap: 8px; }
     .theme-import-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -118,6 +119,8 @@
       justify-content: center;
     }
     .saved-theme-delete:hover { background: rgba(248, 113, 113, 0.2); color: #fca5a5; }
+    .theme-import-export-section { display: none; }
+    .saved-themes-section { display: none; }
   </style>
 </head>
 <body>
@@ -373,89 +376,89 @@
             </div>
           </div>
 
-          <!-- Custom Theme Colors (hidden by default) -->
+          <!-- Custom Theme Colors (collapsed by default) -->
           <div class="settings-section custom-theme-section" hidden>
             <h3 class="settings-section-title">Custom Colors</h3>
             <div class="color-pickers-grid">
-              <div class="compact-field">
-                <label class="toolbar-label">BACKGROUND</label>
-                <input type="color" class="toolbar-input color-picker" id="customBase" value="#1e1e2e">
-              </div>
-              <div class="compact-field">
-                <label class="toolbar-label">TEXT</label>
-                <input type="color" class="toolbar-input color-picker" id="customText" value="#cdd6f4">
-              </div>
-              <div class="compact-field">
-                <label class="toolbar-label">ACCENT</label>
-                <input type="color" class="toolbar-input color-picker" id="customAccent" value="#89b4fa">
-              </div>
-              <div class="compact-field">
-                <label class="toolbar-label">SURFACE 0</label>
-                <input type="color" class="toolbar-input color-picker" id="customSurface" value="#313244">
-              </div>
-              <div class="compact-field">
-                <label class="toolbar-label">SURFACE 1</label>
-                <input type="color" class="toolbar-input color-picker" id="customSurface1" value="#45475a">
-              </div>
-              <div class="compact-field">
-                <label class="toolbar-label">OVERLAY 0</label>
-                <input type="color" class="toolbar-input color-picker" id="customOverlay0" value="#585b70">
-              </div>
-              <div class="compact-field">
-                <label class="toolbar-label">OVERLAY 1</label>
-                <input type="color" class="toolbar-input color-picker" id="customOverlay1" value="#6c7086">
-              </div>
-            </div>
-          </div>
-
-          <!-- Theme Management -->
-          <div class="settings-section theme-management-section">
-            <h3 class="settings-section-title">Theme Management</h3>
-
-            <!-- Saved Theme Selector -->
-            <div class="compact-field">
-              <label class="toolbar-label">LOAD SAVED THEME</label>
-              <select class="toolbar-input" id="customThemeSelect">
-                <option value="">New Custom Theme</option>
-              </select>
-            </div>
-
-            <!-- Save Current Theme -->
-            <div class="theme-save-row">
-              <div class="compact-field" style="flex: 1;">
-                <label class="toolbar-label">THEME NAME</label>
-                <input type="text" class="toolbar-input" id="customThemeName" placeholder="My Custom Theme">
-              </div>
-              <button class="chrome-button" id="saveCustomThemeBtn" style="margin-top: 18px;">Save Theme</button>
-            </div>
-
-            <!-- Saved Themes List -->
-            <div class="saved-themes-section">
-              <label class="toolbar-label">SAVED THEMES</label>
-              <div class="saved-themes-list" id="savedThemesList">
-                <div class="saved-themes-empty">No saved themes</div>
-              </div>
-            </div>
-
-            <!-- Import/Export -->
-            <div class="theme-import-export-section">
-              <label class="toolbar-label">IMPORT THEME</label>
-              <div class="theme-import-controls">
-                <textarea class="toolbar-input theme-import-textarea" id="importThemeJSON" placeholder='{"name": "My Theme", "colors": {"base": "#1a1b26", "text": "#c0caf5", "accent": "#7aa2f7", "surface0": "#24283b"}}'></textarea>
-                <div class="theme-import-buttons">
-                  <button class="chrome-button" id="importThemeBtn">Import JSON</button>
-                  <button class="chrome-button" id="importThemeFileBtn">Import File</button>
-                  <input type="file" id="importThemeFile" accept=".json" hidden>
+              <div class="color-pickers-group">
+                <div class="compact-field">
+                  <label class="toolbar-label">BACKGROUND</label>
+                  <div class="color-picker-row">
+                    <input type="color" class="toolbar-input color-picker" id="customBase" value="#1e1e2e">
+                    <span class="color-hex" id="customBaseHex">#1e1e2e</span>
+                  </div>
+                </div>
+                <div class="compact-field">
+                  <label class="toolbar-label">SURFACE 0</label>
+                  <div class="color-picker-row">
+                    <input type="color" class="toolbar-input color-picker" id="customSurface" value="#313244">
+                    <span class="color-hex" id="customSurfaceHex">#313244</span>
+                  </div>
+                </div>
+                <div class="compact-field">
+                  <label class="toolbar-label">SURFACE 1</label>
+                  <div class="color-picker-row">
+                    <input type="color" class="toolbar-input color-picker" id="customSurface1" value="#45475a">
+                    <span class="color-hex" id="customSurface1Hex">#45475a</span>
+                  </div>
                 </div>
               </div>
-
-              <div class="theme-export-section">
-                <button class="chrome-button" id="exportThemeBtn">Export Current Theme</button>
+              <div class="color-pickers-group">
+                <div class="compact-field">
+                  <label class="toolbar-label">TEXT</label>
+                  <div class="color-picker-row">
+                    <input type="color" class="toolbar-input color-picker" id="customText" value="#cdd6f4">
+                    <span class="color-hex" id="customTextHex">#cdd6f4</span>
+                  </div>
+                </div>
+                <div class="compact-field">
+                  <label class="toolbar-label">ACCENT</label>
+                  <div class="color-picker-row">
+                    <input type="color" class="toolbar-input color-picker" id="customAccent" value="#89b4fa">
+                    <span class="color-hex" id="customAccentHex">#89b4fa</span>
+                  </div>
+                </div>
+                <div class="compact-field">
+                  <label class="toolbar-label">OVERLAY 0</label>
+                  <div class="color-picker-row">
+                    <input type="color" class="toolbar-input color-picker" id="customOverlay0" value="#585b70">
+                    <span class="color-hex" id="customOverlay0Hex">#585b70</span>
+                  </div>
+                </div>
+                <div class="compact-field">
+                  <label class="toolbar-label">OVERLAY 1</label>
+                  <div class="color-picker-row">
+                    <input type="color" class="toolbar-input color-picker" id="customOverlay1" value="#6c7086">
+                    <span class="color-hex" id="customOverlay1Hex">#6c7086</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Font Size -->
+          <!-- Saved Themes -->
+          <div class="settings-section theme-management-section">
+            <h3 class="settings-section-title">Saved Themes</h3>
+            <div class="saved-themes-row">
+              <select class="toolbar-input" id="customThemeSelect" style="flex:1;">
+                <option value="">New Custom Theme</option>
+              </select>
+              <button class="chrome-button is-icon-only" id="deleteThemeBtn" title="Delete selected theme">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+              <button class="chrome-button is-icon-only" id="exportThemeBtn" title="Export theme as JSON">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </button>
+            </div>
+            <div class="theme-save-row">
+              <input type="text" class="toolbar-input" id="customThemeName" placeholder="Theme name..." style="flex:1;">
+              <button class="chrome-button" id="saveCustomThemeBtn">Save</button>
+              <button class="chrome-button" id="importThemeFileBtn">Import</button>
+              <input type="file" id="importThemeFile" accept=".json" hidden>
+            </div>
+          </div>
+
+          <!-- Font -->
           <div class="settings-section">
             <h3 class="settings-section-title">Font</h3>
             <div class="compact-field">
@@ -465,6 +468,7 @@
                 <span class="slider-value" id="fontSizeValue">14px</span>
               </div>
             </div>
+            <div class="font-preview">AaBbCcDd 0123 !@#$%</div>
           </div>
         </div>
 
