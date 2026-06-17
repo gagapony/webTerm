@@ -525,10 +525,10 @@ textarea:focus-visible {
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--bg) 97%, transparent),
-      color-mix(in srgb, var(--bg-top) 95%, transparent)),
+      color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100%), transparent),
+      color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 98%), transparent)),
     var(--bg);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(var(--blur-strength));
   box-shadow: 0 4px 14px var(--shadow);
 }
 .topbar-row {
@@ -1336,9 +1336,10 @@ textarea:focus-visible {
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--bg) 98%, transparent),
-      color-mix(in srgb, var(--bg-top) 98%, transparent)),
+      color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100%), transparent),
+      color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 100%), transparent)),
     var(--bg-top);
+  backdrop-filter: blur(var(--blur-strength));
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 3%, transparent), 0 22px 50px var(--shadow);
   transition:
     filter 180ms ease,
@@ -3682,6 +3683,13 @@ textarea:focus-visible {
   scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--muted) 72%, transparent) color-mix(in srgb, var(--bg) 86%, transparent);
+}
+body.has-background .terminal-viewport .xterm-viewport {
+  background: transparent !important;
+}
+body.has-background .terminal-frame {
+  background: color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100%), transparent);
+  backdrop-filter: blur(var(--blur-strength));
 }
 .terminal-viewport .xterm-viewport::-webkit-scrollbar {
   width: 14px;
