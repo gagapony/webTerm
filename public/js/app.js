@@ -1,6 +1,57 @@
 // WebTerm Frontend Application
 const log = window.logger || console;
 
+const XTERM_THEMES = {
+  'catppuccin-mocha': {
+    background: '#1e1e2e',
+    foreground: '#cdd6f4',
+    cursor: '#f5e0dc',
+    cursorAccent: '#1e1e2e',
+    selectionBackground: 'rgba(88, 91, 112, 0.4)',
+    black: '#45475a', red: '#f38ba8', green: '#a6e3a1', yellow: '#f9e2af',
+    blue: '#89b4fa', magenta: '#f5c2e7', cyan: '#94e2d5', white: '#bac2de',
+    brightBlack: '#585b70', brightRed: '#f38ba8', brightGreen: '#a6e3a1',
+    brightYellow: '#f9e2af', brightBlue: '#89b4fa', brightMagenta: '#f5c2e7',
+    brightCyan: '#94e2d5', brightWhite: '#a6adc8',
+  },
+  'catppuccin-macchiato': {
+    background: '#24273a',
+    foreground: '#cad3f5',
+    cursor: '#f4dbd6',
+    cursorAccent: '#24273a',
+    selectionBackground: 'rgba(73, 77, 100, 0.4)',
+    black: '#494d64', red: '#ed8796', green: '#a6da95', yellow: '#eed49f',
+    blue: '#8aadf4', magenta: '#f5bde6', cyan: '#8bd5ca', white: '#b8c0e0',
+    brightBlack: '#5b6078', brightRed: '#ed8796', brightGreen: '#a6da95',
+    brightYellow: '#eed49f', brightBlue: '#8aadf4', brightMagenta: '#f5bde6',
+    brightCyan: '#8bd5ca', brightWhite: '#a5adcb',
+  },
+  'catppuccin-frappe': {
+    background: '#303446',
+    foreground: '#c6d0f5',
+    cursor: '#f2d5cf',
+    cursorAccent: '#303446',
+    selectionBackground: 'rgba(81, 87, 109, 0.4)',
+    black: '#51576d', red: '#e78284', green: '#a6d189', yellow: '#e5c890',
+    blue: '#8caaee', magenta: '#f4b8e4', cyan: '#81c8be', white: '#b5bfe2',
+    brightBlack: '#626880', brightRed: '#e78284', brightGreen: '#a6d189',
+    brightYellow: '#e5c890', brightBlue: '#8caaee', brightMagenta: '#f4b8e4',
+    brightCyan: '#81c8be', brightWhite: '#a5adce',
+  },
+  'catppuccin-latte': {
+    background: '#eff1f5',
+    foreground: '#4c4f69',
+    cursor: '#dc8a78',
+    cursorAccent: '#eff1f5',
+    selectionBackground: 'rgba(188, 192, 204, 0.4)',
+    black: '#bcc0cc', red: '#d20f39', green: '#40a02b', yellow: '#df8e1d',
+    blue: '#1e66f5', magenta: '#ea76cb', cyan: '#179299', white: '#5c5f77',
+    brightBlack: '#acb0be', brightRed: '#d20f39', brightGreen: '#40a02b',
+    brightYellow: '#df8e1d', brightBlue: '#1e66f5', brightMagenta: '#ea76cb',
+    brightCyan: '#179299', brightWhite: '#6c6f85',
+  },
+};
+
 class WebTerm {
   constructor() {
     log.info('WebTerm constructor called');
@@ -443,14 +494,19 @@ class WebTerm {
   }
 
   createTerminal(sessionId, protocol) {
+    const themeName = this.currentTheme || 'catppuccin-mocha';
+    let terminalTheme;
+    if ((themeName === 'custom' || themeName.startsWith('custom-')) && this.customThemeColors) {
+      terminalTheme = this.deriveXtermTheme(this.customThemeColors);
+    } else {
+      terminalTheme = XTERM_THEMES[themeName] || XTERM_THEMES['catppuccin-mocha'];
+    }
+    if (document.body.classList.contains('has-background')) {
+      terminalTheme = { ...terminalTheme, background: 'transparent' };
+    }
+
     const terminal = new Terminal({
-      theme: {
-        background: '#060b14',
-        foreground: '#e6edf7',
-        cursor: '#55c3ff',
-        cursorAccent: '#060b14',
-        selectionBackground: 'rgba(85, 195, 255, 0.3)',
-      },
+      theme: terminalTheme,
       fontFamily: '"MonaspiceAr NFM Medium", "MonaspiceAr NFM", monospace',
       fontSize: 14,
       lineHeight: 1.2,
@@ -816,6 +872,7 @@ class WebTerm {
     }
 
     this.currentTheme = theme;
+    this.applyTerminalTheme();
   }
 
   initCustomThemePickers() {
@@ -1030,6 +1087,48 @@ class WebTerm {
     document.documentElement.style.setProperty('--ctp-overlay0', overlay0);
     document.documentElement.style.setProperty('--ctp-overlay1', overlay1);
     document.documentElement.removeAttribute('data-theme');
+    this.applyTerminalTheme();
+  }
+
+  deriveXtermTheme(colors) {
+    return {
+      background: colors.base || '#1e1e2e',
+      foreground: colors.text || '#cdd6f4',
+      cursor: colors.accent || '#89b4fa',
+      cursorAccent: colors.base || '#1e1e2e',
+      selectionBackground: (colors.surface1 || '#45475a') + '66',
+      black: colors.surface1 || '#45475a', red: '#f38ba8',
+      green: '#a6e3a1', yellow: '#f9e2af',
+      blue: colors.accent || '#89b4fa', magenta: '#f5c2e7',
+      cyan: '#94e2d5', white: colors.overlay1 || '#6c7086',
+      brightBlack: colors.surface2 || '#585b70', brightRed: '#f38ba8',
+      brightGreen: '#a6e3a1', brightYellow: '#f9e2af',
+      brightBlue: colors.accent || '#89b4fa', brightMagenta: '#f5c2e7',
+      brightCyan: '#94e2d5', brightWhite: colors.overlay0 || '#585b70',
+    };
+  }
+
+  applyTerminalTheme() {
+    const themeName = this.currentTheme || 'catppuccin-mocha';
+    let theme;
+
+    if ((themeName === 'custom' || themeName.startsWith('custom-')) && this.customThemeColors) {
+      theme = this.deriveXtermTheme(this.customThemeColors);
+    } else {
+      theme = XTERM_THEMES[themeName] || XTERM_THEMES['catppuccin-mocha'];
+    }
+
+    // Transparent background when background image is active
+    if (document.body.classList.contains('has-background')) {
+      theme = { ...theme, background: 'transparent' };
+    }
+
+    // Apply to all active terminals
+    this.terminals.forEach(t => {
+      if (t.terminal) {
+        t.terminal.options.theme = theme;
+      }
+    });
   }
 
   updateCustomColorPickers(colors) {
@@ -1283,7 +1382,7 @@ class WebTerm {
     if (!background) {
       document.body.style.backgroundImage = '';
       document.body.classList.remove('has-background');
-      if (typeof this.applyTerminalTheme === 'function') this.applyTerminalTheme();
+      this.applyTerminalTheme();
       return;
     }
 
@@ -1293,7 +1392,7 @@ class WebTerm {
     document.body.style.backgroundPosition = 'center';
     document.body.style.backgroundAttachment = 'fixed';
     document.body.classList.add('has-background');
-    if (typeof this.applyTerminalTheme === 'function') this.applyTerminalTheme();
+    this.applyTerminalTheme();
   }
 
   async loadBackgrounds() {
