@@ -6436,7 +6436,7 @@ textarea:focus-visible {
 
 .theme-option.is-active {
   border-color: var(--accent);
-  background: rgba(137, 180, 250, 0.1);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 .theme-preview {
@@ -6524,7 +6524,7 @@ textarea:focus-visible {
 .bg-preset-item.is-active,
 .bg-uploaded-item.is-active {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(137, 180, 250, 0.3);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 .bg-preset-item img,
@@ -6540,8 +6540,8 @@ textarea:focus-visible {
   left: 0;
   right: 0;
   padding: 4px 8px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
+  background: color-mix(in srgb, var(--ctp-crust) 70%, transparent);
+  color: var(--ctp-text);
   font-size: 10px;
   font-weight: 600;
 }
@@ -6554,8 +6554,8 @@ textarea:focus-visible {
   height: 20px;
   border: 0;
   border-radius: 50%;
-  background: rgba(243, 139, 168, 0.8);
-  color: white;
+  background: color-mix(in srgb, var(--danger) 80%, transparent);
+  color: var(--ctp-base);
   font-size: 12px;
   cursor: pointer;
   opacity: 0;
@@ -6581,7 +6581,7 @@ textarea:focus-visible {
 
 .bg-upload-area:hover {
   border-color: var(--accent);
-  background: rgba(137, 180, 250, 0.05);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
 }
 
 .bg-upload-area svg {
