@@ -1,12 +1,24 @@
 // WebTerm Frontend Application
 const log = window.logger || console;
 
+// Derive a softer "mantle-like" background from a hex color (darken ~12%)
+function deriveMantle(hex) {
+  try {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const f = 0.88; // darken factor
+    const toHex = (v) => Math.round(Math.max(0, Math.min(255, v * f))).toString(16).padStart(2, '0');
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  } catch { return hex; }
+}
+
 const XTERM_THEMES = {
   'catppuccin-mocha': {
-    background: '#1e1e2e',
+    background: '#181825',  // mantle — softer than base (#1e1e2e)
     foreground: '#cdd6f4',
     cursor: '#f5e0dc',
-    cursorAccent: '#1e1e2e',
+    cursorAccent: '#181825',
     selectionBackground: 'rgba(88, 91, 112, 0.4)',
     black: '#45475a', red: '#f38ba8', green: '#a6e3a1', yellow: '#f9e2af',
     blue: '#89b4fa', magenta: '#f5c2e7', cyan: '#94e2d5', white: '#bac2de',
@@ -15,10 +27,10 @@ const XTERM_THEMES = {
     brightCyan: '#94e2d5', brightWhite: '#a6adc8',
   },
   'catppuccin-macchiato': {
-    background: '#24273a',
+    background: '#1e2030',  // mantle
     foreground: '#cad3f5',
     cursor: '#f4dbd6',
-    cursorAccent: '#24273a',
+    cursorAccent: '#1e2030',
     selectionBackground: 'rgba(73, 77, 100, 0.4)',
     black: '#494d64', red: '#ed8796', green: '#a6da95', yellow: '#eed49f',
     blue: '#8aadf4', magenta: '#f5bde6', cyan: '#8bd5ca', white: '#b8c0e0',
@@ -27,10 +39,10 @@ const XTERM_THEMES = {
     brightCyan: '#8bd5ca', brightWhite: '#a5adcb',
   },
   'catppuccin-frappe': {
-    background: '#303446',
+    background: '#292c3c',  // mantle
     foreground: '#c6d0f5',
     cursor: '#f2d5cf',
-    cursorAccent: '#303446',
+    cursorAccent: '#292c3c',
     selectionBackground: 'rgba(81, 87, 109, 0.4)',
     black: '#51576d', red: '#e78284', green: '#a6d189', yellow: '#e5c890',
     blue: '#8caaee', magenta: '#f4b8e4', cyan: '#81c8be', white: '#b5bfe2',
@@ -39,10 +51,10 @@ const XTERM_THEMES = {
     brightCyan: '#81c8be', brightWhite: '#a5adce',
   },
   'catppuccin-latte': {
-    background: '#eff1f5',
+    background: '#e6e9ef',  // mantle — softer than base (#eff1f5)
     foreground: '#4c4f69',
     cursor: '#dc8a78',
-    cursorAccent: '#eff1f5',
+    cursorAccent: '#e6e9ef',
     selectionBackground: 'rgba(188, 192, 204, 0.4)',
     black: '#bcc0cc', red: '#d20f39', green: '#40a02b', yellow: '#df8e1d',
     blue: '#1e66f5', magenta: '#ea76cb', cyan: '#179299', white: '#5c5f77',
@@ -1091,11 +1103,13 @@ class WebTerm {
   }
 
   deriveXtermTheme(colors) {
+    const base = colors.base || '#1e1e2e';
+    const mantle = deriveMantle(base);
     return {
-      background: colors.base || '#1e1e2e',
+      background: mantle,
       foreground: colors.text || '#cdd6f4',
       cursor: colors.accent || '#89b4fa',
-      cursorAccent: colors.base || '#1e1e2e',
+      cursorAccent: mantle,
       selectionBackground: (colors.surface1 || '#45475a') + '66',
       black: colors.surface1 || '#45475a', red: '#f38ba8',
       green: '#a6e3a1', yellow: '#f9e2af',
