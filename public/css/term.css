@@ -1350,12 +1350,7 @@ textarea:focus-visible {
 .terminal-stage {
   position: relative;
   min-height: 0;
-  background:
-    radial-gradient(
-      circle at top right,
-      color-mix(in srgb, var(--accent) 9%, transparent),
-      transparent 30%),
-    color-mix(in srgb, var(--bg-top) 94%, transparent);
+  /* Background removed — terminal-frame handles all background rendering */
 }
 .utility-rail-launcher {
   min-width: 0;
