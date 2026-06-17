@@ -1,0 +1,28 @@
+{
+  "name": "Default Dark",
+  "id": "default",
+  "variables": {
+    "--bg": "#060b14",
+    "--bg-top": "#0e1b30",
+    "--panel": "#0a1222",
+    "--panel-2": "#0d1728",
+    "--panel-3": "#101b2d",
+    "--line": "rgba(148, 163, 184, 0.14)",
+    "--line-strong": "rgba(148, 163, 184, 0.28)",
+    "--text": "#e6edf7",
+    "--muted": "#8fa4bf",
+    "--accent": "#55c3ff",
+    "--accent-2": "#2563eb",
+    "--success": "#22c55e",
+    "--warn": "#f59e0b",
+    "--danger": "#f87171",
+    "--shadow": "rgba(2, 6, 23, 0.42)"
+  },
+  "terminal": {
+    "background": "#060b14",
+    "foreground": "#e6edf7",
+    "cursor": "#55c3ff",
+    "cursorAccent": "#060b14",
+    "selectionBackground": "rgba(85, 195, 255, 0.3)"
+  }
+}

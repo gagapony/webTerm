@@ -117,6 +117,12 @@
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
           </button>
+          <button class="toolbar-button chrome-button is-icon-only" id="settingsBtn" title="Settings">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
           <div class="saved-connections-dropdown" id="savedConnDropdown" hidden>
             <div class="saved-connections-header">
               <strong>Saved Connections</strong>
@@ -220,9 +226,54 @@
     </div>
   </div>
 
+  <!-- Settings Modal -->
+  <div class="settings-modal" id="settingsModal" hidden>
+    <div class="settings-scrim" id="settingsScrim"></div>
+    <div class="settings-dialog">
+      <div class="settings-header">
+        <div class="settings-copy">
+          <span class="settings-kicker">SETTINGS</span>
+          <h2 class="settings-title">Settings</h2>
+        </div>
+        <button class="settings-close-button" id="settingsClose">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="settings-body">
+        <div class="settings-grid">
+          <div class="compact-field">
+            <label class="toolbar-label">FONT SIZE</label>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="range" class="toolbar-input" id="fontSizeSlider" min="10" max="24" value="14" style="flex: 1; height: 6px;">
+              <span id="fontSizeValue" style="min-width: 40px; text-align: right;">14px</span>
+            </div>
+          </div>
+          <div class="compact-field">
+            <label class="toolbar-label">THEME</label>
+            <select class="toolbar-input" id="themeSelect">
+              <option value="default">Default Dark</option>
+              <option value="catppuccin-mocha">Catppuccin Mocha</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="settings-footer">
+        <p class="settings-footer-note"></p>
+        <div class="settings-footer-actions">
+          <button class="chrome-button" id="settingsCancel">Cancel</button>
+          <button class="chrome-button is-primary" id="settingsSave">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="/lib/xterm.js?v=4"></script>
   <script src="/lib/addon-fit.js?v=4"></script>
   <script src="/lib/addon-web-links.js?v=4"></script>
-  <script src="/js/app.js?v=4"></script>
+  <script src="/js/logger.js?v=1"></script>
+  <script src="/js/app.js?v=5"></script>
 </body>
 </html>

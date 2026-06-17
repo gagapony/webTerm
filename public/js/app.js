@@ -1,7 +1,9 @@
 // WebTerm Frontend Application
+const log = window.logger || console;
 
 class WebTerm {
   constructor() {
+    log.info('WebTerm constructor called');
     this.ws = null;
     this.terminals = new Map();
     this.activeSessionId = null;
@@ -12,6 +14,7 @@ class WebTerm {
   }
 
   init() {
+    log.info('WebTerm init called');
     this.bindElements();
     this.bindEvents();
     this.checkAuth();
@@ -29,30 +32,42 @@ class WebTerm {
   }
 
   bindElements() {
+    log.debug('bindElements called');
     // Login
     this.loginOverlay = document.getElementById('loginOverlay');
     this.loginForm = document.getElementById('loginForm');
     this.loginUsername = document.getElementById('loginUsername');
     this.loginPassword = document.getElementById('loginPassword');
     this.loginError = document.getElementById('loginError');
+    log.debug('Login elements:', { loginOverlay: !!this.loginOverlay, loginForm: !!this.loginForm });
 
     // App
     this.app = document.getElementById('app');
+    log.debug('App element:', !!this.app);
 
     // Buttons
     this.savedConnBtn = document.getElementById('savedConnBtn');
     this.reconnectBtn = document.getElementById('reconnectBtn');
     this.newSessionBtn = document.getElementById('newSessionBtn');
+    this.settingsBtn = document.getElementById('settingsBtn');
     this.connectBtn = document.getElementById('connectBtn');
     this.saveConnectionBtn = document.getElementById('saveConnectionBtn');
     this.newSessionClose = document.getElementById('newSessionClose');
     this.newSessionCancel = document.getElementById('newSessionCancel');
     this.newSessionScrim = document.getElementById('newSessionScrim');
+    log.debug('Buttons:', {
+      savedConnBtn: !!this.savedConnBtn,
+      reconnectBtn: !!this.reconnectBtn,
+      newSessionBtn: !!this.newSessionBtn,
+      settingsBtn: !!this.settingsBtn,
+      connectBtn: !!this.connectBtn
+    });
 
     // Modal
     this.newSessionModal = document.getElementById('newSessionModal');
     this.savedConnDropdown = document.getElementById('savedConnDropdown');
     this.savedConnList = document.getElementById('savedConnList');
+    log.debug('Modal elements:', { newSessionModal: !!this.newSessionModal });
 
     // Status
     this.statusHeadline = document.getElementById('statusHeadline');
@@ -78,25 +93,104 @@ class WebTerm {
   }
 
   bindEvents() {
+    log.debug('bindEvents called');
+
     // Login form
-    this.loginForm?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      this.handleLogin();
-    });
+    if (this.loginForm) {
+      this.loginForm.addEventListener('submit', (e) => {
+        log.info('Login form submitted');
+        e.preventDefault();
+        this.handleLogin();
+      });
+      log.debug('Login form event bound');
+    }
 
     // Reconnect
-    this.reconnectBtn?.addEventListener('click', () => {
-      if (this.ws) this.ws.close();
-      this.connectWebSocket();
-    });
+    if (this.reconnectBtn) {
+      this.reconnectBtn.addEventListener('click', () => {
+        log.info('Reconnect button clicked');
+        if (this.ws) this.ws.close();
+        this.connectWebSocket();
+      });
+      log.debug('Reconnect button event bound');
+    }
 
     // New session
-    this.newSessionBtn?.addEventListener('click', () => this.showNewSessionModal());
-    this.newSessionClose?.addEventListener('click', () => this.hideNewSessionModal());
-    this.newSessionCancel?.addEventListener('click', () => this.hideNewSessionModal());
-    this.newSessionScrim?.addEventListener('click', () => this.hideNewSessionModal());
-    this.connectBtn?.addEventListener('click', () => this.createSessionFromModal());
-    this.saveConnectionBtn?.addEventListener('click', () => this.saveConnection());
+    if (this.newSessionBtn) {
+      this.newSessionBtn.addEventListener('click', () => {
+        log.info('New Session button clicked');
+        this.showNewSessionModal();
+      });
+      log.debug('New Session button event bound');
+    }
+
+    // Settings button
+    if (this.settingsBtn) {
+      this.settingsBtn.addEventListener('click', () => {
+        log.info('Settings button clicked');
+        this.showSettingsModal();
+      });
+      log.debug('Settings button event bound');
+    }
+
+    // Settings modal controls
+    const settingsClose = document.getElementById('settingsClose');
+    const settingsScrim = document.getElementById('settingsScrim');
+    const settingsCancel = document.getElementById('settingsCancel');
+    const settingsSave = document.getElementById('settingsSave');
+
+    settingsClose?.addEventListener('click', () => this.hideSettingsModal());
+    settingsScrim?.addEventListener('click', () => this.hideSettingsModal());
+    settingsCancel?.addEventListener('click', () => this.hideSettingsModal());
+    settingsSave?.addEventListener('click', () => {
+      log.info('Settings saved');
+      this.hideSettingsModal();
+    });
+
+    // Font size slider
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    const fontSizeValue = document.getElementById('fontSizeValue');
+    fontSizeSlider?.addEventListener('input', (e) => {
+      const size = e.target.value;
+      if (fontSizeValue) fontSizeValue.textContent = `${size}px`;
+      document.documentElement.style.setProperty('--font-size', `${size}px`);
+      // Update all terminals
+      this.terminals.forEach(t => {
+        if (t.terminal) t.terminal.options.fontSize = parseInt(size);
+      });
+    });
+
+    // Modal controls
+    if (this.newSessionClose) {
+      this.newSessionClose.addEventListener('click', () => {
+        log.debug('Close button clicked');
+        this.hideNewSessionModal();
+      });
+    }
+    if (this.newSessionCancel) {
+      this.newSessionCancel.addEventListener('click', () => {
+        log.debug('Cancel button clicked');
+        this.hideNewSessionModal();
+      });
+    }
+    if (this.newSessionScrim) {
+      this.newSessionScrim.addEventListener('click', () => {
+        log.debug('Scrim clicked');
+        this.hideNewSessionModal();
+      });
+    }
+    if (this.connectBtn) {
+      this.connectBtn.addEventListener('click', () => {
+        log.info('Connect button clicked');
+        this.createSessionFromModal();
+      });
+    }
+    if (this.saveConnectionBtn) {
+      this.saveConnectionBtn.addEventListener('click', () => {
+        log.info('Save Connection button clicked');
+        this.saveConnection();
+      });
+    }
 
     // Saved connections
     this.savedConnBtn?.addEventListener('click', (e) => {
@@ -229,12 +323,44 @@ class WebTerm {
   }
 
   showNewSessionModal() {
-    this.newSessionModal.hidden = false;
+    log.info('showNewSessionModal called');
+    log.debug('newSessionModal element:', this.newSessionModal);
+    if (this.newSessionModal) {
+      this.newSessionModal.removeAttribute('hidden');
+      this.newSessionModal.style.display = 'grid';
+      this.newSessionModal.dataset.open = 'true';
+      log.debug('Modal shown');
+    } else {
+      log.error('newSessionModal element not found!');
+    }
     this.loadSavedConnections();
   }
 
   hideNewSessionModal() {
-    this.newSessionModal.hidden = true;
+    log.info('hideNewSessionModal called');
+    if (this.newSessionModal) {
+      this.newSessionModal.setAttribute('hidden', '');
+      this.newSessionModal.style.display = 'none';
+      this.newSessionModal.dataset.open = 'false';
+    }
+  }
+
+  showSettingsModal() {
+    log.info('showSettingsModal called');
+    const modal = document.getElementById('settingsModal');
+    if (modal) {
+      modal.removeAttribute('hidden');
+      modal.style.display = 'grid';
+    }
+  }
+
+  hideSettingsModal() {
+    log.info('hideSettingsModal called');
+    const modal = document.getElementById('settingsModal');
+    if (modal) {
+      modal.setAttribute('hidden', '');
+      modal.style.display = 'none';
+    }
   }
 
   toggleSavedConnections() {

@@ -1,0 +1,80 @@
+<h2>Settings Modal — Tabbed Layout</h2>
+<p class="subtitle">Click a tab to preview the layout for each settings section</p>
+
+<div class="options">
+  <div class="option" data-choice="font" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Font Tab</h3>
+      <p>Font size slider (10-24px), live preview. Same as current but inside a tab.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="background" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Background Tab</h3>
+      <p>Image upload area (drag-drop or click), thumbnail grid of uploaded images, transparency slider (0-100%), frosted glass intensity slider (0-30px blur). "None" option to remove background.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="theme" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Theme Tab</h3>
+      <p>Preset theme cards (Catppuccin Mocha, Default Dark) with live preview. Below: accent color picker, cursor color picker. Import/export theme JSON button.</p>
+    </div>
+  </div>
+</div>
+
+<h3 style="margin-top: 32px;">Session Tab — Recording Controls</h3>
+<p class="subtitle">Inline recording button in each session tab</p>
+
+<div class="mockup">
+  <div class="mockup-header">Session Tabs Bar</div>
+  <div class="mockup-body" style="display: flex; gap: 4px; padding: 12px; background: #0a1222; border-radius: 8px;">
+    <!-- Active tab with recording button -->
+    <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #0d1728; border: 1px solid rgba(85,195,255,0.3); border-radius: 8px; min-width: 160px;">
+      <div style="width: 6px; height: 6px; border-radius: 50%; background: #22c55e;"></div>
+      <div style="flex: 1;">
+        <div style="font-size: 12px; font-weight: 600; color: #e6edf7;">LOCAL</div>
+        <div style="font-size: 10px; color: #8fa4bf;">a1b2c3d4</div>
+      </div>
+      <!-- Record button -->
+      <button style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #f87171; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Start Recording">
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: #f87171;"></div>
+      </button>
+      <button style="width: 16px; height: 16px; background: none; border: none; color: #8fa4bf; cursor: pointer;">×</button>
+    </div>
+    <!-- Inactive tab -->
+    <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(15,23,42,0.4); border: 1px solid rgba(148,163,184,0.1); border-radius: 8px; min-width: 160px;">
+      <div style="width: 6px; height: 6px; border-radius: 50%; background: #22c55e;"></div>
+      <div style="flex: 1;">
+        <div style="font-size: 12px; font-weight: 600; color: #e6edf7;">SSH</div>
+        <div style="font-size: 10px; color: #8fa4bf;">e5f6a7b8</div>
+      </div>
+      <button style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #f87171; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Start Recording">
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: #f87171;"></div>
+      </button>
+      <button style="width: 16px; height: 16px; background: none; border: none; color: #8fa4bf; cursor: pointer;">×</button>
+    </div>
+    <!-- Recording active tab -->
+    <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.4); border-radius: 8px; min-width: 160px; animation: pulse 2s infinite;">
+      <div style="width: 6px; height: 6px; border-radius: 50%; background: #22c55e;"></div>
+      <div style="flex: 1;">
+        <div style="font-size: 12px; font-weight: 600; color: #e6edf7;">SSH</div>
+        <div style="font-size: 10px; color: #f87171;">● REC 0:23</div>
+      </div>
+      <!-- Stop button (filled square) -->
+      <button style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #f87171; background: #f87171; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Stop Recording">
+        <div style="width: 6px; height: 6px; background: white; border-radius: 1px;"></div>
+      </button>
+      <button style="width: 16px; height: 16px; background: none; border: none; color: #8fa4bf; cursor: pointer;">×</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(248,113,113,0.4); }
+    50% { box-shadow: 0 0 0 4px rgba(248,113,113,0); }
+  }
+</style>
