@@ -278,6 +278,7 @@
   --success: var(--ctp-green);
   --warn: var(--ctp-yellow);
   --danger: var(--ctp-red);
+  --shadow: rgba(2, 6, 23, 0.42);
 
   /* Transparency & Blur */
   --terminal-opacity: 0.85;
