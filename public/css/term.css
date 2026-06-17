@@ -344,6 +344,7 @@
 }
 
 [data-theme="catppuccin-latte"] {
+  color-scheme: light;
   --ctp-rosewater: #dc8a78;
   --ctp-flamingo: #dd7878;
   --ctp-pink: #ea76cb;
