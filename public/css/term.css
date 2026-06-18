@@ -930,8 +930,8 @@ textarea:focus-visible {
   gap: 10px;
   min-height: 40px;
   padding: 4px;
-  border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
-  border-radius: 14px;
+  border: none;
+  border-radius: 0;
   background: transparent;
 }
 .session-tabs-main {
