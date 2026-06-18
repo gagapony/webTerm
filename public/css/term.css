@@ -932,13 +932,7 @@ textarea:focus-visible {
   padding: 4px;
   border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
   border-radius: 14px;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100%), transparent),
-      color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 98%), transparent)),
-    var(--bg);
-  backdrop-filter: blur(var(--blur-strength));
+  background: transparent;
 }
 .session-tabs-main {
   min-width: 0;
