@@ -3619,7 +3619,7 @@ textarea:focus-visible {
   padding: 5px 6px;
   overflow-x: auto;
   scrollbar-width: thin;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
+  border-bottom: 1px solid var(--line);
   background: transparent;
 }
 .terminal-pane-tabs .session-tab {
