@@ -521,7 +521,7 @@ textarea:focus-visible {
   z-index: 8;
   flex-shrink: 0;
   padding: 7px 10px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid color-mix(in srgb, var(--bg-top) 60%, transparent);
   background:
     linear-gradient(
       180deg,
@@ -930,7 +930,7 @@ textarea:focus-visible {
   gap: 10px;
   min-height: 40px;
   padding: 4px;
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--line) 40%, transparent);
   border-radius: 14px;
   background: transparent;
 }
@@ -978,7 +978,7 @@ textarea:focus-visible {
   padding: 0 6px 0 12px;
   border-radius: 10px;
   border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
-  background: color-mix(in srgb, var(--panel) 68%, transparent);
+  background: color-mix(in srgb, var(--panel) 40%, transparent);
   color: var(--text);
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 2%, transparent);
   position: relative;
@@ -1047,7 +1047,7 @@ textarea:focus-visible {
   opacity: 0.78;
 }
 .session-tab.is-pane-active:not(.is-active) {
-  background: color-mix(in srgb, var(--panel) 86%, transparent);
+  background: color-mix(in srgb, var(--panel) 50%, transparent);
   border-color: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 .session-tab.is-dragging {
@@ -3591,7 +3591,7 @@ textarea:focus-visible {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   border: 1px solid color-mix(in srgb, var(--line) 12%, transparent);
-  background: color-mix(in srgb, var(--bg-top) 28%, transparent);
+  background: transparent;
   overflow: hidden;
   transition:
     border-color 160ms ease,
@@ -3607,12 +3607,7 @@ textarea:focus-visible {
   z-index: 2;
   border-color: color-mix(in srgb, var(--accent) 62%, transparent);
   border-radius: 0;
-  background:
-    radial-gradient(
-      circle at 82% 0%,
-      color-mix(in srgb, var(--accent-2) 12%, transparent),
-      transparent 32%),
-    color-mix(in srgb, var(--bg-top) 44%, transparent);
+  background: transparent;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent), 0 18px 44px var(--shadow);
 }
 .terminal-pane-tabs {
@@ -3625,14 +3620,14 @@ textarea:focus-visible {
   overflow-x: auto;
   scrollbar-width: thin;
   border-bottom: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
-  background: color-mix(in srgb, var(--bg-top) 35%, transparent);
+  background: transparent;
 }
 .terminal-pane-tabs .session-tab {
   max-width: 240px;
 }
 .terminal-pane[data-focus-mode=true] .terminal-pane-tabs {
   min-height: 42px;
-  background: color-mix(in srgb, var(--bg-top) 50%, transparent);
+  background: transparent;
 }
 .terminal-pane[data-focus-mode=true] .session-tab {
   max-width: min(360px, calc(100vw - 52px));
