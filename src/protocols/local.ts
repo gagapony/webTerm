@@ -15,9 +15,14 @@ export class LocalSession extends EventEmitter {
   private cols: number = 80;
   private rows: number = 24;
   private useNodePty: boolean = false;
+  private resolvedShell: string = '';
 
   constructor() {
     super();
+  }
+
+  getShell(): string {
+    return this.resolvedShell;
   }
 
   spawn(options: LocalOptions = {}): void {
@@ -34,6 +39,7 @@ export class LocalSession extends EventEmitter {
       }
     }
     shell = shell || '/bin/sh';
+    this.resolvedShell = shell;
 
     const cwd = options.cwd || process.env.HOME || '/tmp';
     this.cols = options.cols || 80;

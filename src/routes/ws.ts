@@ -59,7 +59,7 @@ async function handleMessage(ws: WebSocket, message: WSMessage): Promise<void> {
       }
 
       try {
-        const sessionId = await sessionManager.createSession(ws, message.protocol, {
+        const result = await sessionManager.createSession(ws, message.protocol, {
           host: message.host,
           port: message.port,
           username: message.username,
@@ -69,11 +69,15 @@ async function handleMessage(ws: WebSocket, message: WSMessage): Promise<void> {
           rows: message.rows || 24,
         });
 
-        ws.send(JSON.stringify({
+        const response: any = {
           type: 'created',
-          sessionId,
+          sessionId: result.sessionId,
           protocol: message.protocol,
-        }));
+        };
+        if (result.shell) {
+          response.shell = result.shell;
+        }
+        ws.send(JSON.stringify(response));
       } catch (err) {
         ws.send(JSON.stringify({
           type: 'error',

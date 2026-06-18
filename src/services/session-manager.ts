@@ -22,7 +22,7 @@ class SessionManager {
     ws: WebSocket,
     protocol: 'ssh' | 'telnet' | 'local',
     options: any
-  ): Promise<string> {
+  ): Promise<{ sessionId: string; shell?: string }> {
     const sessionId = uuidv4();
     const cols = options.cols || 80;
     const rows = options.rows || 24;
@@ -104,7 +104,12 @@ class SessionManager {
       });
 
       logger.info(`Session created: ${sessionId} (${protocol})`);
-      return sessionId;
+
+      const result: { sessionId: string; shell?: string } = { sessionId };
+      if (protocol === 'local') {
+        result.shell = (session as LocalSession).getShell();
+      }
+      return result;
     } catch (err) {
       logger.error(`Failed to create session:`, err);
       // Send error to client

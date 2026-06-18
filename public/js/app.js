@@ -409,7 +409,7 @@ class WebTerm {
   handleWSMessage(message) {
     switch (message.type) {
       case 'created':
-        this.onSessionCreated(message.sessionId, message.protocol);
+        this.onSessionCreated(message.sessionId, message.protocol, message.shell);
         break;
       case 'output':
         this.onTerminalOutput(message.sessionId, message.data);
@@ -500,7 +500,9 @@ class WebTerm {
     };
 
     if (this.selectedProtocol === 'local') {
-      options.shell = this.sessionShell.value || '/bin/bash';
+      if (this.sessionShell.value.trim()) {
+        options.shell = this.sessionShell.value.trim();
+      }
     } else {
       options.host = this.sessionHost.value;
       options.port = parseInt(this.sessionPort.value) || (this.selectedProtocol === 'ssh' ? 22 : 23);
@@ -517,12 +519,17 @@ class WebTerm {
     this.hideNewSessionModal();
   }
 
-  onSessionCreated(sessionId, protocol) {
+  onSessionCreated(sessionId, protocol, shell) {
     this.createTerminal(sessionId, protocol);
 
     const host = this.sessionHost.value || 'local';
     this.connectionStartTime = new Date();
-    const target = protocol === 'local' ? 'Local Shell' : `${host}:${this.sessionPort.value || 22}`;
+    let target;
+    if (protocol === 'local') {
+      target = shell || 'Local Shell';
+    } else {
+      target = `${host}:${this.sessionPort.value || 22}`;
+    }
     const protocolLabel = protocol === 'local' ? 'Local' : protocol === 'ssh' ? 'SSH' : 'Telnet';
     this.updateStatus('connected', { state: 'Connected', protocol: protocolLabel, target: target, time: this.formatTime(this.connectionStartTime) });
 
