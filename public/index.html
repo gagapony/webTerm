@@ -28,9 +28,6 @@
     .terminal-frame, .terminal-pane, .terminal-pane-tabs { border-radius: 0 !important; }
     .masthead { gap: 6px; align-items: center; min-width: 0; }
     .brand { flex-shrink: 0; }
-    .status-stack { min-width: 0; padding: 0; display: flex; flex-direction: column; gap: 0; }
-    .status-headline { font-size: 11px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .status-detail { font-size: 9px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .toolbar-button.is-icon-only { width: 32px; min-width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
 
     /* Login */
@@ -97,13 +94,30 @@
             </svg>
             <span class="brand-title">WebTerm</span>
           </div>
-          <div class="status-stack">
-            <div class="status-headline" id="statusHeadline">Connecting...</div>
-            <div class="status-detail" id="statusDetail">Local Shell</div>
-          </div>
         </div>
 
         <div class="toolbar-actions" style="position: relative;">
+          <button class="toolbar-button chrome-button is-icon-only status-indicator" id="statusBtn" title="Connection Status" aria-expanded="false">
+            <span class="status-dot" id="statusDot"></span>
+          </button>
+          <div id="statusDropdown" class="status-dropdown" hidden>
+            <div class="status-dropdown-row">
+              <span class="status-dropdown-label">Status</span>
+              <span class="status-dropdown-value" id="dropdownState">Connecting...</span>
+            </div>
+            <div class="status-dropdown-row">
+              <span class="status-dropdown-label">Protocol</span>
+              <span class="status-dropdown-value" id="dropdownProtocol">-</span>
+            </div>
+            <div class="status-dropdown-row">
+              <span class="status-dropdown-label">Target</span>
+              <span class="status-dropdown-value" id="dropdownTarget">-</span>
+            </div>
+            <div class="status-dropdown-row">
+              <span class="status-dropdown-label">Connected</span>
+              <span class="status-dropdown-value" id="dropdownTime">-</span>
+            </div>
+          </div>
           <button class="toolbar-button chrome-button is-icon-only" id="savedConnBtn" title="Saved Connections">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>

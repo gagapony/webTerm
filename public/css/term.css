@@ -626,37 +626,83 @@ textarea:focus-visible {
   flex: 0 0 30px;
   padding: 0;
 }
-.status-stack {
-  min-width: 0;
-  width: 100%;
-  display: grid;
-  gap: 2px;
-  overflow: hidden;
-  padding: 0 2px;
+/* Status indicator button */
+.status-indicator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.status-copy {
-  min-width: 0;
-  display: grid;
-  gap: 2px;
+.status-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ctp-blue);
+  box-shadow: 0 0 8px var(--ctp-blue);
+  transition: background 300ms ease, box-shadow 300ms ease;
 }
-.status-headline {
-  min-width: 0;
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.status-indicator.status-connected .status-dot {
+  background: var(--ctp-green);
+  box-shadow: 0 0 8px var(--ctp-green);
 }
-.status-detail {
-  min-width: 0;
+.status-indicator.status-connecting .status-dot {
+  background: var(--ctp-blue);
+  box-shadow: 0 0 8px var(--ctp-blue);
+  animation: status-pulse 1.5s ease-in-out infinite;
+}
+.status-indicator.status-disconnected .status-dot {
+  background: var(--ctp-red);
+  box-shadow: 0 0 8px var(--ctp-red);
+}
+.status-indicator.status-error .status-dot {
+  background: var(--ctp-yellow);
+  box-shadow: 0 0 8px var(--ctp-yellow);
+}
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Status dropdown */
+.status-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 100;
+  min-width: 220px;
+  padding: 8px 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--bg) 96%, transparent);
+  backdrop-filter: blur(var(--blur-strength));
+  box-shadow: 0 12px 32px var(--shadow);
+}
+.status-dropdown[hidden] {
+  display: none;
+}
+.status-dropdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 14px;
+  gap: 12px;
+}
+.status-dropdown-label {
+  font-size: 11px;
   color: var(--muted);
-  font-size: 10px;
-  line-height: 1.2;
   white-space: nowrap;
+}
+.status-dropdown-value {
+  font-size: 12px;
+  color: var(--text);
+  text-align: right;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 140px;
 }
+
 .connection-topology {
   width: 32px;
   height: 32px;
@@ -5401,10 +5447,6 @@ body.has-background .topbar {
     flex-wrap: wrap;
     gap: 10px;
   }
-  .status-stack {
-    width: 100%;
-    order: 3;
-  }
   .connection-topology {
     order: 4;
     width: 32px;
@@ -5652,9 +5694,6 @@ body.has-background .topbar {
 @media (max-width: 640px) {
   .brand-title {
     font-size: 11px;
-  }
-  .status-detail {
-    display: none;
   }
   .workspace-switcher {
     width: 100%;

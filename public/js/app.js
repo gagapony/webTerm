@@ -156,8 +156,13 @@ class WebTerm {
     log.debug('Modal elements:', { newSessionModal: !!this.newSessionModal });
 
     // Status
-    this.statusHeadline = document.getElementById('statusHeadline');
-    this.statusDetail = document.getElementById('statusDetail');
+    this.statusBtn = document.getElementById('statusBtn');
+    this.statusDropdown = document.getElementById('statusDropdown');
+    this.dropdownState = document.getElementById('dropdownState');
+    this.dropdownProtocol = document.getElementById('dropdownProtocol');
+    this.dropdownTarget = document.getElementById('dropdownTarget');
+    this.dropdownTime = document.getElementById('dropdownTime');
+    this.connectionStartTime = null;
 
     // Terminal
     this.terminalViewport = document.getElementById('terminalViewport');
@@ -272,6 +277,9 @@ class WebTerm {
       this.toggleSavedConnections();
     });
 
+    // Status indicator
+    this.statusBtn?.addEventListener('click', () => this.toggleStatusDropdown());
+
     // Protocol selection
     this.protocolBtns?.forEach(btn => {
       btn.addEventListener('click', () => this.selectProtocol(btn.dataset.protocol));
@@ -282,6 +290,9 @@ class WebTerm {
       if (this.savedConnDropdown && !this.savedConnDropdown.contains(e.target) && e.target !== this.savedConnBtn) {
         this.savedConnDropdown.hidden = true;
       }
+      if (this.statusDropdown && !this.statusDropdown.contains(e.target) && e.target !== this.statusBtn && !this.statusBtn.contains(e.target)) {
+        this.statusDropdown.hidden = true;
+      }
     });
 
     // Keyboard shortcuts
@@ -289,8 +300,27 @@ class WebTerm {
       if (e.key === 'Escape') {
         this.hideNewSessionModal();
         if (this.savedConnDropdown) this.savedConnDropdown.hidden = true;
+        if (this.statusDropdown) this.statusDropdown.hidden = true;
       }
     });
+  }
+
+  updateStatus(state, detail = {}) {
+    this.statusBtn.classList.remove('status-connected', 'status-connecting', 'status-disconnected', 'status-error');
+    this.statusBtn.classList.add(`status-${state}`);
+    this.dropdownState.textContent = detail.state || '-';
+    this.dropdownProtocol.textContent = detail.protocol || '-';
+    this.dropdownTarget.textContent = detail.target || '-';
+    this.dropdownTime.textContent = detail.time || '-';
+  }
+
+  toggleStatusDropdown() {
+    this.statusDropdown.hidden = !this.statusDropdown.hidden;
+    this.statusBtn.setAttribute('aria-expanded', String(!this.statusDropdown.hidden));
+  }
+
+  formatTime(date) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
 
   async handleLogin() {
@@ -334,15 +364,13 @@ class WebTerm {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}`;
 
-    this.statusHeadline.textContent = 'Connecting...';
-    this.statusDetail.textContent = wsUrl;
+    this.updateStatus('connecting', { state: 'Connecting...', protocol: '-', target: '-', time: '-' });
 
     this.ws = new WebSocket(wsUrl);
 
     this.ws.onopen = () => {
       console.log('WebSocket connected');
-      this.statusHeadline.textContent = 'Connected';
-      this.statusDetail.textContent = 'Ready';
+      this.updateStatus('connected', { state: 'Connected', protocol: 'WebSocket', target: 'Ready' });
       // Auto-connect local shell
       this.autoConnectLocal();
     };
@@ -358,8 +386,7 @@ class WebTerm {
 
     this.ws.onclose = () => {
       console.log('WebSocket disconnected');
-      this.statusHeadline.textContent = 'Disconnected';
-      this.statusDetail.textContent = 'Reconnecting...';
+      this.updateStatus('disconnected', { state: 'Disconnected', protocol: '-', target: 'Reconnecting...' });
       setTimeout(() => {
         if (this.isLoggedIn) this.connectWebSocket();
       }, 3000);
@@ -494,8 +521,10 @@ class WebTerm {
     this.createTerminal(sessionId, protocol);
 
     const host = this.sessionHost.value || 'local';
-    this.statusHeadline.textContent = 'Connected';
-    this.statusDetail.textContent = protocol === 'local' ? 'Local Shell' : `${host}:${this.sessionPort.value || 22}`;
+    this.connectionStartTime = new Date();
+    const target = protocol === 'local' ? 'Local Shell' : `${host}:${this.sessionPort.value || 22}`;
+    const protocolLabel = protocol === 'local' ? 'Local' : protocol === 'ssh' ? 'SSH' : 'Telnet';
+    this.updateStatus('connected', { state: 'Connected', protocol: protocolLabel, target: target, time: this.formatTime(this.connectionStartTime) });
 
     // Clear form
     if (this.connectionName) this.connectionName.value = '';
@@ -582,13 +611,12 @@ class WebTerm {
     if (session) {
       session.terminal.write('\r\n\x1b[33m[Session ended]\x1b[0m\r\n');
     }
-    this.statusHeadline.textContent = 'Disconnected';
+    this.updateStatus('disconnected', { state: 'Disconnected' });
   }
 
   onSessionError(sessionId, message) {
     console.error('Session error:', message);
-    this.statusHeadline.textContent = 'Error';
-    this.statusDetail.textContent = message;
+    this.updateStatus('error', { state: 'Error', target: message });
 
     if (sessionId) {
       const session = this.terminals.get(sessionId);
@@ -663,8 +691,8 @@ class WebTerm {
     }
 
     if (this.terminals.size === 0) {
-      this.statusHeadline.textContent = 'Ready';
-      this.statusDetail.textContent = 'Click + to connect';
+      this.updateStatus('connecting', { state: 'Ready', protocol: '-', target: 'Click + to connect', time: '-' });
+      this.connectionStartTime = null;
       this.activeSessionId = null;
     } else {
       const firstSession = this.terminals.keys().next().value;
