@@ -609,13 +609,9 @@ textarea:focus-visible {
   transform: translateY(-1px);
 }
 .workspace-chip.is-active {
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent) 96%, transparent),
-      color-mix(in srgb, var(--accent-2) 92%, transparent));
+  background: color-mix(in srgb, var(--panel) 90%, transparent);
   color: var(--text);
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 24%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 6%, transparent);
 }
 .workspace-chip .ui-icon {
   width: 13px;
@@ -1244,7 +1240,7 @@ textarea:focus-visible {
   --ui-button-color: var(--text);
   height: 32px;
   padding: 0 11px;
-  border-radius: 9px;
+  border-radius: 6px;
   color: var(--ui-button-color);
   transition:
     transform 120ms ease,
@@ -1264,13 +1260,10 @@ textarea:focus-visible {
 .ui-button.is-primary,
 .toolbar-button.is-primary,
 .chrome-button.is-primary {
-  --ui-button-border: color-mix(in srgb, var(--accent) 30%, transparent);
-  --ui-button-bg:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent) 98%, transparent),
-      color-mix(in srgb, var(--accent-2) 94%, transparent));
+  --ui-button-border: var(--line-strong);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 82%, transparent);
   --ui-button-color: var(--text);
+  font-weight: 600;
 }
 .ui-button.is-secondary,
 .toolbar-button.is-secondary,
@@ -1294,14 +1287,10 @@ textarea:focus-visible {
   padding: 0;
 }
 .chrome-button.is-accent {
-  --ui-button-border: color-mix(in srgb, var(--accent) 30%, transparent);
-  --ui-button-bg:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent) 98%, transparent),
-      color-mix(in srgb, var(--accent-2) 94%, transparent));
+  --ui-button-border: var(--line-strong);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 82%, transparent);
   --ui-button-color: var(--text);
-  box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 24%, transparent);
+  font-weight: 600;
 }
 .terminal-shell {
   min-height: 0;
@@ -1332,7 +1321,7 @@ textarea:focus-visible {
   display: grid;
   grid-template-rows: 1fr;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 6px;
   overflow: hidden;
   background:
     linear-gradient(
@@ -5101,7 +5090,7 @@ body.has-background .topbar {
   gap: 4px;
   padding: 10px 12px 11px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 6px;
   background: color-mix(in srgb, var(--panel) 52%, transparent);
   transition:
     border-color 140ms ease,
