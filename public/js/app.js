@@ -548,7 +548,7 @@ class WebTerm {
       theme: terminalTheme,
       fontFamily: '"MonaspiceAr NFM Medium", "MonaspiceAr NFM", monospace',
       fontSize: 14,
-      lineHeight: 1.2,
+      lineHeight: 1.0,
       cursorBlink: true,
       cursorStyle: 'bar',
       scrollback: 10000,
