@@ -3864,8 +3864,7 @@ body.has-background .topbar {
     linear-gradient(
       180deg,
       color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100%), transparent),
-      color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 98%), transparent)),
-    var(--bg);
+      color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 98%), transparent));
   backdrop-filter: blur(var(--blur-strength));
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 4%, transparent), 0 30px 80px var(--shadow);
   opacity: 0;
@@ -5429,8 +5428,7 @@ body.has-background .topbar {
     linear-gradient(
       180deg,
       color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100%), transparent),
-      color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 98%), transparent)),
-    var(--bg);
+      color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 98%), transparent));
   backdrop-filter: blur(var(--blur-strength));
 }
 .settings-footer[hidden] {
