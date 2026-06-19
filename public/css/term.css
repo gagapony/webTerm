@@ -1310,7 +1310,7 @@ textarea:focus-visible {
 .toolbar-button.is-primary,
 .chrome-button.is-primary {
   --ui-button-border: var(--line-strong);
-  --ui-button-bg: color-mix(in srgb, var(--panel) 82%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 52%, transparent);
   --ui-button-color: var(--text);
   font-weight: 600;
 }
@@ -1318,7 +1318,7 @@ textarea:focus-visible {
 .toolbar-button.is-secondary,
 .chrome-button.is-secondary {
   --ui-button-border: var(--line-strong);
-  --ui-button-bg: color-mix(in srgb, var(--panel) 82%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 52%, transparent);
   --ui-button-color: var(--text);
 }
 .ui-button.is-subtle,
@@ -1337,7 +1337,7 @@ textarea:focus-visible {
 }
 .chrome-button.is-accent {
   --ui-button-border: var(--line-strong);
-  --ui-button-bg: color-mix(in srgb, var(--panel) 82%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 52%, transparent);
   --ui-button-color: var(--text);
   font-weight: 600;
 }
