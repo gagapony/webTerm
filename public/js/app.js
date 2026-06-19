@@ -1413,9 +1413,9 @@ class WebTerm {
     if (!grid) return;
 
     const presets = [
-      { id: 'mountain', name: 'Mountain', url: '/backgrounds/preset-mountain.jpg' },
-      { id: 'ocean', name: 'Ocean', url: '/backgrounds/preset-ocean.jpg' },
-      { id: 'forest', name: 'Forest', url: '/backgrounds/preset-forest.jpg' }
+      { id: 'mountain', name: 'Mountain', url: '/backgrounds/preset-mountain.svg' },
+      { id: 'ocean', name: 'Ocean', url: '/backgrounds/preset-ocean.svg' },
+      { id: 'forest', name: 'Forest', url: '/backgrounds/preset-forest.svg' }
     ];
 
     grid.innerHTML = presets.map(preset => `

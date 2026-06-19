@@ -1284,12 +1284,13 @@ textarea:focus-visible {
 }
 .toolbar-button {
   --ui-button-border: var(--line-strong);
-  --ui-button-bg: color-mix(in srgb, var(--panel) 82%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 52%, transparent);
   --ui-button-color: var(--text);
   height: 32px;
   padding: 0 11px;
   border-radius: 6px;
   color: var(--ui-button-color);
+  backdrop-filter: blur(var(--blur-strength));
   transition:
     transform 120ms ease,
     border-color 140ms ease,
