@@ -523,7 +523,6 @@ textarea:focus-visible {
   padding: 7px 10px;
   margin: 8px 10px 0;
   border-radius: 10px;
-  border-bottom: 1px solid color-mix(in srgb, var(--bg-top) 60%, transparent);
   background:
     linear-gradient(
       180deg,
@@ -5146,6 +5145,9 @@ body.has-background .topbar {
     background-color 140ms ease,
     box-shadow 140ms ease;
 }
+.compact-field + .compact-field {
+  margin-top: 8px;
+}
 .compact-field:focus-within {
   border-color: color-mix(in srgb, var(--accent) 44%, transparent);
   background: color-mix(in srgb, var(--bg) 78%, transparent);
@@ -6652,6 +6654,7 @@ body.has-background .topbar {
   align-items: center;
   gap: 8px;
   padding: 20px;
+  margin-top: 10px;
   border: 2px dashed var(--line);
   border-radius: 10px;
   cursor: pointer;
