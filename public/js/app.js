@@ -531,7 +531,10 @@ class WebTerm {
     this.sessionPassword.value = '';
   }
 
-  createTerminal(sessionId, protocol) {
+  createTerminal(sessionId, protocol, label) {
+    if (!label) {
+      label = protocol.toUpperCase();
+    }
     const terminalTheme = this._resolveTheme();
 
     const terminal = new Terminal({
@@ -590,6 +593,7 @@ class WebTerm {
       terminal,
       fitAddon,
       protocol,
+      label,
       container,
     });
 
@@ -649,7 +653,7 @@ class WebTerm {
       tab.innerHTML = `
         <div class="session-tab-copy">
           <div class="session-tab-heading">
-            <span class="session-tab-title">${session.protocol.toUpperCase()}</span>
+            <span class="session-tab-title">${this.escapeHtml(session.label)}</span>
           </div>
           <div class="session-tab-meta">${id.substring(0, 8)}</div>
         </div>
