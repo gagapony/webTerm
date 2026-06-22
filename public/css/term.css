@@ -5459,37 +5459,6 @@ body.has-background .topbar {
 .settings-footer-actions .chrome-button.is-icon-only {
   flex: 0 0 32px;
 }
-@media (max-width: 1120px) {
-  .topbar-row-main {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .connection-topology {
-    order: 4;
-    width: 32px;
-    min-width: 0;
-    justify-content: center;
-  }
-  .toolbar-actions {
-    margin-left: auto;
-  }
-  .topology-insight-dialog {
-    width: min(920px, 100%);
-  }
-  .topology-insight-modal[data-page=requests] .topology-insight-dialog {
-    width: min(420px, 100%);
-  }
-  .topology-graph {
-    grid-template-columns: 1fr;
-  }
-  .topology-form-grid {
-    grid-template-columns: 1fr;
-  }
-  .topology-core-transport {
-    justify-items: start;
-  }
-}
 .onboarding-empty-state {
   position: absolute;
   inset: 0;
@@ -6062,50 +6031,6 @@ body.has-background .topbar {
 }
 .onboarding-topology-intro li strong {
   color: color-mix(in srgb, var(--text) 96%, transparent);
-}
-@media (max-width: 900px) {
-  .toolbar-actions .onboarding-help-button.is-icon-only {
-    width: 32px;
-    min-width: 32px;
-    flex: 0 0 32px;
-  }
-  .onboarding-topology-step-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 760px) {
-  .topology-insight-modal {
-    padding: 10px;
-  }
-  .topology-insight-dialog,
-  .topology-insight-modal[data-page=target-editor] .topology-insight-dialog,
-  .topology-insight-modal[data-page=core-editor] .topology-insight-dialog,
-  .topology-insight-modal[data-page=requests] .topology-insight-dialog {
-    width: 100%;
-    max-height: calc(100vh - 20px);
-  }
-  .topology-graph,
-  .topology-graph[data-ai-visible=true] {
-    min-width: 0;
-    grid-template-columns: minmax(0, 1fr);
-    align-items: stretch;
-    gap: 18px;
-    padding-bottom: 14px;
-  }
-  .topology-graph-column {
-    align-content: start;
-  }
-  .topology-column-add-shelf {
-    position: static;
-    inset: auto;
-    margin-top: 2px;
-  }
-  .topology-graph-links {
-    display: none;
-  }
-  .topology-confirm-actions {
-    justify-content: flex-end;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   .topology-graph-action.onboarding-topology-anchor,
