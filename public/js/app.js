@@ -792,6 +792,7 @@ class WebTerm {
 
       // Set form and connect
       this.selectProtocol(conn.protocol);
+      if (this.connectionName) this.connectionName.value = conn.name || '';
       this.sessionHost.value = conn.host || '';
       this.sessionPort.value = conn.port || '';
       this.sessionUsername.value = conn.username || '';
