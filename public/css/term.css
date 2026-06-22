@@ -1383,6 +1383,7 @@ textarea:focus-visible {
       color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 100%), transparent)),
     var(--bg);
   backdrop-filter: blur(var(--blur-strength));
+  border-radius: 10px;
   transition:
     filter 180ms ease,
     transform 180ms ease,
