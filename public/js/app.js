@@ -398,12 +398,32 @@ class WebTerm {
   }
 
   autoConnectLocal() {
+    const { cols, rows } = this._measureViewport();
+    this._pendingDims = { cols, rows };
     this.ws.send(JSON.stringify({
       type: 'create',
       protocol: 'local',
-      cols: 80,
-      rows: 24,
+      cols,
+      rows,
     }));
+  }
+
+  _measureViewport() {
+    const c = document.createElement('div');
+    c.style.cssText = 'width:100%;height:100%;position:absolute;visibility:hidden';
+    this.terminalViewport.appendChild(c);
+    const t = new Terminal({
+      fontFamily: '"MonaspiceAr NFM Medium", "MonaspiceAr NFM", monospace',
+      fontSize: 14, lineHeight: 1.0,
+    });
+    const f = new FitAddon.FitAddon();
+    t.loadAddon(f);
+    t.open(c);
+    f.fit();
+    const dims = { cols: t.cols, rows: t.rows };
+    t.dispose();
+    c.remove();
+    return dims;
   }
 
   handleWSMessage(message) {
@@ -492,11 +512,14 @@ class WebTerm {
   }
 
   createSessionFromModal() {
+    const { cols, rows } = this._measureViewport();
+    this._pendingDims = { cols, rows };
+
     const options = {
       type: 'create',
       protocol: this.selectedProtocol,
-      cols: 80,
-      rows: 24,
+      cols,
+      rows,
     };
 
     if (this.selectedProtocol === 'local') {
@@ -573,6 +596,26 @@ class WebTerm {
 
     terminal.open(container);
 
+    // PTY was created with measured dimensions (this._pendingDims).
+    // When fit() produces the same dimensions, skip the first resize
+    // to avoid a spurious SIGWINCH that breaks powerlevel10k prompt.
+    const pendingDims = this._pendingDims;
+    this._pendingDims = null;
+    let firstResize = true;
+
+    // Handle resize
+    terminal.onResize(({ cols, rows }) => {
+      if (firstResize) {
+        firstResize = false;
+        if (pendingDims && pendingDims.cols === cols && pendingDims.rows === rows) {
+          return; // PTY already has these exact dimensions — skip
+        }
+      }
+      if (this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({ type: 'resize', sessionId, cols, rows }));
+      }
+    });
+
     setTimeout(() => fitAddon.fit(), 100);
 
     // Store terminal
@@ -589,13 +632,6 @@ class WebTerm {
     terminal.onData((data) => {
       if (this.ws.readyState === WebSocket.OPEN) {
         this.ws.send(JSON.stringify({ type: 'input', sessionId, data }));
-      }
-    });
-
-    // Handle resize
-    terminal.onResize(({ cols, rows }) => {
-      if (this.ws.readyState === WebSocket.OPEN) {
-        this.ws.send(JSON.stringify({ type: 'resize', sessionId, cols, rows }));
       }
     });
 
