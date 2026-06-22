@@ -414,7 +414,7 @@ class WebTerm {
   handleWSMessage(message) {
     switch (message.type) {
       case 'created':
-        this.onSessionCreated(message.sessionId, message.protocol, message.shell);
+        this.onSessionCreated(message.sessionId, message.protocol);
         break;
       case 'output':
         this.onTerminalOutput(message.sessionId, message.data);
@@ -486,14 +486,8 @@ class WebTerm {
       btn.classList.toggle('is-active', btn.dataset.protocol === protocol);
     });
 
-    if (protocol === 'local') {
-      this.remoteFields.style.display = 'none';
-      this.localFields.style.display = 'block';
-    } else {
-      this.remoteFields.style.display = 'block';
-      this.localFields.style.display = 'none';
-      this.sessionPort.placeholder = protocol === 'ssh' ? '22' : '23';
-    }
+    this.remoteFields.style.display = 'block';
+    this.sessionPort.placeholder = protocol === 'ssh' ? '22' : '23';
   }
 
   createSessionFromModal() {
@@ -505,20 +499,13 @@ class WebTerm {
       protocol: this.selectedProtocol,
       cols,
       rows,
+      host: this.sessionHost.value,
+      port: parseInt(this.sessionPort.value) || (this.selectedProtocol === 'ssh' ? 22 : 23),
+      username: this.sessionUsername.value,
+      password: this.sessionPassword.value,
     };
 
-    if (this.selectedProtocol === 'local') {
-      if (this.sessionShell.value.trim()) {
-        options.shell = this.sessionShell.value.trim();
-      }
-    } else {
-      options.host = this.sessionHost.value;
-      options.port = parseInt(this.sessionPort.value) || (this.selectedProtocol === 'ssh' ? 22 : 23);
-      options.username = this.sessionUsername.value;
-      options.password = this.sessionPassword.value;
-    }
-
-    if (this.selectedProtocol !== 'local' && !options.host) {
+    if (!options.host) {
       alert('Host is required');
       return;
     }
@@ -527,18 +514,13 @@ class WebTerm {
     this.hideNewSessionModal();
   }
 
-  onSessionCreated(sessionId, protocol, shell) {
+  onSessionCreated(sessionId, protocol) {
     this.createTerminal(sessionId, protocol);
 
-    const host = this.sessionHost.value || 'local';
+    const host = this.sessionHost.value;
     this.connectionStartTime = new Date();
-    let target;
-    if (protocol === 'local') {
-      target = shell || 'Local Shell';
-    } else {
-      target = `${host}:${this.sessionPort.value || 22}`;
-    }
-    const protocolLabel = protocol === 'local' ? 'Local' : protocol === 'ssh' ? 'SSH' : 'Telnet';
+    const target = `${host}:${this.sessionPort.value || 22}`;
+    const protocolLabel = protocol === 'ssh' ? 'SSH' : 'Telnet';
     this.updateStatus('connected', { state: 'Connected', protocol: protocolLabel, target: target, time: this.formatTime(this.connectionStartTime) });
 
     // Clear form
@@ -749,13 +731,13 @@ class WebTerm {
     }
 
     this.savedConnList.innerHTML = connections.map(conn => {
-      const icon = conn.protocol === 'ssh' ? '🔒' : conn.protocol === 'telnet' ? '📡' : '💻';
+      const icon = conn.protocol === 'ssh' ? '🔒' : '📡';
       return `
         <div class="saved-connection-item" data-connection-id="${conn.id}">
           <div class="saved-connection-icon">${icon}</div>
           <div class="saved-connection-info">
             <div class="saved-connection-name">${this.escapeHtml(conn.name)}</div>
-            <div class="saved-connection-meta">${conn.protocol.toUpperCase()} • ${conn.host || 'local'}${conn.port ? ':' + conn.port : ''}</div>
+            <div class="saved-connection-meta">${conn.protocol.toUpperCase()} • ${conn.host || '-'}${conn.port ? ':' + conn.port : ''}</div>
           </div>
           <button class="saved-connection-delete" data-connection-id="${conn.id}" title="Delete">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
