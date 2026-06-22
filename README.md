@@ -1,12 +1,11 @@
 # WebTerm
 
-Web-based terminal service with SSH, Telnet, and local shell support.
+Web-based terminal service with SSH and Telnet support.
 
 ## Features
 
 - **SSH**: Connect to remote servers with password or key authentication
 - **Telnet**: Connect to legacy devices
-- **Local Shell**: Start a local bash/zsh session
 - **Session Management**: Multiple terminal sessions with tabs
 - **Log Recording**: Record terminal sessions in asciinema format
 - **Connection Manager**: Save and manage connection configurations
@@ -77,7 +76,7 @@ webTerm/
 │   ├── middleware/          # Auth & session middleware
 │   ├── routes/             # API & WebSocket routes
 │   ├── services/           # Business logic
-│   ├── protocols/          # SSH, Telnet, Local implementations
+│   ├── protocols/          # SSH, Telnet implementations
 │   └── utils/              # Logger, crypto utilities
 ├── public/
 │   ├── index.html          # Main HTML
