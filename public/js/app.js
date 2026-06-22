@@ -492,7 +492,6 @@ class WebTerm {
 
   createSessionFromModal() {
     const { cols, rows } = this._measureViewport();
-    this._pendingDims = { cols, rows };
 
     const options = {
       type: 'create',
@@ -577,21 +576,13 @@ class WebTerm {
 
     terminal.open(container);
 
-    // PTY was created with measured dimensions (this._pendingDims).
-    // When fit() produces the same dimensions, skip the first resize
-    // to avoid a spurious SIGWINCH that breaks powerlevel10k prompt.
-    const pendingDims = this._pendingDims;
-    this._pendingDims = null;
-    let firstResize = true;
-
-    // Handle resize
+    // Handle resize — forward every resize to the backend so the remote
+    // PTY stays in sync with xterm.js. The first resize after fit() is
+    // intentional: SSH/Telnet open with the create-message cols/rows, but
+    // forwarding the first onResize guarantees correctness even if the
+    // server ignored channel-open dimensions. Linux's TIOCSWINSZ is a
+    // no-op when the size is unchanged, so this is safe.
     terminal.onResize(({ cols, rows }) => {
-      if (firstResize) {
-        firstResize = false;
-        if (pendingDims && pendingDims.cols === cols && pendingDims.rows === rows) {
-          return; // PTY already has these exact dimensions — skip
-        }
-      }
       if (this.ws.readyState === WebSocket.OPEN) {
         this.ws.send(JSON.stringify({ type: 'resize', sessionId, cols, rows }));
       }

@@ -6,6 +6,8 @@ export interface TelnetOptions {
   host: string;
   port: number;
   timeout?: number;
+  cols?: number;
+  rows?: number;
 }
 
 export class TelnetSession extends EventEmitter {
@@ -38,6 +40,12 @@ export class TelnetSession extends EventEmitter {
 
         // Send initial telnet negotiations
         this.sendNegotiation();
+
+        // Send initial window size so the server knows our dimensions
+        // before any output is rendered.
+        if (options.cols && options.rows) {
+          this.resize(options.cols, options.rows);
+        }
 
         resolve();
       });
