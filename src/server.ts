@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express from 'express';
+import express, { Response } from 'express';
 import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 import path from 'path';
@@ -25,8 +25,18 @@ async function main() {
   app.use(express.urlencoded({ extended: true }));
   app.use(sessionMiddleware);
 
-  // Static files
-  app.use(express.static(path.join(process.cwd(), 'public')));
+  // Static files — serve with Cache-Control: no-cache so browsers always
+  // revalidate via ETag/Last-Modified. Prevents stale cached JS/HTML from
+  // running old code after a deploy (e.g. the autoConnectLocal regression).
+  const staticOpts = {
+    etag: true,
+    lastModified: true,
+    maxAge: 0,
+    setHeaders: (res: Response) => {
+      res.setHeader('Cache-Control', 'no-cache');
+    },
+  };
+  app.use(express.static(path.join(process.cwd(), 'public'), staticOpts));
 
   // API routes
   app.use('/api', apiRoutes);
