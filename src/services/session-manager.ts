@@ -2,14 +2,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { WebSocket } from 'ws';
 import { SSHSession, SSHOptions } from '../protocols/ssh';
 import { TelnetSession, TelnetOptions } from '../protocols/telnet';
-import { LocalSession, LocalOptions } from '../protocols/local';
 import { store } from './connection-store';
 import { logger } from '../utils/logger';
 
 interface ActiveSession {
   id: string;
-  protocol: 'ssh' | 'telnet' | 'local';
-  session: SSHSession | TelnetSession | LocalSession;
+  protocol: 'ssh' | 'telnet';
+  session: SSHSession | TelnetSession;
   ws: WebSocket;
   cols: number;
   rows: number;
@@ -20,14 +19,14 @@ class SessionManager {
 
   async createSession(
     ws: WebSocket,
-    protocol: 'ssh' | 'telnet' | 'local',
+    protocol: 'ssh' | 'telnet',
     options: any
-  ): Promise<{ sessionId: string; shell?: string }> {
+  ): Promise<{ sessionId: string }> {
     const sessionId = uuidv4();
     const cols = options.cols || 80;
     const rows = options.rows || 24;
 
-    let session: SSHSession | TelnetSession | LocalSession;
+    let session: SSHSession | TelnetSession;
 
     try {
       logger.info(`Creating ${protocol} session...`);
@@ -41,15 +40,6 @@ class SessionManager {
         case 'telnet':
           session = new TelnetSession();
           await (session as TelnetSession).connect(options as TelnetOptions);
-          break;
-
-        case 'local':
-          session = new LocalSession();
-          (session as LocalSession).spawn({
-            ...options as LocalOptions,
-            cols,
-            rows,
-          });
           break;
 
         default:
@@ -105,11 +95,7 @@ class SessionManager {
 
       logger.info(`Session created: ${sessionId} (${protocol})`);
 
-      const result: { sessionId: string; shell?: string } = { sessionId };
-      if (protocol === 'local') {
-        result.shell = (session as LocalSession).getShell();
-      }
-      return result;
+      return { sessionId };
     } catch (err) {
       logger.error(`Failed to create session:`, err);
       // Send error to client

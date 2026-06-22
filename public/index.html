@@ -182,7 +182,7 @@
         <div class="settings-copy">
           <span class="settings-kicker">SESSION</span>
           <h2 class="settings-title">New Terminal Session</h2>
-          <p class="settings-subtitle">Create a new SSH, Telnet, or local shell connection.</p>
+          <p class="settings-subtitle">Create a new SSH or Telnet connection.</p>
         </div>
         <button class="settings-close-button" id="newSessionClose">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -204,7 +204,6 @@
             <div class="workspace-switcher">
               <button class="workspace-chip is-active" data-protocol="ssh">SSH</button>
               <button class="workspace-chip" data-protocol="telnet">Telnet</button>
-              <button class="workspace-chip" data-protocol="local">Local</button>
             </div>
           </div>
           <div id="remoteFields">
@@ -223,12 +222,6 @@
             <div class="compact-field" id="passwordField">
               <label class="toolbar-label">PASSWORD</label>
               <input type="password" class="toolbar-input" id="sessionPassword" placeholder="••••••••" autocomplete="off">
-            </div>
-          </div>
-          <div id="localFields" style="display: none;">
-            <div class="compact-field">
-              <label class="toolbar-label">SHELL</label>
-              <input type="text" class="toolbar-input" id="sessionShell" placeholder="Auto-detect" autocomplete="off">
             </div>
           </div>
         </div>

@@ -172,12 +172,10 @@ class WebTerm {
     // Form fields
     this.connectionName = document.getElementById('connectionName');
     this.remoteFields = document.getElementById('remoteFields');
-    this.localFields = document.getElementById('localFields');
     this.sessionHost = document.getElementById('sessionHost');
     this.sessionPort = document.getElementById('sessionPort');
     this.sessionUsername = document.getElementById('sessionUsername');
     this.sessionPassword = document.getElementById('sessionPassword');
-    this.sessionShell = document.getElementById('sessionShell');
 
     // Protocol buttons
     this.protocolBtns = document.querySelectorAll('[data-protocol]');
@@ -371,8 +369,6 @@ class WebTerm {
     this.ws.onopen = () => {
       console.log('WebSocket connected');
       this.updateStatus('connected', { state: 'Connected', protocol: 'WebSocket', target: 'Ready' });
-      // Auto-connect local shell
-      this.autoConnectLocal();
     };
 
     this.ws.onmessage = (event) => {
@@ -397,19 +393,28 @@ class WebTerm {
     };
   }
 
-  autoConnectLocal() {
-    this.ws.send(JSON.stringify({
-      type: 'create',
-      protocol: 'local',
-      cols: 80,
-      rows: 24,
-    }));
+  _measureViewport() {
+    const c = document.createElement('div');
+    c.style.cssText = 'width:100%;height:100%;position:absolute;visibility:hidden';
+    this.terminalViewport.appendChild(c);
+    const t = new Terminal({
+      fontFamily: '"MonaspiceAr NFM Medium", "MonaspiceAr NFM", monospace',
+      fontSize: 14, lineHeight: 1.0,
+    });
+    const f = new FitAddon.FitAddon();
+    t.loadAddon(f);
+    t.open(c);
+    f.fit();
+    const dims = { cols: t.cols, rows: t.rows };
+    t.dispose();
+    c.remove();
+    return dims;
   }
 
   handleWSMessage(message) {
     switch (message.type) {
       case 'created':
-        this.onSessionCreated(message.sessionId, message.protocol, message.shell);
+        this.onSessionCreated(message.sessionId, message.protocol);
         break;
       case 'output':
         this.onTerminalOutput(message.sessionId, message.data);
@@ -481,36 +486,25 @@ class WebTerm {
       btn.classList.toggle('is-active', btn.dataset.protocol === protocol);
     });
 
-    if (protocol === 'local') {
-      this.remoteFields.style.display = 'none';
-      this.localFields.style.display = 'block';
-    } else {
-      this.remoteFields.style.display = 'block';
-      this.localFields.style.display = 'none';
-      this.sessionPort.placeholder = protocol === 'ssh' ? '22' : '23';
-    }
+    this.remoteFields.style.display = 'block';
+    this.sessionPort.placeholder = protocol === 'ssh' ? '22' : '23';
   }
 
   createSessionFromModal() {
+    const { cols, rows } = this._measureViewport();
+
     const options = {
       type: 'create',
       protocol: this.selectedProtocol,
-      cols: 80,
-      rows: 24,
+      cols,
+      rows,
+      host: this.sessionHost.value,
+      port: parseInt(this.sessionPort.value) || (this.selectedProtocol === 'ssh' ? 22 : 23),
+      username: this.sessionUsername.value,
+      password: this.sessionPassword.value,
     };
 
-    if (this.selectedProtocol === 'local') {
-      if (this.sessionShell.value.trim()) {
-        options.shell = this.sessionShell.value.trim();
-      }
-    } else {
-      options.host = this.sessionHost.value;
-      options.port = parseInt(this.sessionPort.value) || (this.selectedProtocol === 'ssh' ? 22 : 23);
-      options.username = this.sessionUsername.value;
-      options.password = this.sessionPassword.value;
-    }
-
-    if (this.selectedProtocol !== 'local' && !options.host) {
+    if (!options.host) {
       alert('Host is required');
       return;
     }
@@ -519,18 +513,24 @@ class WebTerm {
     this.hideNewSessionModal();
   }
 
-  onSessionCreated(sessionId, protocol, shell) {
-    this.createTerminal(sessionId, protocol);
+  onSessionCreated(sessionId, protocol) {
+    // Capture form values BEFORE clearing the form.
+    const name = (this.connectionName?.value || '').trim();
+    const host = this.sessionHost.value.trim();
+    const username = this.sessionUsername.value.trim();
 
-    const host = this.sessionHost.value || 'local';
+    // Label resolution priority: name → user@host → host → protocol
+    const label =
+      name ||
+      (username && host ? `${username}@${host}` : '') ||
+      host ||
+      protocol.toUpperCase();
+
+    this.createTerminal(sessionId, protocol, label);
+
     this.connectionStartTime = new Date();
-    let target;
-    if (protocol === 'local') {
-      target = shell || 'Local Shell';
-    } else {
-      target = `${host}:${this.sessionPort.value || 22}`;
-    }
-    const protocolLabel = protocol === 'local' ? 'Local' : protocol === 'ssh' ? 'SSH' : 'Telnet';
+    const target = `${host}:${this.sessionPort.value || 22}`;
+    const protocolLabel = protocol === 'ssh' ? 'SSH' : 'Telnet';
     this.updateStatus('connected', { state: 'Connected', protocol: protocolLabel, target: target, time: this.formatTime(this.connectionStartTime) });
 
     // Clear form
@@ -541,7 +541,10 @@ class WebTerm {
     this.sessionPassword.value = '';
   }
 
-  createTerminal(sessionId, protocol) {
+  createTerminal(sessionId, protocol, label) {
+    if (!label) {
+      label = protocol.toUpperCase();
+    }
     const terminalTheme = this._resolveTheme();
 
     const terminal = new Terminal({
@@ -573,6 +576,18 @@ class WebTerm {
 
     terminal.open(container);
 
+    // Handle resize — forward every resize to the backend so the remote
+    // PTY stays in sync with xterm.js. The first resize after fit() is
+    // intentional: SSH/Telnet open with the create-message cols/rows, but
+    // forwarding the first onResize guarantees correctness even if the
+    // server ignored channel-open dimensions. Linux's TIOCSWINSZ is a
+    // no-op when the size is unchanged, so this is safe.
+    terminal.onResize(({ cols, rows }) => {
+      if (this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify({ type: 'resize', sessionId, cols, rows }));
+      }
+    });
+
     setTimeout(() => fitAddon.fit(), 100);
 
     // Store terminal
@@ -580,6 +595,7 @@ class WebTerm {
       terminal,
       fitAddon,
       protocol,
+      label,
       container,
     });
 
@@ -589,13 +605,6 @@ class WebTerm {
     terminal.onData((data) => {
       if (this.ws.readyState === WebSocket.OPEN) {
         this.ws.send(JSON.stringify({ type: 'input', sessionId, data }));
-      }
-    });
-
-    // Handle resize
-    terminal.onResize(({ cols, rows }) => {
-      if (this.ws.readyState === WebSocket.OPEN) {
-        this.ws.send(JSON.stringify({ type: 'resize', sessionId, cols, rows }));
       }
     });
 
@@ -646,7 +655,7 @@ class WebTerm {
       tab.innerHTML = `
         <div class="session-tab-copy">
           <div class="session-tab-heading">
-            <span class="session-tab-title">${session.protocol.toUpperCase()}</span>
+            <span class="session-tab-title">${this.escapeHtml(session.label)}</span>
           </div>
           <div class="session-tab-meta">${id.substring(0, 8)}</div>
         </div>
@@ -728,13 +737,13 @@ class WebTerm {
     }
 
     this.savedConnList.innerHTML = connections.map(conn => {
-      const icon = conn.protocol === 'ssh' ? '🔒' : conn.protocol === 'telnet' ? '📡' : '💻';
+      const icon = conn.protocol === 'ssh' ? '🔒' : '📡';
       return `
         <div class="saved-connection-item" data-connection-id="${conn.id}">
           <div class="saved-connection-icon">${icon}</div>
           <div class="saved-connection-info">
             <div class="saved-connection-name">${this.escapeHtml(conn.name)}</div>
-            <div class="saved-connection-meta">${conn.protocol.toUpperCase()} • ${conn.host || 'local'}${conn.port ? ':' + conn.port : ''}</div>
+            <div class="saved-connection-meta">${conn.protocol.toUpperCase()} • ${conn.host || '-'}${conn.port ? ':' + conn.port : ''}</div>
           </div>
           <button class="saved-connection-delete" data-connection-id="${conn.id}" title="Delete">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -774,6 +783,7 @@ class WebTerm {
 
       // Set form and connect
       this.selectProtocol(conn.protocol);
+      if (this.connectionName) this.connectionName.value = conn.name || '';
       this.sessionHost.value = conn.host || '';
       this.sessionPort.value = conn.port || '';
       this.sessionUsername.value = conn.username || '';

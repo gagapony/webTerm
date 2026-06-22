@@ -9,6 +9,8 @@ export interface SSHOptions {
   password?: string;
   privateKey?: string;
   passphrase?: string;
+  cols?: number;
+  rows?: number;
 }
 
 export class SSHSession extends EventEmitter {
@@ -48,8 +50,8 @@ export class SSHSession extends EventEmitter {
         this.client.shell(
           {
             term: 'xterm-256color',
-            cols: 80,
-            rows: 24,
+            cols: options.cols || 80,
+            rows: options.rows || 24,
           },
           (err, stream) => {
             if (err) {
