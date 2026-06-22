@@ -1,4 +1,4 @@
-export type Protocol = 'ssh' | 'telnet' | 'local';
+export type Protocol = 'ssh' | 'telnet';
 
 export interface Connection {
   id: number;
