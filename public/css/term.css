@@ -5490,72 +5490,6 @@ body.has-background .topbar {
     justify-items: start;
   }
 }
-@media (max-width: 640px) {
-  .brand-title {
-    font-size: 11px;
-  }
-  .workspace-switcher {
-    width: 100%;
-  }
-  .workspace-chip {
-    flex: 1 1 0;
-  }
-  .workspace-chip.is-icon-only {
-    flex: 0 0 30px;
-  }
-  .settings-header {
-    padding: 16px 16px 12px;
-  }
-  .settings-body {
-    padding: 16px;
-  }
-  .settings-footer {
-    padding: 12px 16px 16px;
-  }
-  .topology-insight-modal {
-    padding: 14px;
-  }
-  .topology-insight-header {
-    padding: 14px;
-  }
-  .topology-insight-body {
-    padding: 12px 14px 14px;
-  }
-  .topology-graph {
-    grid-template-columns: 1fr;
-  }
-  .topology-core-transport {
-    justify-items: start;
-  }
-  .topology-insight-row {
-    grid-template-columns: 1fr;
-    gap: 4px;
-  }
-  .core-links-header,
-  .core-settings-actions {
-    align-items: stretch;
-    flex-direction: column;
-  }
-  .core-links-toolbar,
-  .core-settings-actions {
-    justify-content: flex-start;
-  }
-  .core-link-fields {
-    grid-template-columns: 1fr;
-  }
-  .topology-inline-fields,
-  .topology-core-inline-fields {
-    grid-template-columns: 1fr;
-  }
-  .topology-inline-actions,
-  .topology-core-inline-actions {
-    justify-content: flex-start;
-  }
-  .history-banner {
-    gap: 6px;
-    padding: 6px;
-  }
-}
 .onboarding-empty-state {
   position: absolute;
   inset: 0;
@@ -6137,28 +6071,6 @@ body.has-background .topbar {
   }
   .onboarding-topology-step-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 640px) {
-  .onboarding-topology-callout,
-  .onboarding-main-callout {
-    display: none;
-  }
-  .onboarding-empty-card {
-    padding: 20px;
-  }
-  .onboarding-panel-root {
-    padding: 14px;
-  }
-  .onboarding-panel {
-    max-height: 92vh;
-    padding: 16px;
-  }
-  .onboarding-checklist-body {
-    padding-left: 14px;
-  }
-  .onboarding-topology-step-list {
-    grid-template-columns: 1fr;
   }
 }
 @media (max-width: 760px) {
