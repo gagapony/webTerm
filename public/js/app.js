@@ -172,12 +172,10 @@ class WebTerm {
     // Form fields
     this.connectionName = document.getElementById('connectionName');
     this.remoteFields = document.getElementById('remoteFields');
-    this.localFields = document.getElementById('localFields');
     this.sessionHost = document.getElementById('sessionHost');
     this.sessionPort = document.getElementById('sessionPort');
     this.sessionUsername = document.getElementById('sessionUsername');
     this.sessionPassword = document.getElementById('sessionPassword');
-    this.sessionShell = document.getElementById('sessionShell');
 
     // Protocol buttons
     this.protocolBtns = document.querySelectorAll('[data-protocol]');
@@ -371,8 +369,6 @@ class WebTerm {
     this.ws.onopen = () => {
       console.log('WebSocket connected');
       this.updateStatus('connected', { state: 'Connected', protocol: 'WebSocket', target: 'Ready' });
-      // Auto-connect local shell
-      this.autoConnectLocal();
     };
 
     this.ws.onmessage = (event) => {
@@ -395,17 +391,6 @@ class WebTerm {
     this.ws.onerror = (err) => {
       console.error('WebSocket error:', err);
     };
-  }
-
-  autoConnectLocal() {
-    const { cols, rows } = this._measureViewport();
-    this._pendingDims = { cols, rows };
-    this.ws.send(JSON.stringify({
-      type: 'create',
-      protocol: 'local',
-      cols,
-      rows,
-    }));
   }
 
   _measureViewport() {
