@@ -18,6 +18,7 @@ class ConnectionStore {
     this.db = new Database(config.database.path);
     this.db.pragma('journal_mode = WAL');
     this.initialize();
+    this.migrateRemoveLocalConnections();
   }
 
   private initialize(): void {
@@ -32,7 +33,7 @@ class ConnectionStore {
       CREATE TABLE IF NOT EXISTS connections (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        protocol TEXT NOT NULL CHECK(protocol IN ('ssh', 'telnet', 'local')),
+        protocol TEXT NOT NULL,
         host TEXT,
         port INTEGER,
         username TEXT,
@@ -59,6 +60,36 @@ class ConnectionStore {
       CREATE INDEX IF NOT EXISTS idx_sessions_connection ON sessions(connection_id);
       CREATE INDEX IF NOT EXISTS idx_sessions_started ON sessions(started_at);
     `);
+  }
+
+  private migrateRemoveLocalConnections(): void {
+    // Delete any existing local protocol connections
+    this.db.prepare('DELETE FROM connections WHERE protocol = ?').run('local');
+
+    // If the old CHECK constraint exists, rebuild the table without it.
+    const tableInfo = this.db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='connections'").get() as { sql: string } | undefined;
+
+    if (tableInfo && tableInfo.sql.includes("CHECK(protocol IN")) {
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS connections_new (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          protocol TEXT NOT NULL,
+          host TEXT,
+          port INTEGER,
+          username TEXT,
+          password_encrypted TEXT,
+          ssh_key_path TEXT,
+          ssh_key_passphrase TEXT,
+          options TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+        INSERT INTO connections_new SELECT * FROM connections;
+        DROP TABLE connections;
+        ALTER TABLE connections_new RENAME TO connections;
+      `);
+    }
   }
 
   // User operations
