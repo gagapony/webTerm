@@ -9,12 +9,11 @@ interface WSMessage {
   data?: string;
   cols?: number;
   rows?: number;
-  protocol?: 'ssh' | 'telnet' | 'local';
+  protocol?: 'ssh' | 'telnet';
   host?: string;
   port?: number;
   username?: string;
   password?: string;
-  shell?: string;
 }
 
 export function setupWebSocket(wss: WebSocketServer): void {
@@ -64,20 +63,15 @@ async function handleMessage(ws: WebSocket, message: WSMessage): Promise<void> {
           port: message.port,
           username: message.username,
           password: message.password,
-          shell: message.shell,
           cols: message.cols || 80,
           rows: message.rows || 24,
         });
 
-        const response: any = {
+        ws.send(JSON.stringify({
           type: 'created',
           sessionId: result.sessionId,
           protocol: message.protocol,
-        };
-        if (result.shell) {
-          response.shell = result.shell;
-        }
-        ws.send(JSON.stringify(response));
+        }));
       } catch (err) {
         ws.send(JSON.stringify({
           type: 'error',
