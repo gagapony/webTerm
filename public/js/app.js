@@ -515,9 +515,20 @@ class WebTerm {
   }
 
   onSessionCreated(sessionId, protocol) {
-    this.createTerminal(sessionId, protocol);
+    // Capture form values BEFORE clearing the form.
+    const name = (this.connectionName?.value || '').trim();
+    const host = this.sessionHost.value.trim();
+    const username = this.sessionUsername.value.trim();
 
-    const host = this.sessionHost.value;
+    // Label resolution priority: name → user@host → host → protocol
+    const label =
+      name ||
+      (username && host ? `${username}@${host}` : '') ||
+      host ||
+      protocol.toUpperCase();
+
+    this.createTerminal(sessionId, protocol, label);
+
     this.connectionStartTime = new Date();
     const target = `${host}:${this.sessionPort.value || 22}`;
     const protocolLabel = protocol === 'ssh' ? 'SSH' : 'Telnet';
