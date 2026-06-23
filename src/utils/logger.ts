@@ -42,4 +42,11 @@ class Logger {
   }
 }
 
-export const logger = new Logger(LogLevel.DEBUG);
+const ENV_LEVEL = (process.env.LOG_LEVEL || 'debug').toUpperCase();
+const LEVEL_MAP: Record<string, LogLevel> = {
+  DEBUG: LogLevel.DEBUG,
+  INFO: LogLevel.INFO,
+  WARN: LogLevel.WARN,
+  ERROR: LogLevel.ERROR,
+};
+export const logger = new Logger(LEVEL_MAP[ENV_LEVEL] ?? LogLevel.DEBUG);
