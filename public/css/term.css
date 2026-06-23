@@ -1283,7 +1283,7 @@ textarea:focus-visible {
 }
 .toolbar-button {
   --ui-button-border: var(--line-strong);
-  --ui-button-bg: color-mix(in srgb, var(--panel) 52%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 72%, transparent);
   --ui-button-color: var(--text);
   height: 32px;
   padding: 0 11px;
@@ -1310,13 +1310,13 @@ textarea:focus-visible {
     border-color 140ms ease;
 }
 .chrome-button:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--panel) 72%, transparent);
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
 }
 .ui-button.is-primary,
 .toolbar-button.is-primary,
 .chrome-button.is-primary {
   --ui-button-border: var(--line-strong);
-  --ui-button-bg: color-mix(in srgb, var(--panel) 52%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 72%, transparent);
   --ui-button-color: var(--text);
   font-weight: 600;
 }
@@ -1324,7 +1324,7 @@ textarea:focus-visible {
 .toolbar-button.is-secondary,
 .chrome-button.is-secondary {
   --ui-button-border: var(--line-strong);
-  --ui-button-bg: color-mix(in srgb, var(--panel) 52%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 72%, transparent);
   --ui-button-color: var(--text);
 }
 .ui-button.is-subtle,
@@ -1343,7 +1343,7 @@ textarea:focus-visible {
 }
 .chrome-button.is-accent {
   --ui-button-border: var(--line-strong);
-  --ui-button-bg: color-mix(in srgb, var(--panel) 52%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) 72%, transparent);
   --ui-button-color: var(--text);
   font-weight: 600;
 }
@@ -5423,12 +5423,6 @@ body.has-background .topbar {
   gap: 16px;
   padding: 14px 20px 18px;
   border-top: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100%), transparent),
-      color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 98%), transparent));
-  backdrop-filter: blur(var(--blur-strength));
 }
 .settings-footer[hidden] {
   display: none;
