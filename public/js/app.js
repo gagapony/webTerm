@@ -1191,15 +1191,12 @@ class WebTerm {
     const confirm = document.getElementById('confirmPassword')?.value;
     const errEl = document.getElementById('passwordError');
 
-    // No password fields filled — skip silently
-    if (!current && !newPwd && !confirm) return true;
+    // Only attempt password change when ALL fields are filled.
+    // If any field is empty (e.g. browser autofill on just currentPassword),
+    // treat as "no password change intended" and skip silently.
+    if (!current || !newPwd || !confirm) return true;
 
     if (errEl) errEl.style.display = 'none';
-
-    if (!current || !newPwd || !confirm) {
-      if (errEl) { errEl.textContent = 'All fields are required'; errEl.style.display = 'block'; }
-      return false;
-    }
 
     if (newPwd.length < 6) {
       if (errEl) { errEl.textContent = 'New password must be at least 6 characters'; errEl.style.display = 'block'; }

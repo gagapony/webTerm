@@ -5424,6 +5424,10 @@ body.has-background .topbar {
   padding: 14px 20px 18px;
   border-top: 1px solid color-mix(in srgb, var(--line) 10%, transparent);
 }
+.settings-footer-actions .chrome-button:not(.is-primary):not(.is-icon-only):not(.is-danger) {
+  --ui-button-border: transparent;
+  --ui-button-bg: color-mix(in srgb, var(--panel) calc(var(--terminal-opacity) * 85%), transparent);
+}
 .settings-footer[hidden] {
   display: none;
 }
