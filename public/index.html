@@ -31,9 +31,9 @@
     .toolbar-button.is-icon-only { width: 32px; min-width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
 
     /* Login */
-    .login-overlay { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(20px); }
+    .login-overlay { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100%), transparent); backdrop-filter: blur(var(--blur-strength)); }
     .login-overlay[hidden] { display: none; }
-    .login-card { width: min(400px, 90%); padding: 32px; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 20px; background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(10, 16, 30, 0.98)); box-shadow: 0 24px 64px rgba(2, 6, 23, 0.6); }
+    .login-card { width: min(400px, 90%); padding: 32px; border: 1px solid var(--line); border-radius: 20px; background: linear-gradient(180deg, color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100%), transparent), color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 98%), transparent)); backdrop-filter: blur(var(--blur-strength)); box-shadow: 0 24px 64px var(--shadow); }
     .login-card h1 { margin: 0 0 8px; font-size: 24px; font-weight: 700; color: var(--text); }
     .login-card p { margin: 0 0 24px; color: var(--muted); font-size: 13px; }
     .login-card .compact-field { margin-bottom: 16px; }
