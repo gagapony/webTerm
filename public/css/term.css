@@ -1283,7 +1283,7 @@ textarea:focus-visible {
 }
 .toolbar-button {
   --ui-button-border: var(--line-strong);
-  --ui-button-bg: color-mix(in srgb, var(--panel) 72%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) calc(var(--terminal-opacity) * 85%), transparent);
   --ui-button-color: var(--text);
   height: 32px;
   padding: 0 11px;
@@ -1310,13 +1310,13 @@ textarea:focus-visible {
     border-color 140ms ease;
 }
 .chrome-button:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  background: color-mix(in srgb, var(--panel) calc(var(--terminal-opacity) * 85% + 16%), transparent);
 }
 .ui-button.is-primary,
 .toolbar-button.is-primary,
 .chrome-button.is-primary {
   --ui-button-border: var(--line-strong);
-  --ui-button-bg: color-mix(in srgb, var(--panel) 72%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) calc(var(--terminal-opacity) * 85%), transparent);
   --ui-button-color: var(--text);
   font-weight: 600;
 }
@@ -1324,7 +1324,7 @@ textarea:focus-visible {
 .toolbar-button.is-secondary,
 .chrome-button.is-secondary {
   --ui-button-border: var(--line-strong);
-  --ui-button-bg: color-mix(in srgb, var(--panel) 72%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) calc(var(--terminal-opacity) * 85%), transparent);
   --ui-button-color: var(--text);
 }
 .ui-button.is-subtle,
@@ -1343,7 +1343,7 @@ textarea:focus-visible {
 }
 .chrome-button.is-accent {
   --ui-button-border: var(--line-strong);
-  --ui-button-bg: color-mix(in srgb, var(--panel) 72%, transparent);
+  --ui-button-bg: color-mix(in srgb, var(--panel) calc(var(--terminal-opacity) * 85%), transparent);
   --ui-button-color: var(--text);
   font-weight: 600;
 }
@@ -1501,7 +1501,7 @@ textarea:focus-visible {
       180deg,
       color-mix(in srgb, var(--accent) 56%, transparent),
       color-mix(in srgb, var(--muted) 28%, transparent)),
-    color-mix(in srgb, var(--panel) 72%, transparent);
+    color-mix(in srgb, var(--panel) calc(var(--terminal-opacity) * 85%), transparent);
   box-shadow: inset 1px 0 0 color-mix(in srgb, var(--text) 10%, transparent), 0 12px 28px color-mix(in srgb, var(--accent-2) 12%, transparent);
 }
 .utility-rail-spine:focus-visible {
@@ -1537,7 +1537,7 @@ textarea:focus-visible {
       180deg,
       color-mix(in srgb, var(--accent-2) 28%, transparent),
       color-mix(in srgb, var(--panel-2) 58%, transparent)),
-    color-mix(in srgb, var(--panel) 72%, transparent);
+    color-mix(in srgb, var(--panel) calc(var(--terminal-opacity) * 85%), transparent);
   box-shadow: inset 1px 0 0 color-mix(in srgb, var(--text) 8%, transparent), 0 12px 28px var(--shadow);
   transition:
     width 140ms ease,
