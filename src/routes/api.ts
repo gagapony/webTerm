@@ -61,6 +61,18 @@ router.get('/sessions', requireAuth, (req: Request, res: Response) => {
   res.json(sessions);
 });
 
+// Settings routes — GET is public (UI preferences, no sensitive data),
+// PUT requires auth so only logged-in admin can change them.
+router.get('/settings', (req: Request, res: Response) => {
+  const settings = store.getSettings();
+  res.json(settings || {});
+});
+
+router.put('/settings', requireAuth, (req: Request, res: Response) => {
+  store.saveSettings(req.body);
+  res.json({ success: true });
+});
+
 // Recording routes
 router.get('/recordings', requireAuth, (req: Request, res: Response) => {
   const logDir = config.logs.directory;

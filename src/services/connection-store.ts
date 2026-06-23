@@ -59,6 +59,12 @@ class ConnectionStore {
 
       CREATE INDEX IF NOT EXISTS idx_sessions_connection ON sessions(connection_id);
       CREATE INDEX IF NOT EXISTS idx_sessions_started ON sessions(started_at);
+
+      CREATE TABLE IF NOT EXISTS settings (
+        key   TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
     `);
   }
 
@@ -217,6 +223,20 @@ class ConnectionStore {
     `);
 
     stmt.run(status, logPath || null, id);
+  }
+
+  // Settings operations
+  getSettings(): any | null {
+    const row = this.db.prepare('SELECT value FROM settings WHERE key = ?').get('app') as { value: string } | undefined;
+    return row ? JSON.parse(row.value) : null;
+  }
+
+  saveSettings(settings: any): void {
+    const json = JSON.stringify(settings);
+    this.db.prepare(`
+      INSERT INTO settings (key, value, updated_at) VALUES ('app', ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
+    `).run(json);
   }
 
   close(): void {

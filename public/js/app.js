@@ -1007,104 +1007,127 @@ class WebTerm {
     }
   }
 
-  loadSettings() {
-    const saved = localStorage.getItem('webterm-settings');
-    if (saved) {
-      const settings = JSON.parse(saved);
+  async loadSettings() {
+    try {
+      const response = await fetch('/api/settings');
+      if (!response.ok) return;
+      let settings = await response.json();
 
-      // Load saved themes (backward compatible)
-      if (settings.themes) {
-        this.savedThemes = settings.themes;
-      } else if (settings.customColors) {
-        // Migrate old format
-        this.savedThemes = {
-          'custom-legacy': {
-            name: 'Legacy Custom Theme',
-            colors: settings.customColors
-          }
-        };
-      } else {
-        this.savedThemes = {};
-      }
-
-      // Apply theme
-      const themeToApply = settings.currentTheme || settings.theme || 'catppuccin-mocha';
-      this.currentTheme = themeToApply;
-
-      // Check if it's a saved custom theme
-      if (themeToApply.startsWith('custom-') && this.savedThemes[themeToApply]) {
-        const customTheme = this.savedThemes[themeToApply];
-        this.applyCustomThemeFromColors(customTheme.colors);
-        this.customThemeColors = customTheme.colors;
-
-        // Update color pickers
-        this.updateCustomColorPickers(customTheme.colors);
-
-        // Show custom section
-        const customThemeSection = document.querySelector('.custom-theme-section');
-        if (customThemeSection) {
-          customThemeSection.hidden = false;
+      // Migration: if server has no settings but localStorage does, upload then clear
+      if (!settings || Object.keys(settings).length === 0) {
+        const saved = localStorage.getItem('webterm-settings');
+        if (saved) {
+          settings = JSON.parse(saved);
+          await fetch('/api/settings', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(settings),
+          });
+          localStorage.removeItem('webterm-settings');
+          log.info('Settings migrated from localStorage to server');
+        } else {
+          return;
         }
-
-        // Update custom theme dropdown if exists
-        this.updateCustomThemeDropdown();
-      } else if (themeToApply === 'custom') {
-        // Legacy custom theme handling
-        if (settings.customColors) {
-          this.customThemeColors = settings.customColors;
-          this.applyCustomThemeFromColors(settings.customColors);
-          this.updateCustomColorPickers(settings.customColors);
-        }
-        const customThemeSection = document.querySelector('.custom-theme-section');
-        if (customThemeSection) {
-          customThemeSection.hidden = false;
-        }
-      } else {
-        this.applyTheme(themeToApply);
       }
 
-      // Update theme selector UI
-      this.updateThemeSelectorUI(themeToApply);
-
-      // Apply font size
-      if (settings.fontSize) {
-        this.currentFontSize = settings.fontSize;
-        document.documentElement.style.setProperty('--font-size', `${settings.fontSize}px`);
-        const fontSizeSlider = document.getElementById('fontSizeSlider');
-        const fontSizeValue = document.getElementById('fontSizeValue');
-        if (fontSizeSlider) fontSizeSlider.value = settings.fontSize;
-        if (fontSizeValue) fontSizeValue.textContent = `${settings.fontSize}px`;
-      }
-
-      // Apply opacity
-      if (settings.terminalOpacity !== undefined) {
-        this.currentOpacity = settings.terminalOpacity;
-        document.documentElement.style.setProperty('--terminal-opacity', settings.terminalOpacity);
-        const opacitySlider = document.getElementById('opacitySlider');
-        const opacityValue = document.getElementById('opacityValue');
-        if (opacitySlider) opacitySlider.value = settings.terminalOpacity * 100;
-        if (opacityValue) opacityValue.textContent = `${Math.round(settings.terminalOpacity * 100)}%`;
-      }
-
-      // Apply blur
-      if (settings.blurStrength !== undefined) {
-        this.currentBlurStrength = settings.blurStrength;
-        document.documentElement.style.setProperty('--blur-strength', `${settings.blurStrength}px`);
-        const blurSlider = document.getElementById('blurSlider');
-        const blurValue = document.getElementById('blurValue');
-        if (blurSlider) blurSlider.value = settings.blurStrength;
-        if (blurValue) blurValue.textContent = `${settings.blurStrength}px`;
-      }
-
-      // Apply background
-      if (settings.backgroundImage) {
-        this.applyBackground(settings.backgroundImage);
-      }
-
+      this.applySettings(settings);
+    } catch (err) {
+      log.error('Failed to load settings:', err);
     }
   }
 
-  saveSettings() {
+  applySettings(settings) {
+    // Load saved themes (backward compatible)
+    if (settings.themes) {
+      this.savedThemes = settings.themes;
+    } else if (settings.customColors) {
+      // Migrate old format
+      this.savedThemes = {
+        'custom-legacy': {
+          name: 'Legacy Custom Theme',
+          colors: settings.customColors
+        }
+      };
+    } else {
+      this.savedThemes = {};
+    }
+
+    // Apply theme
+    const themeToApply = settings.currentTheme || settings.theme || 'catppuccin-mocha';
+    this.currentTheme = themeToApply;
+
+    // Check if it's a saved custom theme
+    if (themeToApply.startsWith('custom-') && this.savedThemes[themeToApply]) {
+      const customTheme = this.savedThemes[themeToApply];
+      this.applyCustomThemeFromColors(customTheme.colors);
+      this.customThemeColors = customTheme.colors;
+
+      // Update color pickers
+      this.updateCustomColorPickers(customTheme.colors);
+
+      // Show custom section
+      const customThemeSection = document.querySelector('.custom-theme-section');
+      if (customThemeSection) {
+        customThemeSection.hidden = false;
+      }
+
+      // Update custom theme dropdown if exists
+      this.updateCustomThemeDropdown();
+    } else if (themeToApply === 'custom') {
+      // Legacy custom theme handling
+      if (settings.customColors) {
+        this.customThemeColors = settings.customColors;
+        this.applyCustomThemeFromColors(settings.customColors);
+        this.updateCustomColorPickers(settings.customColors);
+      }
+      const customThemeSection = document.querySelector('.custom-theme-section');
+      if (customThemeSection) {
+        customThemeSection.hidden = false;
+      }
+    } else {
+      this.applyTheme(themeToApply);
+    }
+
+    // Update theme selector UI
+    this.updateThemeSelectorUI(themeToApply);
+
+    // Apply font size
+    if (settings.fontSize) {
+      this.currentFontSize = settings.fontSize;
+      document.documentElement.style.setProperty('--font-size', `${settings.fontSize}px`);
+      const fontSizeSlider = document.getElementById('fontSizeSlider');
+      const fontSizeValue = document.getElementById('fontSizeValue');
+      if (fontSizeSlider) fontSizeSlider.value = settings.fontSize;
+      if (fontSizeValue) fontSizeValue.textContent = `${settings.fontSize}px`;
+    }
+
+    // Apply opacity
+    if (settings.terminalOpacity !== undefined) {
+      this.currentOpacity = settings.terminalOpacity;
+      document.documentElement.style.setProperty('--terminal-opacity', settings.terminalOpacity);
+      const opacitySlider = document.getElementById('opacitySlider');
+      const opacityValue = document.getElementById('opacityValue');
+      if (opacitySlider) opacitySlider.value = settings.terminalOpacity * 100;
+      if (opacityValue) opacityValue.textContent = `${Math.round(settings.terminalOpacity * 100)}%`;
+    }
+
+    // Apply blur
+    if (settings.blurStrength !== undefined) {
+      this.currentBlurStrength = settings.blurStrength;
+      document.documentElement.style.setProperty('--blur-strength', `${settings.blurStrength}px`);
+      const blurSlider = document.getElementById('blurSlider');
+      const blurValue = document.getElementById('blurValue');
+      if (blurSlider) blurSlider.value = settings.blurStrength;
+      if (blurValue) blurValue.textContent = `${settings.blurStrength}px`;
+    }
+
+    // Apply background
+    if (settings.backgroundImage) {
+      this.applyBackground(settings.backgroundImage);
+    }
+  }
+
+  async saveSettings() {
     const settings = {
       themes: this.savedThemes || {},
       currentTheme: this.currentTheme || 'catppuccin-mocha',
@@ -1122,7 +1145,15 @@ class WebTerm {
       };
     }
 
-    localStorage.setItem('webterm-settings', JSON.stringify(settings));
+    try {
+      await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+    } catch (err) {
+      log.error('Failed to save settings:', err);
+    }
   }
 
   // Theme management methods
