@@ -567,6 +567,30 @@ class WebTerm {
     terminal.loadAddon(fitAddon);
     terminal.loadAddon(webLinksAddon);
 
+    // OSC 52 clipboard support — lets remote programs (tmux, nvim, etc.)
+    // write to the browser clipboard via standard escape sequences.
+    // Format: ESC ] 52 ; <selection> ; <base64> ST
+    terminal.parser.registerOscHandler(52, (data) => {
+      const semicolon = data.indexOf(';');
+      if (semicolon === -1) return true;
+
+      const payload = data.substring(semicolon + 1);
+      if (!payload || payload === '?') return true; // ignore clipboard reads
+
+      try {
+        const binary = atob(payload);
+        const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+        const text = new TextDecoder('utf-8').decode(bytes);
+
+        if (navigator.clipboard?.writeText) {
+          navigator.clipboard.writeText(text).catch(() => {});
+        }
+      } catch (e) {
+        // Ignore decode errors
+      }
+      return true;
+    });
+
     // Hide all existing containers
     const existingContainers = this.terminalViewport.querySelectorAll('[id^="terminal-"]');
     existingContainers.forEach(c => c.style.display = 'none');
