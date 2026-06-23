@@ -535,7 +535,16 @@ class WebTerm {
     this.connectionStartTime = new Date();
     const target = `${host}:${this.sessionPort.value || 22}`;
     const protocolLabel = protocol === 'ssh' ? 'SSH' : 'Telnet';
-    this.updateStatus('connected', { state: 'Connected', protocol: protocolLabel, target: target, time: this.formatTime(this.connectionStartTime) });
+    const detail = { state: 'Connected', protocol: protocolLabel, target, time: this.formatTime(this.connectionStartTime) };
+
+    // Persist per-session status so switchToSession can restore it
+    const session = this.terminals.get(sessionId);
+    if (session) {
+      session.connectionState = 'connected';
+      session.connectionDetail = detail;
+    }
+
+    this.updateStatus('connected', detail);
 
     // Clear form
     if (this.connectionName) this.connectionName.value = '';
@@ -625,6 +634,8 @@ class WebTerm {
       protocol,
       label,
       container,
+      connectionState: 'connecting',
+      connectionDetail: {},
     });
 
     this.activeSessionId = sessionId;
@@ -654,19 +665,30 @@ class WebTerm {
     const session = this.terminals.get(sessionId);
     if (session) {
       session.terminal.write('\r\n\x1b[33m[Session ended]\x1b[0m\r\n');
+      session.connectionState = 'disconnected';
+      session.connectionDetail = { ...session.connectionDetail, state: 'Disconnected' };
     }
-    this.updateStatus('disconnected', { state: 'Disconnected' });
+    // Only update the global indicator if this is the active session
+    if (sessionId === this.activeSessionId) {
+      this.updateStatus('disconnected', { state: 'Disconnected' });
+    }
   }
 
   onSessionError(sessionId, message) {
     console.error('Session error:', message);
-    this.updateStatus('error', { state: 'Error', target: message });
 
     if (sessionId) {
       const session = this.terminals.get(sessionId);
       if (session) {
         session.terminal.write(`\r\n\x1b[31mError: ${message}\x1b[0m\r\n`);
+        session.connectionState = 'error';
+        session.connectionDetail = { ...session.connectionDetail, state: 'Error', target: message };
       }
+    }
+
+    // Only update the global indicator if this is the active session
+    if (sessionId === this.activeSessionId) {
+      this.updateStatus('error', { state: 'Error', target: message });
     }
   }
 
@@ -721,6 +743,9 @@ class WebTerm {
       session.fitAddon.fit();
       session.terminal.focus();
     }
+
+    // Refresh status indicator to reflect the newly active session
+    this.updateStatus(session.connectionState || 'connected', session.connectionDetail || {});
 
     this.updateSessionTabs();
   }
