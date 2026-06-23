@@ -1,16 +1,50 @@
 import { Router, Request, Response } from 'express';
 import { store } from '../services/connection-store';
 import { requireAuth, handleLogin, handleLogout } from '../middleware/auth';
+import { hashPassword, comparePassword } from '../utils/crypto';
 import { CreateConnectionDTO, UpdateConnectionDTO } from '../models/connection';
 import { join } from 'path';
 import { existsSync, createReadStream, readdirSync } from 'fs';
 import { config } from '../config';
+import { logger } from '../utils/logger';
 
 const router = Router();
 
 // Auth routes
 router.post('/auth/login', handleLogin);
 router.post('/auth/logout', handleLogout);
+
+router.post('/auth/change-password', requireAuth, async (req: Request, res: Response) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    res.status(400).json({ error: 'Current password and new password are required' });
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    res.status(400).json({ error: 'New password must be at least 6 characters' });
+    return;
+  }
+
+  const userId = req.session.userId!;
+  const user = store.getUser(req.session.username!);
+  if (!user) {
+    res.status(404).json({ error: 'User not found' });
+    return;
+  }
+
+  const valid = await comparePassword(currentPassword, user.password_hash);
+  if (!valid) {
+    res.status(401).json({ error: 'Current password is incorrect' });
+    return;
+  }
+
+  const hash = await hashPassword(newPassword);
+  store.updateUserPassword(userId, hash);
+  logger.info(`Password changed for user: ${req.session.username}`);
+  res.json({ success: true });
+});
 
 // Connection routes
 router.get('/connections', requireAuth, (req: Request, res: Response) => {

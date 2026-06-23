@@ -108,6 +108,10 @@ class ConnectionStore {
     return this.db.prepare('SELECT * FROM users WHERE id = ?').get(result.lastInsertRowid) as User;
   }
 
+  updateUserPassword(userId: number, passwordHash: string): void {
+    this.db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, userId);
+  }
+
   userCount(): number {
     return (this.db.prepare('SELECT COUNT(*) as count FROM users').get() as any).count;
   }

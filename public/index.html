@@ -278,6 +278,13 @@
           </svg>
           <span>Background</span>
         </button>
+        <button class="settings-tab" role="tab" aria-selected="false" aria-controls="tab-user" data-tab="user">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>User</span>
+        </button>
       </div>
 
       <div class="settings-body">
@@ -474,6 +481,32 @@
                 <span class="slider-value" id="blurValue">12px</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- User Tab Content -->
+        <div class="settings-tab-content" role="tabpanel" id="tab-user" data-tab-content="user">
+          <div class="settings-section">
+            <h3 class="settings-section-title">Change Password</h3>
+            <div class="compact-field">
+              <label class="compact-label" for="currentPassword">Current Password</label>
+              <input type="password" class="toolbar-input" id="currentPassword" autocomplete="current-password">
+            </div>
+            <div class="compact-field">
+              <label class="compact-label" for="newPassword">New Password</label>
+              <input type="password" class="toolbar-input" id="newPassword" autocomplete="new-password">
+            </div>
+            <div class="compact-field">
+              <label class="compact-label" for="confirmPassword">Confirm New Password</label>
+              <input type="password" class="toolbar-input" id="confirmPassword" autocomplete="new-password">
+            </div>
+            <button class="chrome-button is-primary" id="changePasswordBtn">Update Password</button>
+            <p class="login-error" id="passwordError" style="display:none; margin-top:8px;"></p>
+          </div>
+
+          <div class="settings-section">
+            <h3 class="settings-section-title">Session</h3>
+            <button class="chrome-button is-danger" id="logoutBtn">Log Out</button>
           </div>
         </div>
       </div>

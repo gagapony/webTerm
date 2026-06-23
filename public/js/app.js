@@ -237,6 +237,10 @@ class WebTerm {
       this.hideSettingsModal();
     });
 
+    // User tab: change password + logout
+    document.getElementById('changePasswordBtn')?.addEventListener('click', () => this.handleChangePassword());
+    document.getElementById('logoutBtn')?.addEventListener('click', () => this.handleLogout());
+
     // Modal controls
     if (this.newSessionClose) {
       this.newSessionClose.addEventListener('click', () => {
@@ -1153,6 +1157,61 @@ class WebTerm {
       });
     } catch (err) {
       log.error('Failed to save settings:', err);
+    }
+  }
+
+  // User tab methods
+  async handleChangePassword() {
+    const current = document.getElementById('currentPassword')?.value;
+    const newPwd = document.getElementById('newPassword')?.value;
+    const confirm = document.getElementById('confirmPassword')?.value;
+    const errEl = document.getElementById('passwordError');
+
+    if (errEl) errEl.style.display = 'none';
+
+    if (!current || !newPwd || !confirm) {
+      if (errEl) { errEl.textContent = 'All fields are required'; errEl.style.display = 'block'; }
+      return;
+    }
+
+    if (newPwd.length < 6) {
+      if (errEl) { errEl.textContent = 'New password must be at least 6 characters'; errEl.style.display = 'block'; }
+      return;
+    }
+
+    if (newPwd !== confirm) {
+      if (errEl) { errEl.textContent = 'New passwords do not match'; errEl.style.display = 'block'; }
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: current, newPassword: newPwd }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        if (errEl) { errEl.textContent = 'Password updated successfully'; errEl.style.color = '#4ade80'; errEl.style.display = 'block'; }
+      } else {
+        if (errEl) { errEl.textContent = data.error || 'Failed to change password'; errEl.style.color = '#f87171'; errEl.style.display = 'block'; }
+      }
+    } catch (err) {
+      if (errEl) { errEl.textContent = 'Connection error'; errEl.style.color = '#f87171'; errEl.style.display = 'block'; }
+    }
+  }
+
+  async handleLogout() {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      location.reload();
+    } catch (err) {
+      log.error('Logout failed:', err);
     }
   }
 
