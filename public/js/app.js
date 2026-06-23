@@ -231,14 +231,14 @@ class WebTerm {
     settingsClose?.addEventListener('click', () => this.hideSettingsModal());
     settingsScrim?.addEventListener('click', () => this.hideSettingsModal());
     settingsCancel?.addEventListener('click', () => this.hideSettingsModal());
-    settingsSave?.addEventListener('click', () => {
+    settingsSave?.addEventListener('click', async () => {
       log.info('Settings saved');
-      this.saveSettings();
-      this.hideSettingsModal();
+      await this.saveSettings();
+      const pwdOk = await this.handleChangePassword();
+      if (pwdOk) this.hideSettingsModal();
     });
 
-    // User tab: change password + logout
-    document.getElementById('changePasswordBtn')?.addEventListener('click', () => this.handleChangePassword());
+    // User tab: logout
     document.getElementById('logoutBtn')?.addEventListener('click', () => this.handleLogout());
 
     // Modal controls
@@ -1167,21 +1167,24 @@ class WebTerm {
     const confirm = document.getElementById('confirmPassword')?.value;
     const errEl = document.getElementById('passwordError');
 
+    // No password fields filled — skip silently
+    if (!current && !newPwd && !confirm) return true;
+
     if (errEl) errEl.style.display = 'none';
 
     if (!current || !newPwd || !confirm) {
       if (errEl) { errEl.textContent = 'All fields are required'; errEl.style.display = 'block'; }
-      return;
+      return false;
     }
 
     if (newPwd.length < 6) {
       if (errEl) { errEl.textContent = 'New password must be at least 6 characters'; errEl.style.display = 'block'; }
-      return;
+      return false;
     }
 
     if (newPwd !== confirm) {
       if (errEl) { errEl.textContent = 'New passwords do not match'; errEl.style.display = 'block'; }
-      return;
+      return false;
     }
 
     try {
@@ -1197,12 +1200,14 @@ class WebTerm {
         document.getElementById('currentPassword').value = '';
         document.getElementById('newPassword').value = '';
         document.getElementById('confirmPassword').value = '';
-        if (errEl) { errEl.textContent = 'Password updated successfully'; errEl.style.color = '#4ade80'; errEl.style.display = 'block'; }
+        return true;
       } else {
         if (errEl) { errEl.textContent = data.error || 'Failed to change password'; errEl.style.color = '#f87171'; errEl.style.display = 'block'; }
+        return false;
       }
     } catch (err) {
       if (errEl) { errEl.textContent = 'Connection error'; errEl.style.color = '#f87171'; errEl.style.display = 'block'; }
+      return false;
     }
   }
 
