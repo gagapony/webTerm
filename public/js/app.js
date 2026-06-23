@@ -1485,6 +1485,8 @@ class WebTerm {
 
   // Background image methods
   applyBackground(background) {
+    this.currentBackground = background || null;
+
     if (!background) {
       document.body.style.backgroundImage = '';
       document.body.classList.remove('has-background');
