@@ -64,6 +64,51 @@ const XTERM_THEMES = {
   },
 };
 
+/**
+ * Coalesces high-frequency SSH output (e.g. `cat` of a huge file, compiler
+ * output) so xterm's term.write() is called at most once per animation frame.
+ * xterm parses write() internally in ~16ms slices, but batching at the frame
+ * boundary minimizes parse passes and — crucially — render frames, which is
+ * where the GPU/WebGL cost lives. A 1MB safety valve flushes synchronously so
+ * the buffer can't grow unbounded while the tab is hidden (rAF pauses then).
+ */
+class WriteBuffer {
+  constructor(term, maxBytes = 1 << 20) {
+    this.term = term;
+    this.chunks = [];
+    this.size = 0;
+    this.max = maxBytes;
+    this.rafId = 0;
+  }
+
+  push(data) {
+    this.chunks.push(data);
+    this.size += data.length;
+    if (this.size >= this.max) {           // over-size: drain now, don't wait
+      this.flush();
+      return;
+    }
+    if (!this.rafId) {
+      this.rafId = requestAnimationFrame(() => {
+        this.rafId = 0;
+        this.flush();
+      });
+    }
+  }
+
+  flush() {
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = 0;
+    }
+    if (!this.chunks.length) return;
+    const merged = this.chunks.length === 1 ? this.chunks[0] : this.chunks.join('');
+    this.chunks.length = 0;
+    this.size = 0;
+    this.term.write(merged);
+  }
+}
+
 class WebTerm {
   constructor() {
     log.info('WebTerm constructor called');
@@ -80,6 +125,7 @@ class WebTerm {
     log.info('WebTerm init called');
     this.bindElements();
     this.bindEvents();
+    this._setupGlobalResize();
     this.checkAuth();
 
     // Initialize settings
@@ -305,6 +351,33 @@ class WebTerm {
         if (this.statusDropdown) this.statusDropdown.hidden = true;
       }
     });
+  }
+
+  // Single shared, debounced resize handler. Replaces the old per-session
+  // window.addEventListener('resize') which (a) leaked one listener per
+  // session and (b) fired fit() N times with no debounce — each call forcing a
+  // layout reflow plus a backend resize message. Now: one listener, debounced,
+  // fitting only the visible terminal.
+  _setupGlobalResize() {
+    this._onResize = this._debounce(() => {
+      for (const s of this.terminals.values()) {
+        if (!s.container || s.container.style.display === 'none') continue;
+        try {
+          if (s.fitAddon) s.fitAddon.fit();
+        } catch (e) {
+          log.error('fit() failed during resize', e);
+        }
+      }
+    }, 150);
+    window.addEventListener('resize', this._onResize);
+  }
+
+  _debounce(fn, wait) {
+    let timer = 0;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), wait);
+    };
   }
 
   updateStatus(state, detail = {}) {
@@ -568,6 +641,7 @@ class WebTerm {
       cursorBlink: true,
       cursorStyle: 'bar',
       scrollback: 10000,
+      allowTransparency: true, // true alpha channel on the WebGL canvas
     });
 
     const fitAddon = new FitAddon.FitAddon();
@@ -613,6 +687,21 @@ class WebTerm {
 
     terminal.open(container);
 
+    // Force GPU rendering via the WebGL renderer — never silently fall back to
+    // the Canvas2D software renderer. Must be loaded after open(). Context loss
+    // is handled by disposing the addon so GL resources are reclaimed.
+    let webglAddon;
+    try {
+      webglAddon = new WebglAddon.WebglAddon();
+      webglAddon.onContextLoss(() => {
+        webglAddon.dispose();
+        log.error('[WebTerm] WebGL context lost — addon disposed');
+      });
+      terminal.loadAddon(webglAddon);
+    } catch (e) {
+      log.error('[WebTerm] WebGL renderer unavailable:', e);
+    }
+
     // Handle resize — forward every resize to the backend so the remote
     // PTY stays in sync with xterm.js. The first resize after fit() is
     // intentional: SSH/Telnet open with the create-message cols/rows, but
@@ -631,6 +720,8 @@ class WebTerm {
     this.terminals.set(sessionId, {
       terminal,
       fitAddon,
+      webglAddon,
+      writeBuffer: new WriteBuffer(terminal),
       protocol,
       label,
       container,
@@ -647,8 +738,9 @@ class WebTerm {
       }
     });
 
-    // Fit on resize
-    window.addEventListener('resize', () => fitAddon.fit());
+    // NOTE: window 'resize' is handled by ONE shared, debounced handler set up
+    // in init() (_setupGlobalResize). Do NOT add a listener per session — that
+    // leaked one listener per session and fired N un-debounced fit() calls.
 
     this.updateSessionTabs();
     terminal.focus();
@@ -656,7 +748,9 @@ class WebTerm {
 
   onTerminalOutput(sessionId, data) {
     const session = this.terminals.get(sessionId);
-    if (session) {
+    if (session?.writeBuffer) {
+      session.writeBuffer.push(data);   // rAF-coalesced: one term.write() per frame
+    } else if (session) {
       session.terminal.write(data);
     }
   }
@@ -755,6 +849,7 @@ class WebTerm {
 
     const session = this.terminals.get(sessionId);
     if (session) {
+      if (session.writeBuffer) session.writeBuffer.flush();   // drain pending output first
       session.terminal.dispose();
       this.terminals.delete(sessionId);
     }
@@ -1319,10 +1414,11 @@ class WebTerm {
       theme = XTERM_THEMES[themeName] || XTERM_THEMES['catppuccin-mocha'];
     }
 
-    // Terminal background always transparent — color and opacity
-    // are controlled by .terminal-frame CSS for visual consistency
-    // with the topbar
-    theme = { ...theme, background: 'transparent' };
+    // Terminal background fully transparent — true alpha is provided by the
+    // WebGL canvas itself (allowTransparency + rgba background). The frosted
+    // look now comes from the dedicated .frost-layer behind #app, NOT from a
+    // backdrop-filter on .terminal-frame.
+    theme = { ...theme, background: 'rgba(0,0,0,0)' };
 
     return theme;
   }

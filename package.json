@@ -7,12 +7,13 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "postinstall": "cp -f node_modules/@xterm/xterm/css/xterm.css public/lib/xterm.css && cp -f node_modules/@xterm/xterm/lib/xterm.js public/lib/xterm.js && cp -f node_modules/@xterm/addon-fit/lib/addon-fit.js public/lib/addon-fit.js && cp -f node_modules/@xterm/addon-web-links/lib/addon-web-links.js public/lib/addon-web-links.js"
+    "postinstall": "cp -f node_modules/@xterm/xterm/css/xterm.css public/lib/xterm.css && cp -f node_modules/@xterm/xterm/lib/xterm.js public/lib/xterm.js && cp -f node_modules/@xterm/addon-fit/lib/addon-fit.js public/lib/addon-fit.js && cp -f node_modules/@xterm/addon-web-links/lib/addon-web-links.js public/lib/addon-web-links.js && cp -f node_modules/@xterm/addon-webgl/lib/addon-webgl.js public/lib/addon-webgl.js"
   },
   "dependencies": {
     "@types/multer": "^2.1.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/addon-web-links": "^0.11.0",
+    "@xterm/addon-webgl": "^0.18.0",
     "@xterm/xterm": "^5.5.0",
     "bcrypt": "^5.1.1",
     "better-sqlite3": "^11.0.0",

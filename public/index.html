@@ -62,6 +62,11 @@
   </style>
 </head>
 <body>
+  <!-- Single frozen frosted-glass layer: blurs the body background once and
+       caches it as a GPU texture. High-frequency terminal repaints happen on a
+       separate layer above this, so the blur is never re-computed per frame. -->
+  <div class="frost-layer" aria-hidden="true"></div>
+
   <!-- Login Overlay -->
   <div class="login-overlay" id="loginOverlay">
     <div class="login-card">
@@ -523,7 +528,8 @@
   <script src="/lib/xterm.js?v=4"></script>
   <script src="/lib/addon-fit.js?v=4"></script>
   <script src="/lib/addon-web-links.js?v=4"></script>
+  <script src="/lib/addon-webgl.js?v=4"></script>
   <script src="/js/logger.js?v=1"></script>
-  <script src="/js/app.js?v=7"></script>
+  <script src="/js/app.js?v=8"></script>
 </body>
 </html>
