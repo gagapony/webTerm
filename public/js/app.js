@@ -641,7 +641,7 @@ class WebTerm {
       cursorBlink: true,
       cursorStyle: 'bar',
       scrollback: 10000,
-      allowTransparency: true, // true alpha channel on the WebGL canvas
+      allowTransparency: true, // true alpha — canvas renderer composites the page behind it
     });
 
     const fitAddon = new FitAddon.FitAddon();
@@ -687,19 +687,16 @@ class WebTerm {
 
     terminal.open(container);
 
-    // Force GPU rendering via the WebGL renderer — never silently fall back to
-    // the Canvas2D software renderer. Must be loaded after open(). Context loss
-    // is handled by disposing the addon so GL resources are reclaimed.
-    let webglAddon;
+    // Canvas2D renderer. The WebGL renderer ignores the theme background alpha
+    // and paints an opaque panel (solid black when bg is rgba(0,0,0,0)), which
+    // kills the frosted-glass transparency. The canvas renderer composites
+    // alpha correctly, so true see-through works. Loaded after open().
+    let canvasAddon;
     try {
-      webglAddon = new WebglAddon.WebglAddon();
-      webglAddon.onContextLoss(() => {
-        webglAddon.dispose();
-        log.error('[WebTerm] WebGL context lost — addon disposed');
-      });
-      terminal.loadAddon(webglAddon);
+      canvasAddon = new CanvasAddon.CanvasAddon();
+      terminal.loadAddon(canvasAddon);
     } catch (e) {
-      log.error('[WebTerm] WebGL renderer unavailable:', e);
+      log.error('[WebTerm] Canvas renderer unavailable:', e);
     }
 
     // Handle resize — forward every resize to the backend so the remote
@@ -720,7 +717,7 @@ class WebTerm {
     this.terminals.set(sessionId, {
       terminal,
       fitAddon,
-      webglAddon,
+      canvasAddon,
       writeBuffer: new WriteBuffer(terminal),
       protocol,
       label,
