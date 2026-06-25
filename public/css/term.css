@@ -706,10 +706,14 @@ textarea:focus-visible {
   min-width: 220px;
   padding: 8px 0;
   border: 1px solid var(--line);
-  border-radius: 6px;
-  background: color-mix(in srgb, var(--bg) 96%, transparent);
+  border-radius: 10px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100%), transparent),
+      color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 98%), transparent));
   backdrop-filter: blur(var(--blur-strength));
-  box-shadow: 0 12px 32px var(--shadow);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 4%, transparent), 0 12px 32px var(--shadow);
 }
 
 .status-dropdown[hidden] {
@@ -1113,8 +1117,8 @@ textarea:focus-visible {
   min-height: 0;
   position: relative;
   z-index: 0;
-  overflow: hidden;
   display: grid;
+  padding: 0;
   grid-template-columns: minmax(0, 1fr);
   margin: 8px 10px 10px;
   border-radius: 10px;
@@ -1151,9 +1155,12 @@ textarea:focus-visible {
      to the terminal's high-frequency repaints. The frosted look now comes from
      the single frozen .frost-layer behind #app. */
   border-radius: 10px;
+  box-shadow: 0 4px 14px var(--shadow);
+  overflow: hidden;
   /* contain scoping keeps terminal repaints from spilling into a larger
-     compositing region. */
-  contain: layout paint style;
+     compositing region. "paint" was removed so box-shadow isn't clipped;
+     overflow:hidden handles child clipping instead. */
+  contain: layout style;
   transition:
     filter 180ms ease,
     transform 180ms ease,
@@ -1583,16 +1590,6 @@ body.has-background .topbar {
 .settings-modal[data-open=true] .settings-dialog {
   opacity: 1;
   transform: translateY(0) scale(1);
-}
-
-.saved-connections-dropdown {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100%), transparent),
-      color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 98%), transparent)),
-    var(--bg);
-  backdrop-filter: blur(var(--blur-strength));
 }
 
 .settings-header {
