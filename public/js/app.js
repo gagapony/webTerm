@@ -128,6 +128,14 @@ class WebTerm {
     this._setupGlobalResize();
     this.checkAuth();
 
+    // Preload terminal fonts so the canvas renderer measures correct
+    // glyph metrics at terminal.open() time. Without this, the renderer
+    // may use a fallback monospace and produce garbled character cells.
+    if (document.fonts) {
+      document.fonts.load('14px "MonaspiceAr NFM Medium"').catch(() => {});
+      document.fonts.load('14px "MonaspiceAr NFM"').catch(() => {});
+    }
+
     // Initialize settings
     this.currentTheme = 'catppuccin-mocha';
     this.savedThemes = {};
@@ -483,8 +491,13 @@ class WebTerm {
     t.open(c);
     f.fit();
     const dims = { cols: t.cols, rows: t.rows };
-    t.dispose();
+    // Defer dispose: xterm's open() schedules a setTimeout for
+    // Viewport.syncScrollArea that accesses _renderService.dimensions.
+    // If we dispose synchronously, that callback hits undefined → crash.
+    // Removing the DOM node now keeps it invisible; disposing after the
+    // internal callback fires avoids the race.
     c.remove();
+    setTimeout(() => t.dispose(), 200);
     return dims;
   }
 
@@ -711,7 +724,15 @@ class WebTerm {
       }
     });
 
-    setTimeout(() => fitAddon.fit(), 100);
+    // Wait for the terminal font to load before fitting. The canvas
+    // renderer measures glyph metrics at loadAddon() time; if the web
+    // font is still downloading it falls back to a generic monospace
+    // and character cells come out garbled.
+    const doFit = () => fitAddon.fit();
+    if (document.fonts && document.fonts.status !== 'loaded') {
+      document.fonts.ready.then(doFit, doFit);
+    }
+    setTimeout(doFit, 100);
 
     // Store terminal
     this.terminals.set(sessionId, {
