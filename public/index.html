@@ -4,6 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WebTerm</title>
+
+  <!-- Favicons: SVG first (sharp at any size, ~3KB), then ICO fallback for
+       legacy browsers, then apple-touch-icon for iOS home-screen pins.
+       ?v=2 is the cache-buster — bump it (v=3…) when shipping a replacement
+       icon, since Chrome stashes favicons in a separate cache that survives
+       hard-refresh. -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2">
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2">
+  <meta name="theme-color" content="#05060a">
+
   <link rel="stylesheet" href="/css/term.css?v=3">
   <link rel="stylesheet" href="/lib/xterm.css">
   <style>
