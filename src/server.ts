@@ -35,14 +35,18 @@ async function main() {
 
   function setStaticCacheHeaders(res: Response, filePath: string): void {
     const ext = path.extname(filePath).toLowerCase();
+    const base = path.basename(filePath).toLowerCase();
+
     if (ext === '.html') {
       res.setHeader('Cache-Control', 'no-cache');
+    } else if (ext === '.ico' || base.startsWith('favicon') || base === 'apple-touch-icon.png') {
+      // Favicons: Chrome's favicon cache is quirky (survives hard-refresh),
+      // so don't pin them immutable — use a 1-day revalidate window.
+      res.setHeader('Cache-Control', 'public, max-age=86400');
     } else if (['.js', '.css', '.otf', '.woff', '.woff2', '.ttf'].includes(ext)) {
       res.setHeader('Cache-Control', `public, max-age=${STATIC_MAX_AGE}, immutable`);
     } else if (['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg'].includes(ext)) {
       res.setHeader('Cache-Control', `public, max-age=${STATIC_MAX_AGE}, immutable`);
-    } else if (ext === '.ico') {
-      res.setHeader('Cache-Control', 'public, max-age=86400');
     } else {
       res.setHeader('Cache-Control', 'no-cache');
     }
