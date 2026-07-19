@@ -27,3 +27,6 @@ data/logs/*.cast
 # OS
 .DS_Store
 Thumbs.db
+
+# Worktrees
+.worktrees/
