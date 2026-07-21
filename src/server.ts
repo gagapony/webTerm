@@ -25,15 +25,39 @@ async function main() {
   app.use(express.urlencoded({ extended: true }));
   app.use(sessionMiddleware);
 
-  // Static files — serve with Cache-Control: no-cache so browsers always
-  // revalidate via ETag/Last-Modified. Prevents stale cached JS/HTML from
-  // running old code after a deploy (e.g. the autoConnectLocal regression).
+  // Static files — layered cache strategy:
+  //   HTML        → no-cache            (always revalidate via ETag/Last-Modified)
+  //   JS/CSS/font → 1y immutable        (URL carries ?v=N cache-buster)
+  //   images      → 1y immutable        (uploads include timestamp in filename)
+  //   favicon     → 1 day               (Chrome's favicon cache is quirky)
+  //   default     → no-cache            (conservative)
+  const STATIC_MAX_AGE = 31536000; // 1 year in seconds
+
+  function setStaticCacheHeaders(res: Response, filePath: string): void {
+    const ext = path.extname(filePath).toLowerCase();
+    const base = path.basename(filePath).toLowerCase();
+
+    if (ext === '.html') {
+      res.setHeader('Cache-Control', 'no-cache');
+    } else if (ext === '.ico' || base.startsWith('favicon') || base === 'apple-touch-icon.png') {
+      // Favicons: Chrome's favicon cache is quirky (survives hard-refresh),
+      // so don't pin them immutable — use a 1-day revalidate window.
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+    } else if (['.js', '.css', '.otf', '.woff', '.woff2', '.ttf'].includes(ext)) {
+      res.setHeader('Cache-Control', `public, max-age=${STATIC_MAX_AGE}, immutable`);
+    } else if (['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg'].includes(ext)) {
+      res.setHeader('Cache-Control', `public, max-age=${STATIC_MAX_AGE}, immutable`);
+    } else {
+      res.setHeader('Cache-Control', 'no-cache');
+    }
+  }
+
   const staticOpts = {
     etag: true,
     lastModified: true,
     maxAge: 0,
-    setHeaders: (res: Response) => {
-      res.setHeader('Cache-Control', 'no-cache');
+    setHeaders: (res: Response, filePath: string) => {
+      setStaticCacheHeaders(res, filePath);
     },
   };
   app.use(express.static(path.join(process.cwd(), 'public'), staticOpts));
@@ -42,8 +66,9 @@ async function main() {
   app.use('/api', apiRoutes);
   app.use('/api/backgrounds', backgroundsRouter);
 
-  // Serve uploaded backgrounds
-  app.use('/backgrounds', express.static(path.join(__dirname, '../data/backgrounds')));
+  // Serve uploaded backgrounds (same layered cache strategy — filenames
+  // include a Date.now() timestamp so immutable caching is safe).
+  app.use('/backgrounds', express.static(path.join(__dirname, '../data/backgrounds'), staticOpts));
 
   // WebSocket server
   const wss = new WebSocketServer({ server });
