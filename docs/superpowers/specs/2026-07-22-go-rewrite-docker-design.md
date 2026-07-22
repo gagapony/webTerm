@@ -109,3 +109,17 @@ go-server/
 - [ ] 空闲 RSS ≤ 30MB
 - [ ] `docker build` 成功，镜像 ≤ 25MB；`docker compose up` 一键可用
 - [ ] WS 未登录访问被拒绝
+
+## Verification results
+
+日期：2026-07-22
+
+| 指标 | 结果 |
+|---|---|
+| Node 生产版空闲 RSS（参考基线） | ~90 MB |
+| Go 容器空闲 RSS | 12.35 MiB（`docker stats` cgroup memory：8.785 MiB） |
+| Go 容器会话中 RSS | 未测（当前环境无法执行浏览器 SSH/Telnet 手动验证） |
+| RSS 降幅 | 约 86%，达到 85% 目标 |
+| Docker 镜像大小 | 17.13 MB（17,132,865 bytes） |
+
+Compose 在宿主机端口 8090 成功启动（8009 被 Node 开发实例占用）。首页返回 200 且 `Cache-Control: no-cache`，JavaScript 返回一年 immutable 缓存头，公开 settings 端点返回 200，未认证 WebSocket upgrade 返回 401。挂载现有数据库后，默认 `admin/admin` 登录按预期返回 401；因未提供现有管理员密码，认证后的 connections 冒烟延后由用户验证。

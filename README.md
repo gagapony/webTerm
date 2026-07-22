@@ -351,3 +351,24 @@ npm run build   # ensure it compiles
 ## 📄 License
 
 Released under the **MIT License**. See [LICENSE](LICENSE) for details.
+
+## Go 版本（低内存）
+
+后端已用 Go 重写（`go-server/`），功能与 Node 版一致，内存占用降低 70-80%（空闲 ~15-25MB）。
+
+### 本地运行
+
+```bash
+cd go-server
+go build -o webterm .
+cd .. && ./go-server/webterm   # 复用根目录 .env 与 data/
+```
+
+### Docker（推荐）
+
+```bash
+docker build -t webterm .
+docker compose up -d     # 端口取 .env 的 PORT，默认 8008
+```
+
+镜像 ~15MB（scratch + 静态二进制）。数据持久化在 `./data`（SQLite、背景图、日志）。

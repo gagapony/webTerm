@@ -1,0 +1,16 @@
+services:
+  webterm:
+    build: .
+    image: webterm:latest
+    # compose 自动读取本目录 .env；复用其 PORT 作为宿主机端口（默认 8008）
+    ports:
+      - "${PORT:-8008}:8008"
+    environment:
+      SESSION_SECRET: ${SESSION_SECRET:?请在 .env 中设置 SESSION_SECRET}
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASS: ${ADMIN_PASS:-admin}
+      LOG_LEVEL: ${LOG_LEVEL:-warn}
+      GOMEMLIMIT: ${GOMEMLIMIT:-200MiB}
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
