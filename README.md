@@ -9,8 +9,8 @@ Built on [xterm.js](https://xtermjs.org/) with a real-time WebSocket backend, en
 storage, session recording, and a polished frosted-glass UI.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](#license)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Go](https://img.shields.io/badge/Go-1.23%2B-00ADD8?logo=go&logoColor=white)](https://go.dev/)
+[![Docker](https://img.shields.io/badge/Docker-%E2%89%A524-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![xterm.js](https://img.shields.io/badge/Powered%20by-xterm.js-1f1f1f)](https://xtermjs.org/)
 [![Protocols](https://img.shields.io/badge/Protocols-SSH%20%7C%20Telnet-8A2BE2)](#features)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#contributing)
@@ -29,6 +29,12 @@ out of remote `tmux`/`nvim` — all behind a single authenticated endpoint.
 > Ideal for homelabs, jump-hosts, ops dashboards, or anywhere you want a terminal
 > without installing one.
 
+The backend is a single static Go binary with **~13 MB idle RSS** (an order of magnitude
+smaller than typical Node.js deployments) and ships as a **~17 MB scratch-based Docker
+image**. SQLite is embedded (pure Go, no CGO), bcrypt hashes and the on-disk database
+schema are byte-compatible with the original Node version, and zero external services are
+required.
+
 ---
 
 ## ✨ Features
@@ -39,8 +45,10 @@ out of remote `tmux`/`nvim` — all behind a single authenticated endpoint.
 - **Session Recording** — Capture every session in [asciinema](https://asciinema.org/) `.cast` format for replay and audit.
 - **OSC 52 Clipboard** — Copy from remote `tmux`, `nvim`, and friends directly into your browser clipboard.
 - **Theming & Backgrounds** — Switch themes (e.g. *Catppuccin Mocha*), set custom backgrounds, and tune transparency with a frosted-glass UI.
-- **Authentication** — Session-based login with `bcrypt`-hashed passwords and a default admin you can change.
+- **Authentication** — Session-based login with `bcrypt`-hashed passwords, HMAC-signed cookies, and a default admin you can change.
+- **WebSocket auth** — Terminal creation requires a valid session (a security improvement over the original Node version).
 - **Self-contained** — SQLite-backed, zero external databases required. Optional [Nix](https://nixos.org/) shell included.
+- **Tiny footprint** — Static Go binary, scratch Docker image, ~13 MB RSS at idle.
 
 ---
 
@@ -59,72 +67,22 @@ out of remote `tmux`/`nvim` — all behind a single authenticated endpoint.
 </details>
 
 <details>
-<summary><b>🗂️ Multiple sessions & tabs</b></summary>
+<summary><b>🔌 Connection manager</b></summary>
 <br>
 
-<img src="docs/images/multi-session.png" alt="Several SSH and Telnet sessions open across browser tabs" width="100%">
+<img src="docs/images/connection-manager.png" alt="WebTerm connection manager: list of saved connection profiles with quick-open buttons" width="100%">
 
-<p><em>Several SSH and Telnet sessions running concurrently, each with a live connection-status indicator and recording toggle on its tab.</em></p>
+<p><em>Connection profiles with credentials encrypted at rest in SQLite. Edit, delete, or open a new session in one click.</em></p>
 
 </details>
 
 <details>
-<summary><b>🧭 Connection Manager</b></summary>
+<summary><b>⚙️ Settings & theme switcher</b></summary>
 <br>
 
-<img src="docs/images/connection-manager.png" alt="Saved connections dropdown listing reusable SSH/Telnet profiles" width="100%">
+<img src="docs/images/settings.png" alt="WebTerm settings panel: theme dropdown, opacity slider, blur strength, background picker" width="100%">
 
-<p><em>Save, edit, and reuse connection profiles. Credentials are encrypted at rest and never exposed to the browser after a session is opened.</em></p>
-
-</details>
-
-<details>
-<summary><b>🎬 Session recording (asciinema)</b></summary>
-<br>
-
-<img src="docs/images/recording.png" alt="A recording indicator on a session tab and an asciinema cast file being replayed" width="100%">
-
-<p><em>Record any session to a standard <code>.cast</code> file, then download or replay it later for review, debugging, or compliance.</em></p>
-
-</details>
-
-<details>
-<summary><b>🎨 Themes & appearance settings</b></summary>
-<br>
-
-<img src="docs/images/settings-themes.png" alt="Settings panel with theme picker including Catppuccin Mocha and transparency controls" width="100%">
-
-<p><em>Pick a theme (Default, Catppuccin Mocha, …), adjust transparency, and switch fonts from a single tabbed settings panel.</em></p>
-
-</details>
-
-<details>
-<summary><b>🖼️ Custom backgrounds & transparency</b></summary>
-<br>
-
-<img src="docs/images/backgrounds.png" alt="Terminal rendered over a custom preset background (forest, mountain, ocean) with adjustable blur and opacity" width="100%">
-
-<p><em>Choose built-in presets (Forest / Mountain / Ocean) or upload your own, then dial in blur and opacity for a glassy, see-through terminal.</em></p>
-
-</details>
-
-<details>
-<summary><b>📋 OSC 52 clipboard in action</b></summary>
-<br>
-
-<img src="docs/images/osc52-clipboard.png" alt="Copying yanked text from remote nvim into the local browser clipboard via OSC 52" width="100%">
-
-<p><em>Remote programs (<code>nvim</code>, <code>tmux</code>, …) push text to your local clipboard over OSC 52 — no add-ons required. See <a href="docs/osc52-clipboard.md">OSC 52 docs</a>.</em></p>
-
-</details>
-
-<details>
-<summary><b>🔐 Login screen</b></summary>
-<br>
-
-<img src="docs/images/login.png" alt="WebTerm login card over a frosted background" width="100%">
-
-<p><em>A single gated login protects every session. Change the default <code>admin</code> / <code>admin</code> credentials before exposing the service.</em></p>
+<p><em>Tune transparency, blur strength, font size, terminal background (preset/uploaded/URL), and theme from one panel — persisted server-side.</em></p>
 
 </details>
 
@@ -134,13 +92,17 @@ out of remote `tmux`/`nvim` — all behind a single authenticated endpoint.
 
 | Layer | Technology | Purpose |
 |-------|------------|---------|
-| Frontend | [xterm.js](https://xtermjs.org/) (Canvas renderer) + vanilla JS | Terminal rendering & UI |
-| Backend | [Express](https://expressjs.com/) + [ws](https://github.com/websockets/ws) | HTTP API + real-time WebSocket |
-| Protocols | [ssh2](https://github.com/mscdex/ssh2), [telnet-client](https://github.com/mkozjak/node-telnet-client) | SSH & Telnet clients |
-| Storage | [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) | Connections, users, metadata |
-| Auth | [bcrypt](https://github.com/kelektiv/node.bcrypt.js) + [express-session](https://github.com/expressjs/session) | Password hashing & sessions |
-| Language | [TypeScript](https://www.typescriptlang.org/) | End-to-end type safety |
-| Recordings | asciinema `.cast` (filesystem) | Portable session replays |
+| Frontend | [xterm.js](https://xtermjs.org/) (Canvas renderer) + vanilla JS | Terminal rendering & UI (embedded in the Go binary via `embed.FS`) |
+| Backend | Go (standard library `net/http` + Go 1.22 method-pattern routing) | HTTP API + real-time WebSocket |
+| WebSocket | [`coder/websocket`](https://github.com/coder/websocket) | Maintained, low-overhead WebSocket |
+| SSH | [`golang.org/x/crypto/ssh`](https://pkg.go.dev/golang.org/x/crypto/ssh) | Pure-Go SSH client (no CGO) |
+| Telnet | Hand-written IAC state machine in `go-server/telnet.go` | ~150 LOC, latin1-accurate |
+| Storage | [`modernc.org/sqlite`](https://pkg.go.dev/modernc.org/sqlite) | Pure-Go SQLite, no CGO, byte-compatible schema with the original Node build |
+| Auth | [`golang.org/x/crypto/bcrypt`](https://pkg.go.dev/golang.org/x/crypto/bcrypt) + HMAC-SHA256-signed cookies | Password hashing & sessions |
+| Recordings | asciinema `.cast` files on disk | Portable session replays |
+
+The whole backend compiles to a single static binary with `CGO_ENABLED=0` and runs on
+`scratch`, Alpine, or `gcr.io/distroless/static`.
 
 ---
 
@@ -148,43 +110,53 @@ out of remote `tmux`/`nvim` — all behind a single authenticated endpoint.
 
 ### Prerequisites
 
-- **Node.js ≥ 18**
-- A C++ toolchain and Python (for compiling native modules like `bcrypt` and `better-sqlite3`)
+- **Docker** (recommended) **or Go ≥ 1.23** for local builds.
 
 <details>
 <summary><b>Using Nix? (recommended on NixOS)</b></summary>
 
 ```bash
-nix-shell   # provides nodejs, gcc, python3, pkg-config, …
+nix-shell   # provides go from the project's shell.nix
 ```
 
 </details>
 
-### Install & Run
+### Docker (recommended)
 
 ```bash
-# 1. Install dependencies (also copies xterm assets into public/lib)
-npm install
-
-# 2. Configure (optional — sane defaults are built in)
+# 1. Configure (optional — sane defaults are built in)
 cp .env.example .env
 #   …then edit .env, or just set env vars inline
 
-# 3. Run in development
-npm run dev
-
-#   …or build & run in production
-npm run build
-npm start
+# 2. Build and start
+docker compose up -d
 ```
 
-The server starts at **`http://localhost:3000`** (override with `PORT`).
+The container reads `./data/` for persistent SQLite, background images, and `.cast`
+recordings. It binds to **port 8008 by default** (override via `PORT` in `.env`).
 
 Log in with the default credentials, then **change them immediately**:
 
 ```bash
-ADMIN_USER=admin ADMIN_PASS=admin npm start
+ADMIN_USER=admin ADMIN_PASS=your-strong-password docker compose up -d
 ```
+
+### Local (Go toolchain)
+
+```bash
+# 1. Configure
+cp .env.example .env
+
+# 2. Build
+cd go-server
+go build -o webterm .
+
+# 3. Run from the repo root so ./data and ./.env resolve
+cd ..
+./go-server/webterm
+```
+
+The server starts at **`http://localhost:3000`** (override with `PORT`).
 
 ---
 
@@ -198,19 +170,35 @@ All settings are optional and have sensible defaults. Configure via a `.env` fil
 | `HOST` | `0.0.0.0` | Network interface to bind |
 | `SESSION_SECRET` | `webterm-secret-change-in-production` | Secret used to sign session cookies — **set this in production** |
 | `DB_PATH` | `./data/webterm.db` | SQLite database file location |
-| `LOG_DIR` | `./data/logs` | Directory for session recordings (`.cast`) |
-| `ADMIN_USER` | `admin` | Default admin username |
-| `ADMIN_PASS` | `admin` | Default admin password |
+| `LOG_DIR` | `./data/logs` | Directory for asciinema `.cast` recordings |
+| `ADMIN_USER` | `admin` | Username for the default admin (only used if the `users` table is empty) |
+| `ADMIN_PASS` | `admin` | Password for the default admin — **change this in production** |
+| `LOG_LEVEL` | `info` | Logger threshold: `debug` \| `info` \| `warn` \| `error` (production should be `warn`) |
+| `GOMEMLIMIT` | (unset) | Soft memory cap for the Go runtime, e.g. `200MiB`. Compose sets `200MiB` by default. |
 
 ---
 
 ## 🧭 Usage
 
-1. Open the app in your browser and log in.
-2. Click **New Session** to connect, or pick a saved profile from the **Connection Manager**.
-3. Authenticate with a password, private key, or key + passphrase.
-4. Work in the terminal as usual — resize, open more tabs, start/stop a recording.
-5. Review recorded sessions anytime under **Recordings** (downloadable as `.cast`).
+1. **Log in** at `/` with the default `admin` / `admin` (or whatever you set in `.env`).
+2. **Change your password** immediately via the settings panel.
+3. **Add a connection** in the connection manager: name, protocol (`ssh` or `telnet`),
+   host, port, username, and either password or private key.
+4. **Open a terminal tab** — credentials are sent over WebSocket and never persisted client-side.
+5. **Record sessions** by default; browse past recordings in the settings panel and
+   download `.cast` files to replay in [asciinema](https://asciinema.org/).
+
+### Multiple sessions, one browser
+
+Open as many connection profiles as you want; each gets its own tab and its own
+upstream SSH/Telnet connection. Closing a tab cleanly tears down the upstream session
+and updates the database.
+
+### Themes & backgrounds
+
+Switch between bundled themes (e.g. *Catppuccin Mocha*, default), upload a custom
+background image, or paste an image URL. Tuning lives in the settings panel and
+persists server-side.
 
 ---
 
@@ -223,14 +211,14 @@ All settings are optional and have sensible defaults. Configure via a `.env` fil
 └───────────────────────────────┬───────────────────────────────────┘
                                  │  HTTP API  +  WebSocket
 ┌───────────────────────────────┴───────────────────────────────────┐
-│                       Express Server                              │
-│   Auth middleware · Session manager · Protocol handlers · Recorder│
+│                       Go HTTP Server                              │
+│   Auth middleware · Session manager · Protocol handlers · Static FS│
 └──────────┬────────────────────────────────────┬──────────────────┘
            │                                    │
            ▼                                    ▼
 ┌─────────────────────┐               ┌──────────────────────────┐
 │        SSH          │               │         Telnet           │
-│     (ssh2)          │               │   (telnet-client)        │
+│  (x/crypto/ssh)     │               │   (hand-written IAC)    │
 └─────────────────────┘               └──────────────────────────┘
            │                                    │
            ▼                                    ▼
@@ -240,135 +228,173 @@ All settings are optional and have sensible defaults. Configure via a `.env` fil
 └──────────────────────────────────────────────────────────────────┘
 ```
 
+The Go binary embeds `public/` (the entire frontend, served by `embed.FS`), so a single
+file deploys the whole app. Backgrounds and recordings live under `./data/` which is the
+volume mount point in `docker-compose.yml`.
+
 ### Project Structure
 
 ```
 webTerm/
-├── src/
-│   ├── server.ts              # Express + WebSocket server
-│   ├── config.ts              # Configuration
-│   ├── middleware/            # Auth & session middleware
-│   ├── routes/                # REST API & WebSocket handlers
-│   ├── services/              # Session manager & connection store
-│   ├── protocols/             # SSH & Telnet implementations
-│   ├── models/                # Connection / session / user types
-│   └── utils/                 # Logger & crypto utilities
-├── public/
-│   ├── index.html             # App shell
-│   ├── css/term.css           # Design system
-│   ├── js/                    # Frontend application logic
-│   ├── themes/                # Theme definitions (JSON)
-│   └── backgrounds/           # Built-in preset backgrounds
-├── docs/                      # Documentation & design specs
-└── data/                      # SQLite DB & session recordings (runtime)
+├── go-server/                   # Go backend (single package, main)
+│   ├── main.go                  # entry point + server assembly + graceful shutdown
+│   ├── config.go                # env loading + .env parsing
+│   ├── logger.go                # slog text handler
+│   ├── store.go                 # SQLite (modernc.org/sqlite, no CGO) — full schema parity with Node
+│   ├── auth.go                  # session store + HMAC-signed cookies + bcrypt login/change-password
+│   ├── ws.go                    # WebSocket protocol + auth-gated upgrade
+│   ├── session.go               # Manager: bridges WS connections to SSH/Telnet sessions
+│   ├── ssh.go                   # SSH client (x/crypto/ssh) + keepalive
+│   ├── telnet.go                # Telnet client (IAC/NAWS/latin1-accurate)
+│   ├── api.go                   # 9 REST endpoints (connections, sessions, settings, recordings)
+│   ├── backgrounds.go           # multipart upload with MIME whitelist + path sanitation
+│   ├── static.go                # embed.FS + layered cache headers + disk handler
+│   └── *_test.go                # 46 tests
+├── public/                      # frontend (embedded into the binary)
+│   ├── index.html
+│   ├── js/app.js                # main UI
+│   ├── css/term.css
+│   ├── themes/                  # theme definitions (JSON)
+│   ├── backgrounds/             # preset backgrounds
+│   └── lib/                     # xterm.js + addons (canvas, fit, web-links)
+├── data/                        # runtime data — bind-mount in Docker, gitignored
+│   ├── webterm.db               # SQLite (WAL mode)
+│   ├── backgrounds/             # uploaded user backgrounds
+│   └── logs/*.cast              # session recordings
+├── docs/                        # design specs, plans, screenshots
+├── Dockerfile                   # multi-stage golang:alpine → scratch
+├── docker-compose.yml           # port mapping + ./data volume + GOMEMLIMIT
+├── shell.nix                    # Nix shell providing Go
+├── .env.example                 # template; copy to .env and customize
+├── .dockerignore                # build context = go-server/ only
+└── README.md                    # this file
 ```
 
 ---
 
 ## 📡 API Reference
 
-<details>
-<summary><b>REST endpoints</b></summary>
+All endpoints return JSON. Authenticated endpoints require a `connect.sid` cookie
+from `POST /api/auth/login`. Some endpoints (notably `GET /api/settings`) are
+intentionally public.
 
-All endpoints except `auth/login` require an authenticated session.
+### Auth
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/auth/login` | Authenticate and start a session |
-| `POST` | `/api/auth/logout` | End the session |
-| `POST` | `/api/auth/change-password` | Change the admin password |
-| `GET` | `/api/connections` | List saved connections |
-| `POST` | `/api/connections` | Create a connection |
-| `PUT` | `/api/connections/:id` | Update a connection |
-| `DELETE` | `/api/connections/:id` | Delete a connection |
-| `GET` | `/api/sessions` | List active sessions |
-| `GET` | `/api/settings` | Read app settings |
-| `PUT` | `/api/settings` | Update app settings |
-| `GET` | `/api/recordings` | List recordings |
-| `GET` | `/api/recordings/:id/download` | Download a `.cast` recording |
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `POST` | `/api/auth/login` | — | Body: `{username, password}`. Sets `connect.sid` cookie. |
+| `POST` | `/api/auth/logout` | — | Destroys the current session. |
+| `POST` | `/api/auth/change-password` | ✓ | Body: `{currentPassword, newPassword}` (≥6 chars). |
 
-</details>
+### Connections
 
-<details>
-<summary><b>WebSocket protocol</b></summary>
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/api/connections` | ✓ | List all saved connection profiles. |
+| `POST` | `/api/connections` | ✓ | Create a new profile. |
+| `PUT` | `/api/connections/{id}` | ✓ | Update an existing profile. |
+| `DELETE` | `/api/connections/{id}` | ✓ | Delete a profile. |
 
-**Client → Server**
+### Sessions & recordings
 
-```jsonc
-{ "type": "create", "protocol": "ssh", "host": "192.168.1.10", "port": 22 }
-{ "type": "input",  "sessionId": "...", "data": "ls -la\n" }
-{ "type": "resize", "sessionId": "...", "cols": 80, "rows": 24 }
-{ "type": "close",  "sessionId": "..." }
-```
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/api/sessions` | ✓ | List historical sessions. |
+| `GET` | `/api/recordings` | ✓ | List `.cast` files in the log directory. |
+| `GET` | `/api/recordings/{id}/download` | ✓ | Download a `.cast` file. Path traversal rejected (400). |
 
-**Server → Client**
+### Settings
 
-```jsonc
-{ "type": "created", "sessionId": "...", "protocol": "ssh" }
-{ "type": "output",  "sessionId": "...", "data": "file1 file2\n" }
-{ "type": "exit",    "sessionId": "..." }
-{ "type": "error",   "sessionId": "...", "message": "Connection refused" }
-{ "type": "recording:status", "sessionId": "...", "active": true }
-```
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/api/settings` | — | Get current UI settings (or `{}`). |
+| `PUT` | `/api/settings` | ✓ | Persist UI settings. |
 
-</details>
+### Backgrounds
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/api/backgrounds` | ✓ | List uploaded backgrounds. |
+| `POST` | `/api/backgrounds/upload` | ✓ | Multipart upload (`image` field). JPEG/PNG/GIF/WebP only, ≤ 5 MB. |
+| `DELETE` | `/api/backgrounds/{id}` | ✓ | Delete a background. |
+
+### WebSocket
+
+Connect to `ws://<host>:<port>/` (upgrade from HTTP on `/`). **Authentication is
+required** — `connect.sid` must be present and valid, otherwise the upgrade is rejected
+with `401 Authentication required`.
+
+Message protocol (all messages are JSON text frames):
+
+| Client → server | Fields | Purpose |
+|-----------------|--------|---------|
+| `create` | `protocol`, `host`, `port`, `username`, `password`, `cols`, `rows` | Open a new SSH/Telnet session. |
+| `input` | `sessionId`, `data` | Forward keystrokes to the upstream session. |
+| `resize` | `sessionId`, `cols`, `rows` | Notify the upstream session of a viewport change. |
+| `close` | `sessionId` | Close the upstream session and tear down. |
+
+| Server → client | Fields | Purpose |
+|-----------------|--------|---------|
+| `created` | `sessionId`, `protocol` | Acknowledges a successful `create`. |
+| `output` | `sessionId`, `data` | Upstream session output. |
+| `exit` | `sessionId` | Upstream session ended. |
+| `error` | `message` (and optionally `sessionId`) | Error reply to a `create` or an upstream error. |
 
 ---
 
 ## 🔒 Security
 
-- **Encrypted credentials** — Stored connection passwords are encrypted at rest, not stored in plaintext.
-- **Hashed passwords** — User/admin passwords are hashed with `bcrypt`.
-- **Session auth** — A signed session cookie gates every API and WebSocket request.
-- **Change defaults** — Replace the default `admin` / `admin` credentials and set a strong `SESSION_SECRET` before exposing the service publicly.
+- **bcrypt** cost 10 for password hashing (same as the original Node build — hashes are
+  portable between the two implementations).
+- **HMAC-SHA256**-signed session cookies (`connect.sid`), verified with constant-time
+  compare; tamper-resistant.
+- **HttpOnly + SameSite=Lax** cookies; `Secure` flag auto-applied when behind TLS or
+  a trusted reverse proxy (`X-Forwarded-Proto: https`).
+- **WebSocket auth gate** — terminals can no longer be opened by unauthenticated clients
+  (an improvement over the original Node version, which had no WS-side auth).
+- **Path-traversal rejection** for recording downloads (`/`/`\`/`..` all rejected with
+  400).
+- **Filename sanitation** for background uploads: `/`, `\`, and `[^a-zA-Z0-9._-]` all
+  mapped to `_`, prefixed with a millisecond timestamp.
+- **Insecure host-key verification** for SSH — matches the original `ssh2` default;
+  flip this in `go-server/ssh.go` for production deployments.
+- **Default admin** (`admin`/`admin`) is created only when the `users` table is empty;
+  **change the password immediately** after first login.
 
-> WebTerm is intended to run on a trusted network or behind a reverse proxy with TLS. Always serve it over HTTPS in production.
+**Before deploying**: set `SESSION_SECRET` to a strong random value, set
+`ADMIN_PASS` to a strong password, and put WebTerm behind TLS (the `Secure` cookie flag
+is set automatically when TLS is terminated upstream).
 
 ---
 
 ## 🛣️ Roadmap
 
-- [ ] User accounts & role-based access
-- [ ] In-app recording playback
-- [ ] SFTP file transfer
-- [ ] Key generation & management UI
-- [ ] Additional themes
+- [ ] Strict host-key verification for SSH (configurable `known_hosts`).
+- [ ] Passphrase-encrypted SSH keys at rest (currently stored as plaintext like the
+      original).
+- [ ] Cluster mode (Redis-backed sessions) for multi-instance deployments.
+- [ ] Terminal multiplexing (split panes).
+- [ ] Optional TURN/relay for browser-side clipboard over OSC 52.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please open an issue first to discuss what you'd like to change, then submit a pull request.
+PRs welcome. The codebase is small enough to grok in an afternoon — ~2,000 LOC of Go
+plus a vanilla-JS frontend with no build step.
 
 ```bash
-git checkout -b feature/your-feature
-# make your changes…
-npm run build   # ensure it compiles
+git clone <your-fork>
+cd webTerm
+nix-shell           # or install Go ≥ 1.23 manually
+cd go-server
+go test ./...
 ```
+
+Before opening a PR, please run the full test suite and the linter (`go vet ./...`).
 
 ---
 
 ## 📄 License
 
 Released under the **MIT License**. See [LICENSE](LICENSE) for details.
-
-## Go 版本（低内存）
-
-后端已用 Go 重写（`go-server/`），功能与 Node 版一致，内存占用降低 70-80%（空闲 ~15-25MB）。
-
-### 本地运行
-
-```bash
-cd go-server
-go build -o webterm .
-cd .. && ./go-server/webterm   # 复用根目录 .env 与 data/
-```
-
-### Docker（推荐）
-
-```bash
-docker build -t webterm .
-docker compose up -d     # 端口取 .env 的 PORT，默认 8008
-```
-
-镜像 ~15MB（scratch + 静态二进制）。数据持久化在 `./data`（SQLite、背景图、日志）。

@@ -1,9 +1,5 @@
-# Dependencies
-node_modules/
-package-lock.json
-
 # Build output
-dist/
+go-server/webterm
 
 # Database
 data/webterm.db
@@ -30,3 +26,6 @@ Thumbs.db
 
 # Worktrees
 .worktrees/
+
+# Nix shell env
+.direnv/
