@@ -60,7 +60,7 @@ async function main() {
       setStaticCacheHeaders(res, filePath);
     },
   };
-  app.use(express.static(path.join(process.cwd(), 'public'), staticOpts));
+  app.use(express.static(path.join(process.cwd(), 'go-server', 'public'), staticOpts));
 
   // API routes
   app.use('/api', apiRoutes);
