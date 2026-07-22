@@ -1,0 +1,6 @@
+# 构建上下文只需要 go-server/
+*
+!go-server
+# go-server 内排除本地产物
+go-server/webterm
+go-server/data
