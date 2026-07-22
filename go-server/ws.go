@@ -48,6 +48,7 @@ type WSHandler struct {
 func (h *WSHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 设计批准的偏差：WS upgrade 需要登录（Node 版无此检查）。
 	if h.Sessions.FromRequest(r) == nil {
+		slog.Debug("WebSocket auth failed", "remote", r.RemoteAddr)
 		writeErr(w, 401, "Authentication required")
 		return
 	}

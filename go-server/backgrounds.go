@@ -84,6 +84,7 @@ func (h *BackgroundsHandler) Upload(w http.ResponseWriter, r *http.Request) {
 
 	id, err := h.Store.CreateBackground(filename, header.Filename, mime, size)
 	if err != nil {
+		os.Remove(filepath.Join(h.Dir, filename)) // best-effort cleanup of orphan
 		writeErr(w, 500, "Failed to upload background")
 		return
 	}
@@ -110,7 +111,9 @@ func (h *BackgroundsHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 404, "Background not found")
 		return
 	}
-	os.Remove(filepath.Join(h.Dir, bg.Filename)) // 文件不存在不算错误（对齐 Node existsSync 检查）
+	if err := os.Remove(filepath.Join(h.Dir, bg.Filename)); err != nil && !os.IsNotExist(err) {
+		slog.Warn("Failed to remove background file", "filename", bg.Filename, "err", err)
+	}
 	if _, err := h.Store.DeleteBackground(id); err != nil {
 		writeErr(w, 500, "Failed to delete background")
 		return

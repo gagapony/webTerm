@@ -124,3 +124,21 @@ func TestBackgroundUploadNoFile(t *testing.T) {
 		t.Errorf("no file: %d", rec.Code)
 	}
 }
+
+func TestBackgroundUploadTooLarge(t *testing.T) {
+	h, auth, cv := newTestBackgrounds(t)
+	// 6MB PNG payload exceeds maxUploadSize (5MB); MaxBytesReader must reject it.
+	large := make([]byte, 6*1024*1024)
+	for i := range large {
+		large[i] = 0x89
+	}
+	req := uploadRequest(t, "image", "huge.png", "image/png", large, cv)
+	rec := httptest.NewRecorder()
+	auth.RequireAuth(h.Upload)(rec, req)
+	if rec.Code != 400 {
+		t.Fatalf("too large: %d %s", rec.Code, rec.Body.String())
+	}
+	if !strings.Contains(rec.Body.String(), "File too large") {
+		t.Errorf("body should contain 'File too large', got: %s", rec.Body.String())
+	}
+}
