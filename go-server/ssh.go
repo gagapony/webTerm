@@ -145,8 +145,7 @@ func (s *SSHSession) keepalive() {
 		case <-s.keepaliveC:
 			return
 		case <-t.C:
-			// *Client 没有公开的 SendGlobalRequest；用会话级 channel 请求作为存活探针。
-			if _, err := s.session.SendRequest("keepalive@openssh.com", true, nil); err != nil {
+			if _, _, err := s.client.SendRequest("keepalive@openssh.com", true, nil); err != nil {
 				s.doClose()
 				return
 			}
