@@ -46,7 +46,11 @@ func (a *API) ListConnections(w http.ResponseWriter, r *http.Request) {
 
 func (a *API) CreateConnection(w http.ResponseWriter, r *http.Request) {
 	in, err := decodeConnectionInput(r)
-	if err != nil || in.Name == "" || in.Protocol == "" {
+	if err != nil {
+		writeErr(w, 400, "Invalid JSON")
+		return
+	}
+	if in.Name == "" || in.Protocol == "" {
 		writeErr(w, 400, "Name and protocol required")
 		return
 	}
@@ -64,7 +68,11 @@ func (a *API) UpdateConnection(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 404, "Connection not found")
 		return
 	}
-	in, _ := decodeConnectionInput(r)
+	in, err := decodeConnectionInput(r)
+	if err != nil {
+		writeErr(w, 400, "Invalid JSON")
+		return
+	}
 	c, err := a.Store.UpdateConnection(id, in)
 	if err != nil {
 		writeErr(w, 500, "Internal error")

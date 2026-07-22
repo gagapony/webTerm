@@ -104,6 +104,23 @@ func TestAPIConnectionsCRUD(t *testing.T) {
 	if rec.Code != 404 {
 		t.Errorf("delete again: %d", rec.Code)
 	}
+
+	// Non-numeric id → 404
+	rec = httptest.NewRecorder()
+	req = authedReq("PUT", "/api/connections/abc", `{"name":"z"}`, cv)
+	req.SetPathValue("id", "abc")
+	auth.RequireAuth(api.UpdateConnection)(rec, req)
+	if rec.Code != 404 {
+		t.Errorf("update non-numeric id: %d, want 404", rec.Code)
+	}
+
+	rec = httptest.NewRecorder()
+	req = authedReq("DELETE", "/api/connections/abc", "", cv)
+	req.SetPathValue("id", "abc")
+	auth.RequireAuth(api.DeleteConnection)(rec, req)
+	if rec.Code != 404 {
+		t.Errorf("delete non-numeric id: %d, want 404", rec.Code)
+	}
 }
 
 func TestAPISettings(t *testing.T) {
