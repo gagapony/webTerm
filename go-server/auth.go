@@ -156,6 +156,14 @@ func InitializeDefaultUser(store *Store, cfg Config) error {
 	return nil
 }
 
+// Status returns 200 with {authenticated: true/false}. Never returns 401,
+// so the browser console stays clean when the frontend probes login state
+// on page load.
+func (a *Auth) Status(w http.ResponseWriter, r *http.Request) {
+	sd := a.Sessions.FromRequest(r)
+	writeJSON(w, 200, map[string]bool{"authenticated": sd != nil})
+}
+
 func (a *Auth) parseCredentials(r *http.Request) (string, string) {
 	if strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
 		var body struct {

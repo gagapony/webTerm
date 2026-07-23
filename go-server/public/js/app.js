@@ -161,12 +161,13 @@ class WebTerm {
 
   async checkAuth() {
     try {
-      const response = await fetch('/api/connections');
-      if (response.ok) {
+      const response = await fetch('/api/auth/status');
+      const data = await response.json();
+      if (data.authenticated) {
         this.onLoginSuccess();
       }
     } catch (err) {
-      // Not logged in
+      // Network error — not actionable
     }
   }
 

@@ -47,6 +47,7 @@ func run() error {
 	mux.HandleFunc("POST /api/auth/login", auth.Login)
 	mux.HandleFunc("POST /api/auth/logout", auth.Logout)
 	mux.HandleFunc("POST /api/auth/change-password", auth.RequireAuth(auth.ChangePassword))
+	mux.HandleFunc("GET /api/auth/status", auth.Status)
 
 	// Connections
 	mux.HandleFunc("GET /api/connections", auth.RequireAuth(api.ListConnections))
