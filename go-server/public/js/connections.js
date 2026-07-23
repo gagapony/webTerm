@@ -344,7 +344,8 @@
       });
     }
 
-    // Mount when modal becomes visible (app.js toggles display + data-open).
+    // Mount ONLY when the modal becomes visible (avoids fetching /api/connections
+    // on page load before the user is logged in, which would emit a 401).
     if (modal && window.MutationObserver) {
       const obs = new MutationObserver(() => {
         if (modal.style.display !== 'none' && !modal.hasAttribute('hidden')) {
@@ -352,13 +353,6 @@
         }
       });
       obs.observe(modal, { attributes: true, attributeFilter: ['style', 'hidden', 'data-open'] });
-    }
-
-    // Also try mounting on DOMContentLoaded in case the modal is already open.
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', tryMount);
-    } else {
-      tryMount();
     }
   }
 
