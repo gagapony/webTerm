@@ -155,7 +155,6 @@ class WebTerm {
 
     // Load backgrounds when settings modal opens
     this.settingsBtn?.addEventListener('click', () => {
-      this.renderPresetBackgrounds();
       this.loadBackgrounds();
     });
   }
@@ -572,16 +571,19 @@ class WebTerm {
 
   selectProtocol(protocol) {
     this.selectedProtocol = protocol;
-    this.protocolBtns.forEach(btn => {
-      btn.classList.toggle('is-active', btn.dataset.protocol === protocol);
-    });
-
-    this.remoteFields.style.display = 'block';
-    this.sessionPort.placeholder = protocol === 'ssh' ? '22' : '23';
+    if (this.protocolBtns) {
+      this.protocolBtns.forEach(btn => {
+        btn.classList.toggle('is-active', btn.dataset.protocol === protocol);
+      });
+    }
+    if (this.remoteFields) this.remoteFields.style.display = 'block';
+    if (this.sessionPort) this.sessionPort.placeholder = protocol === 'ssh' ? '22' : '23';
   }
 
   createSessionFromModal() {
-    const { cols, rows } = this._measureViewport();
+    // Form fields removed; this is now dead code (no button calls it).
+    // Kept for safety; the Add button in Manage Sessions uses connections.js.
+    if (!this.sessionHost) return;
 
     const options = {
       type: 'create',
@@ -604,22 +606,14 @@ class WebTerm {
   }
 
   onSessionCreated(sessionId, protocol) {
-    // Capture form values BEFORE clearing the form.
-    const name = (this.connectionName?.value || '').trim();
-    const host = this.sessionHost.value.trim();
-    const username = this.sessionUsername.value.trim();
-
-    // Label resolution priority: name → user@host → host → protocol
-    const label =
-      name ||
-      (username && host ? `${username}@${host}` : '') ||
-      host ||
-      protocol.toUpperCase();
+    // Form fields were removed; label comes from connectSaved's stash or falls
+    // back to the protocol name.
+    const label = this._pendingSessionLabel || protocol.toUpperCase();
+    const target = this._pendingSessionTarget || '';
 
     this.createTerminal(sessionId, protocol, label);
 
     this.connectionStartTime = new Date();
-    const target = `${host}:${this.sessionPort.value || 22}`;
     const protocolLabel = protocol === 'ssh' ? 'SSH' : 'Telnet';
     const detail = { state: 'Connected', protocol: protocolLabel, target, time: this.formatTime(this.connectionStartTime) };
 
@@ -632,12 +626,9 @@ class WebTerm {
 
     this.updateStatus('connected', detail);
 
-    // Clear form
-    if (this.connectionName) this.connectionName.value = '';
-    this.sessionHost.value = '';
-    this.sessionPort.value = '';
-    this.sessionUsername.value = '';
-    this.sessionPassword.value = '';
+    // Clear stash
+    this._pendingSessionLabel = null;
+    this._pendingSessionTarget = null;
   }
 
   createTerminal(sessionId, protocol, label) {
@@ -946,16 +937,32 @@ class WebTerm {
       if (!conn) return;
 
       this.savedConnDropdown.hidden = true;
+      this.hideNewSessionModal();
 
-      // Set form and connect
-      this.selectProtocol(conn.protocol);
-      if (this.connectionName) this.connectionName.value = conn.name || '';
-      this.sessionHost.value = conn.host || '';
-      this.sessionPort.value = conn.port || '';
-      this.sessionUsername.value = conn.username || '';
-      this.sessionPassword.value = conn.password_encrypted || '';
+      const { cols, rows } = this._measureViewport();
+      const protocol = conn.protocol || 'ssh';
+      const host = conn.host || '';
+      const port = conn.port || (protocol === 'ssh' ? 22 : 23);
+      const username = conn.username || '';
+      const password = conn.password_encrypted || '';
+      const name = conn.name || '';
 
-      this.createSessionFromModal();
+      // Stash label/target for onSessionCreated (form fields no longer exist).
+      this._pendingSessionLabel = name || (username && host ? `${username}@${host}` : '') || host || protocol.toUpperCase();
+      this._pendingSessionTarget = `${host}:${port}`;
+
+      const options = {
+        type: 'create',
+        protocol, cols, rows,
+        host, port, username, password,
+      };
+
+      if (!host) {
+        alert('Host is required');
+        return;
+      }
+
+      this.ws.send(JSON.stringify(options));
     } catch (err) {
       console.error('Failed to connect:', err);
     }
@@ -971,6 +978,9 @@ class WebTerm {
   }
 
   async saveConnection() {
+    // Form fields removed; dead code. The Add button in Manage Sessions uses
+    // connections.js to POST new connections.
+    if (!this.connectionName) return;
     const name = this.connectionName?.value?.trim();
     if (!name) {
       alert('Please enter a connection name');
@@ -1006,8 +1016,9 @@ class WebTerm {
   }
 
   initSettingsTabs() {
-    const tabs = document.querySelectorAll('.settings-tab');
-    const contents = document.querySelectorAll('.settings-tab-content');
+    const modal = document.getElementById('settingsModal') || document;
+    const tabs = modal.querySelectorAll('.settings-tab');
+    const contents = modal.querySelectorAll('.settings-tab-content');
 
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
@@ -1287,9 +1298,11 @@ class WebTerm {
       if (blurValue) blurValue.textContent = `${settings.blurStrength}px`;
     }
 
-    // Apply background
+    // Apply background (CSS mesh gradient is the default when null)
     if (settings.backgroundImage) {
       this.applyBackground(settings.backgroundImage);
+    } else {
+      this.applyBackground(null);
     }
   }
 
@@ -1643,13 +1656,21 @@ class WebTerm {
     };
   }
 
-  // Background image methods
+  // Background image methods.
+  // When no custom background is set, the CSS mesh-gradient layer
+  // (.mesh-background in index.html) shows through (it's the default).
+  // When the user picks an image, we hide the mesh layer and apply the image.
   applyBackground(background) {
     this.currentBackground = background || null;
+
+    const mesh = document.getElementById('meshBackground');
+    const noise = document.getElementById('meshNoise');
 
     if (!background) {
       document.body.style.backgroundImage = '';
       document.body.classList.remove('has-background');
+      if (mesh) mesh.hidden = false;
+      if (noise) noise.hidden = false;
       this.applyTerminalTheme();
       return;
     }
@@ -1660,6 +1681,8 @@ class WebTerm {
     document.body.style.backgroundPosition = 'center';
     document.body.style.backgroundAttachment = 'fixed';
     document.body.classList.add('has-background');
+    if (mesh) mesh.hidden = true;
+    if (noise) noise.hidden = true;
     this.applyTerminalTheme();
   }
 
@@ -1675,36 +1698,6 @@ class WebTerm {
     }
   }
 
-  renderPresetBackgrounds() {
-    const grid = document.getElementById('bgPresetGrid');
-    if (!grid) return;
-
-    const presets = [
-      { id: 'mountain', name: 'Mountain', url: '/backgrounds/preset-mountain.svg' },
-      { id: 'ocean', name: 'Ocean', url: '/backgrounds/preset-ocean.svg' },
-      { id: 'forest', name: 'Forest', url: '/backgrounds/preset-forest.svg' }
-    ];
-
-    grid.innerHTML = presets.map(preset => `
-      <div class="bg-preset-item" data-preset="${preset.id}" data-url="${preset.url}">
-        <img src="${preset.url}" alt="${preset.name}" loading="lazy">
-        <span>${preset.name}</span>
-      </div>
-    `).join('');
-
-    // Add click handlers
-    grid.querySelectorAll('.bg-preset-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const url = item.dataset.url;
-        this.selectBackground({ type: 'preset', value: url });
-
-        // Update active state
-        document.querySelectorAll('.bg-preset-item, .bg-uploaded-item').forEach(i => i.classList.remove('is-active'));
-        item.classList.add('is-active');
-      });
-    });
-  }
-
   renderUploadedBackgrounds(backgrounds) {
     const grid = document.getElementById('bgUploadedGrid');
     if (!grid) return;
@@ -1715,22 +1708,22 @@ class WebTerm {
     }
 
     grid.innerHTML = backgrounds.map(bg => `
-      <div class="bg-uploaded-item" data-id="${bg.id}" data-url="/backgrounds/${this.escapeHtml(bg.filename)}">
-        <img src="/backgrounds/${this.escapeHtml(bg.filename)}" alt="${this.escapeHtml(bg.original_name)}" loading="lazy">
-        <button class="bg-delete-btn" data-id="${bg.id}">×</button>
-      </div>
-    `).join('');
+        <div class="bg-uploaded-item" data-id="${bg.id}" data-url="/backgrounds/${this.escapeHtml(bg.filename)}">
+          <img src="/backgrounds/${this.escapeHtml(bg.filename)}" alt="${this.escapeHtml(bg.original_name)}" loading="lazy">
+          <button class="bg-delete-btn" data-id="${bg.id}">×</button>
+        </div>
+      `).join('');
 
-    // Add click handlers
-    grid.querySelectorAll('.bg-uploaded-item').forEach(item => {
-      item.addEventListener('click', (e) => {
-        if (!e.target.classList.contains('bg-delete-btn')) {
-          const url = item.dataset.url;
-          this.selectBackground({ type: 'uploaded', value: url });
+      // Add click handlers
+      grid.querySelectorAll('.bg-uploaded-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          if (!e.target.classList.contains('bg-delete-btn')) {
+            const url = item.dataset.url;
+            this.selectBackground({ type: 'uploaded', value: url });
 
-          // Update active state
-          document.querySelectorAll('.bg-preset-item, .bg-uploaded-item').forEach(i => i.classList.remove('is-active'));
-          item.classList.add('is-active');
+            // Update active state
+            document.querySelectorAll('.bg-uploaded-item').forEach(i => i.classList.remove('is-active'));
+            item.classList.add('is-active');
         }
       });
     });

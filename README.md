@@ -290,9 +290,9 @@ intentionally public.
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| `GET` | `/api/connections` | ✓ | List all saved connection profiles. |
-| `POST` | `/api/connections` | ✓ | Create a new profile. |
-| `PUT` | `/api/connections/{id}` | ✓ | Update an existing profile. |
+| `GET`  | `/api/connections` | ✓ | List all saved connection profiles (ordered by name). |
+| `POST` | `/api/connections` | ✓ | Create a new profile. Body fields: `name*`, `protocol*`, `host*`, `port*`, `username*`, `password`, `ssh_key_path`, `ssh_key_passphrase`, optional `description` (≤200 chars) and `color` (`#rrggbb`). |
+| `PUT`  | `/api/connections/{id}` | ✓ | Update an existing profile. Same body fields; missing/unset fields are preserved. |
 | `DELETE` | `/api/connections/{id}` | ✓ | Delete a profile. |
 
 ### Sessions & recordings
