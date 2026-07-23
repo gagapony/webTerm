@@ -279,7 +279,7 @@
 .frost-layer {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 1;
   backdrop-filter: blur(var(--blur-strength));
   -webkit-backdrop-filter: blur(var(--blur-strength));
   transform: translateZ(0);
@@ -434,6 +434,65 @@
 * {
   box-sizing: border-box;
 }
+
+/* === CSS mesh-gradient default background (orbs + noise) ===
+   Shown when no custom background image is set. The app hides this layer
+   via [hidden] when a user picks an uploaded/URL background. */
+.mesh-background {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  background: #000000;
+  overflow: hidden;
+}
+.mesh-background[hidden] { display: none !important; }
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  animation: float-around infinite alternate ease-in-out;
+  will-change: transform;
+}
+.orb-1 {
+  background: radial-gradient(circle at center, rgba(255, 0, 102, 1) 0%, rgba(255, 0, 102, 0) 70%);
+  width: 55vw; height: 55vw; top: -10%; left: -10%;
+  animation-duration: 12s;
+}
+.orb-2 {
+  background: radial-gradient(circle at center, rgba(138, 43, 226, 1) 0%, rgba(138, 43, 226, 0) 70%);
+  width: 65vw; height: 65vw; bottom: -20%; right: -10%;
+  animation-duration: 15s; animation-direction: alternate-reverse;
+}
+.orb-3 {
+  background: radial-gradient(circle at center, rgba(0, 255, 255, 1) 0%, rgba(0, 255, 255, 0) 70%);
+  width: 50vw; height: 50vw; top: 30%; left: 10%;
+  animation-duration: 18s;
+}
+.orb-4 {
+  background: radial-gradient(circle at center, rgba(255, 94, 0, 1) 0%, rgba(255, 94, 0, 0) 70%);
+  width: 45vw; height: 45vw; top: -5%; right: 0%;
+  animation-duration: 14s;
+}
+@keyframes float-around {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(8vw, -10vh) scale(1.1); }
+  66%  { transform: translate(-10vw, 8vh) scale(0.9); }
+  100% { transform: translate(5vw, 15vh) scale(1.15); }
+}
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  opacity: 0.04;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+.noise-overlay[hidden] { display: none !important; }
+/* === end mesh-background === */
 
 html,
 body {
@@ -1605,6 +1664,22 @@ body.has-background .topbar {
   min-width: 0;
 }
 
+.bg-disable-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+.bg-disable-toggle input[type=checkbox] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--accent, #60a5fa);
+}
+
 .settings-kicker {
   display: inline-block;
   margin-bottom: 6px;
@@ -2239,4 +2314,52 @@ body.has-background .topbar {
    *   other features.
    *)
 */
+/* === Manage tab content (New Session Modal reuses .settings-tab* for the tab bar) === */
+.conn-toolbar { display: flex; justify-content: flex-end; margin-bottom: 14px; }
+.conn-add-btn { display: inline-flex; align-items: center; gap: 4px; }
+.conn-list { display: flex; flex-direction: column; gap: 2px; }
+.conn-row {
+  display: grid;
+  grid-template-columns: 2fr 1.4fr 1fr 80px;
+  align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+}
+.conn-row:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(148, 163, 184, 0.1); }
+.conn-row.conn-header {
+  background: transparent; font-weight: 600; font-size: 11px;
+  letter-spacing: 0.06em; color: var(--text-dim, rgba(226, 232, 240, 0.5));
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15); padding-bottom: 6px; border-radius: 0;
+}
+.conn-col-actions { text-align: center; white-space: nowrap; }
+.conn-col-name, .conn-col-host, .conn-col-user {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px;
+}
+.conn-desc {
+  display: block; font-size: 11px; color: var(--text-dim, rgba(226, 232, 240, 0.5));
+  margin-top: 2px; font-weight: 400;
+}
+.conn-btn-icon {
+  background: none; border: none; cursor: pointer; padding: 2px 6px; font-size: 14px;
+  color: var(--text-dim, rgba(226, 232, 240, 0.55));
+}
+.conn-btn-icon:hover { color: var(--text, #e2e8f0); }
+.conn-btn-icon.conn-btn-danger:hover { color: #fca5a5; }
+
+.conn-empty {
+  text-align: center; padding: 40px 20px;
+  color: var(--text-dim, rgba(226, 232, 240, 0.5)); font-size: 13px;
+}
+.conn-error { color: #fca5a5; padding: 12px; font-size: 13px; }
+
+/* Nested edit/delete modal — inherits frosted glass from .settings-modal/.settings-dialog */
+.conn-form-error {
+  background: rgba(127, 29, 29, 0.4); border: 1px solid rgba(252, 165, 165, 0.4);
+  color: #fecaca; padding: 8px 12px; border-radius: 6px;
+  font-size: 12px; margin: 0 24px;
+}
+.conn-confirm { padding: 8px 24px; }
+.conn-confirm-text { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text, #e2e8f0); }
+.conn-confirm-text strong { color: var(--text, #e2e8f0); font-weight: 600; }
 /*# sourceMappingURL=serial-app.css.map */

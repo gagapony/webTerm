@@ -73,6 +73,17 @@
   </style>
 </head>
 <body>
+  <!-- Default CSS mesh-gradient background (orbs + noise). Visible when no
+       custom background image is set; app.js hides it via [hidden] when a
+       custom background is applied. -->
+  <div class="mesh-background" id="meshBackground" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+  </div>
+  <div class="noise-overlay" id="meshNoise" aria-hidden="true"></div>
+
   <!-- Single frozen frosted-glass layer: blurs the body background once and
        caches it as a GPU texture. High-frequency terminal repaints happen on a
        separate layer above this, so the blur is never re-computed per frame. -->
@@ -145,7 +156,7 @@
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
             </svg>
           </button>
-          <button class="toolbar-button chrome-button is-icon-only is-primary" id="newSessionBtn" title="New Session">
+          <button class="toolbar-button chrome-button is-icon-only is-primary" id="newSessionBtn" title="Manage Sessions">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -190,15 +201,15 @@
     </main>
   </div>
 
-  <!-- New Session Modal -->
+  <!-- Manage Sessions Modal -->
   <div class="settings-modal" data-open="false" id="newSessionModal" hidden>
     <div class="settings-scrim" id="newSessionScrim"></div>
     <div class="settings-dialog">
       <div class="settings-header">
         <div class="settings-copy">
-          <span class="settings-kicker">SESSION</span>
-          <h2 class="settings-title">New Terminal Session</h2>
-          <p class="settings-subtitle">Create a new SSH or Telnet connection.</p>
+          <span class="settings-kicker">SESSIONS</span>
+          <h2 class="settings-title">Manage Sessions</h2>
+          <p class="settings-subtitle">Create, edit, or delete saved connections.</p>
         </div>
         <button class="settings-close-button" id="newSessionClose">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -208,46 +219,19 @@
         </button>
       </div>
       <div class="settings-body">
-        <div class="settings-grid">
-          <div class="compact-field">
-            <label class="toolbar-label">CONNECTION NAME</label>
-            <input type="text" class="toolbar-input" id="connectionName" placeholder="My Server" autocomplete="off">
-          </div>
-          <div class="settings-transport">
-            <div class="settings-transport-copy">
-              <span class="toolbar-label">PROTOCOL</span>
-            </div>
-            <div class="workspace-switcher">
-              <button class="workspace-chip is-active" data-protocol="ssh">SSH</button>
-              <button class="workspace-chip" data-protocol="telnet">Telnet</button>
-            </div>
-          </div>
-          <div id="remoteFields">
-            <div class="compact-field">
-              <label class="toolbar-label">HOST</label>
-              <input type="text" class="toolbar-input" id="sessionHost" placeholder="192.168.1.100" autocomplete="off">
-            </div>
-            <div class="compact-field">
-              <label class="toolbar-label">PORT</label>
-              <input type="number" class="toolbar-input" id="sessionPort" placeholder="22" autocomplete="off">
-            </div>
-            <div class="compact-field" id="usernameField">
-              <label class="toolbar-label">USERNAME</label>
-              <input type="text" class="toolbar-input" id="sessionUsername" placeholder="root" autocomplete="off">
-            </div>
-            <div class="compact-field" id="passwordField">
-              <label class="toolbar-label">PASSWORD</label>
-              <input type="password" class="toolbar-input" id="sessionPassword" placeholder="••••••••" autocomplete="off">
-            </div>
-          </div>
-        </div>
+        <div id="ns-manage-host"></div>
       </div>
       <div class="settings-footer">
         <p class="settings-footer-note" id="connectionStatus"></p>
         <div class="settings-footer-actions">
-          <button class="chrome-button" id="newSessionCancel">Cancel</button>
-          <button class="chrome-button is-primary" id="saveConnectionBtn">Save</button>
-          <button class="chrome-button is-primary" id="connectBtn">Connect</button>
+          <button class="chrome-button" id="newSessionCancel">Close</button>
+          <button class="chrome-button is-primary" id="nsAddBtn" title="Add connection">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add</span>
+          </button>
         </div>
       </div>
     </div>
@@ -444,14 +428,6 @@
 
         <!-- Background Tab Content -->
         <div class="settings-tab-content" role="tabpanel" id="tab-background" data-tab-content="background">
-          <!-- Preset Images -->
-          <div class="settings-section">
-            <h3 class="settings-section-title">Preset Images</h3>
-            <div class="bg-preset-grid" id="bgPresetGrid">
-              <!-- Populated by JavaScript -->
-            </div>
-          </div>
-
           <!-- Uploaded Images -->
           <div class="settings-section">
             <h3 class="settings-section-title">Uploaded Images</h3>
@@ -477,6 +453,7 @@
               <input type="text" class="toolbar-input" id="bgUrlInput" placeholder="Enter image URL...">
               <button class="chrome-button" id="bgUrlApply">Apply</button>
             </div>
+            <p class="bg-help">Leave empty to use the animated CSS mesh background.</p>
           </div>
 
           <!-- Transparency & Blur -->
@@ -540,6 +517,7 @@
   <script src="/lib/addon-web-links.js?v=5"></script>
   <script src="/lib/addon-canvas.js?v=5"></script>
   <script src="/js/logger.js?v=1"></script>
-  <script src="/js/app.js?v=12"></script>
+  <script src="/js/app.js?v=13"></script>
+  <script src="/js/connections.js?v=2"></script>
 </body>
 </html>
