@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"path/filepath"
 	"testing"
@@ -203,5 +204,64 @@ func TestStoreMigratesLocalProtocol(t *testing.T) {
 		if c.Protocol == "local" {
 			t.Errorf("local protocol row should be migrated away")
 		}
+	}
+}
+
+func TestStoreMigratesNewColumns(t *testing.T) {
+	s := newTestStore(t)
+	// PRAGMA table_info gives column metadata; verify all 4 new columns present.
+	rows, err := s.db.Query(`PRAGMA table_info(connections)`)
+	if err != nil {
+		t.Fatalf("table_info: %v", err)
+	}
+	defer rows.Close()
+	cols := map[string]bool{}
+	for rows.Next() {
+		var cid int
+		var name, ctype string
+		var notnull int
+		var dflt sql.NullString
+		var pk int
+		if err := rows.Scan(&cid, &name, &ctype, &notnull, &dflt, &pk); err != nil {
+			t.Fatal(err)
+		}
+		cols[name] = true
+	}
+	for _, want := range []string{"description", "color"} {
+		if !cols[want] {
+			t.Errorf("missing column %q after migrate", want)
+		}
+	}
+}
+
+func TestStoreConnectionNewFieldsRoundTrip(t *testing.T) {
+	s := newTestStore(t)
+	desc := "production web server"
+	col := "#e74c3c"
+	c, err := s.CreateConnection(ConnectionInput{
+		Name: "prod-web", Protocol: "ssh", Host: "10.0.1.5",
+		Username: "root", Password: "pw",
+		Description: desc, Color: col,
+	})
+	if err != nil {
+		t.Fatalf("CreateConnection: %v", err)
+	}
+	if c.Description == nil || *c.Description != desc {
+		t.Errorf("Description = %v, want %q", c.Description, desc)
+	}
+	if c.Color == nil || *c.Color != col {
+		t.Errorf("Color = %v, want %q", c.Color, col)
+	}
+
+	// Empty strings → NULL (matches existing nullIfEmpty semantics)
+	c2, err := s.CreateConnection(ConnectionInput{
+		Name: "test", Protocol: "ssh", Host: "h",
+		Description: "", Color: "",
+	})
+	if err != nil {
+		t.Fatalf("CreateConnection empty fields: %v", err)
+	}
+	if c2.Description != nil || c2.Color != nil {
+		t.Errorf("empty strings should be NULL, got D=%v C=%v", c2.Description, c2.Color)
 	}
 }

@@ -32,6 +32,8 @@ type Connection struct {
 	SSHKeyPath        *string `json:"ssh_key_path"`
 	SSHKeyPassphrase  *string `json:"ssh_key_passphrase"`
 	Options           *string `json:"options"`
+	Description       *string `json:"description"`
+	Color             *string `json:"color"`
 	CreatedAt         string  `json:"created_at"`
 	UpdatedAt         string  `json:"updated_at"`
 }
@@ -47,6 +49,8 @@ type ConnectionInput struct {
 	SSHKeyPath       string
 	SSHKeyPassphrase string
 	Options          json.RawMessage
+	Description      string
+	Color            string
 }
 
 type Session struct {
@@ -180,7 +184,51 @@ DROP TABLE connections;
 ALTER TABLE connections_new RENAME TO connections;
 `)
 	}
-	return err
+	if err != nil {
+		return err
+	}
+
+	// New columns for Connection Management UI (description/color).
+	// Idempotent: only add if missing.
+	if hasColumn, err := columnExists(s.db, "connections", "description"); err != nil {
+		return err
+	} else if !hasColumn {
+		if _, err := s.db.Exec(`ALTER TABLE connections ADD COLUMN description TEXT`); err != nil {
+			return err
+		}
+	}
+	if hasColumn, err := columnExists(s.db, "connections", "color"); err != nil {
+		return err
+	} else if !hasColumn {
+		if _, err := s.db.Exec(`ALTER TABLE connections ADD COLUMN color TEXT`); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// columnExists checks whether the given table has the given column. Used for
+// idempotent ALTER TABLE migrations.
+func columnExists(db *sql.DB, table, column string) (bool, error) {
+	rows, err := db.Query(`PRAGMA table_info(` + table + `)`)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var cid int
+		var name, ctype string
+		var notnull int
+		var dflt sql.NullString
+		var pk int
+		if err := rows.Scan(&cid, &name, &ctype, &notnull, &dflt, &pk); err != nil {
+			return false, err
+		}
+		if name == column {
+			return true, nil
+		}
+	}
+	return false, rows.Err()
 }
 
 // ---- Users ----
@@ -213,17 +261,19 @@ func (s *Store) UserCount() int {
 // ---- Connections ----
 
 // datetime 列 CAST AS TEXT：避免 modernc.org/sqlite 扫成 time.Time，保持与 Node 版相同的 JSON 字符串格式。
-const connectionCols = `id, name, protocol, host, port, username, password_encrypted, ssh_key_path, ssh_key_passphrase, options, CAST(created_at AS TEXT) AS created_at, CAST(updated_at AS TEXT) AS updated_at`
+const connectionCols = `id, name, protocol, host, port, username, password_encrypted, ssh_key_path, ssh_key_passphrase, options, description, color, CAST(created_at AS TEXT) AS created_at, CAST(updated_at AS TEXT) AS updated_at`
 
 func scanConnection(row interface{ Scan(...any) error }) (*Connection, error) {
 	var c Connection
 	err := row.Scan(&c.ID, &c.Name, &c.Protocol, &c.Host, &c.Port, &c.Username,
-		&c.PasswordEncrypted, &c.SSHKeyPath, &c.SSHKeyPassphrase, &c.Options, &c.CreatedAt, &c.UpdatedAt)
+		&c.PasswordEncrypted, &c.SSHKeyPath, &c.SSHKeyPassphrase, &c.Options,
+		&c.Description, &c.Color,
+		&c.CreatedAt, &c.UpdatedAt)
 	return &c, err
 }
 
 func (s *Store) GetConnections() ([]Connection, error) {
-	rows, err := s.db.Query(`SELECT ` + connectionCols + ` FROM connections ORDER BY name`)
+	rows, err := s.db.Query(`SELECT ` + connectionCols + ` FROM connections ORDER BY name ASC`)
 	if err != nil {
 		return nil, err
 	}
@@ -263,11 +313,11 @@ func nullIfEmptyJSON(v json.RawMessage) any {
 
 func (s *Store) CreateConnection(in ConnectionInput) (*Connection, error) {
 	res, err := s.db.Exec(`
-INSERT INTO connections (name, protocol, host, port, username, password_encrypted, ssh_key_path, ssh_key_passphrase, options)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+INSERT INTO connections (name, protocol, host, port, username, password_encrypted, ssh_key_path, ssh_key_passphrase, options, description, color)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		in.Name, in.Protocol, nullIfEmpty(in.Host), in.Port, nullIfEmpty(in.Username),
 		nullIfEmpty(in.Password), nullIfEmpty(in.SSHKeyPath), nullIfEmpty(in.SSHKeyPassphrase),
-		nullIfEmptyJSON(in.Options))
+		nullIfEmptyJSON(in.Options), nullIfEmpty(in.Description), nullIfEmpty(in.Color))
 	if err != nil {
 		return nil, err
 	}
@@ -280,6 +330,9 @@ func (s *Store) UpdateConnection(id int64, in ConnectionInput) (*Connection, err
 	if err != nil || existing == nil {
 		return nil, err
 	}
+	// COALESCE pattern: NULL means "preserve existing" for nullable fields.
+	desc := nullIfEmpty(in.Description)
+	col := nullIfEmpty(in.Color)
 	_, err = s.db.Exec(`
 UPDATE connections
 SET name = COALESCE(?, name),
@@ -290,11 +343,13 @@ SET name = COALESCE(?, name),
     ssh_key_path = COALESCE(?, ssh_key_path),
     ssh_key_passphrase = COALESCE(?, ssh_key_passphrase),
     options = COALESCE(?, options),
+    description = COALESCE(?, description),
+    color = COALESCE(?, color),
     updated_at = CURRENT_TIMESTAMP
 WHERE id = ?`,
 		nullIfEmpty(in.Name), nullIfEmpty(in.Host), in.Port, nullIfEmpty(in.Username),
 		nullIfEmpty(in.Password), nullIfEmpty(in.SSHKeyPath), nullIfEmpty(in.SSHKeyPassphrase),
-		nullIfEmptyJSON(in.Options), id)
+		nullIfEmptyJSON(in.Options), desc, col, id)
 	if err != nil {
 		return nil, err
 	}

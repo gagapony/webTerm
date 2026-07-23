@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 type API struct {
@@ -25,6 +27,8 @@ func decodeConnectionInput(r *http.Request) (ConnectionInput, error) {
 		SSHKeyPath       string          `json:"ssh_key_path"`
 		SSHKeyPassphrase string          `json:"ssh_key_passphrase"`
 		Options          json.RawMessage `json:"options"`
+		Description      string          `json:"description"`
+		Color            string          `json:"color"`
 	}
 	err := json.NewDecoder(r.Body).Decode(&body)
 	return ConnectionInput{
@@ -32,7 +36,24 @@ func decodeConnectionInput(r *http.Request) (ConnectionInput, error) {
 		Username: body.Username, Password: body.Password,
 		SSHKeyPath: body.SSHKeyPath, SSHKeyPassphrase: body.SSHKeyPassphrase,
 		Options: body.Options,
+		Description: body.Description, Color: body.Color,
 	}, err
+}
+
+var validColorRE = regexp.MustCompile(`^#[0-9a-fA-F]{6}$`)
+
+// validateConnectionInput checks description and color. Empty fields are allowed
+// (meaning "no label"). Returns the verbatim error message on failure, or "" if valid.
+func validateConnectionInput(in ConnectionInput) string {
+	if in.Color != "" {
+		if !validColorRE.MatchString(in.Color) {
+			return "Invalid color format"
+		}
+	}
+	if utf8.RuneCountInString(in.Description) > 200 {
+		return "Description too long (max 200 chars)"
+	}
+	return ""
 }
 
 func (a *API) ListConnections(w http.ResponseWriter, r *http.Request) {
@@ -54,6 +75,10 @@ func (a *API) CreateConnection(w http.ResponseWriter, r *http.Request) {
 		writeErr(w, 400, "Name and protocol required")
 		return
 	}
+	if msg := validateConnectionInput(in); msg != "" {
+		writeErr(w, 400, msg)
+		return
+	}
 	c, err := a.Store.CreateConnection(in)
 	if err != nil {
 		writeErr(w, 500, "Internal error")
@@ -71,6 +96,10 @@ func (a *API) UpdateConnection(w http.ResponseWriter, r *http.Request) {
 	in, err := decodeConnectionInput(r)
 	if err != nil {
 		writeErr(w, 400, "Invalid JSON")
+		return
+	}
+	if msg := validateConnectionInput(in); msg != "" {
+		writeErr(w, 400, msg)
 		return
 	}
 	c, err := a.Store.UpdateConnection(id, in)

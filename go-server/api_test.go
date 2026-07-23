@@ -204,6 +204,77 @@ func TestAPIRecordings(t *testing.T) {
 	}
 }
 
+func TestAPICreateConnectionColorValidation(t *testing.T) {
+	api, auth, cv := newTestAPI(t)
+	rec := httptest.NewRecorder()
+	auth.RequireAuth(api.CreateConnection)(rec, authedReq("POST", "/api/connections",
+		`{"name":"bad","protocol":"ssh","host":"h","color":"red"}`, cv))
+	if rec.Code != 400 {
+		t.Fatalf("invalid color: code = %d, want 400", rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), "Invalid color format") {
+		t.Errorf("body = %s, want 'Invalid color format'", rec.Body.String())
+	}
+
+	rec = httptest.NewRecorder()
+	auth.RequireAuth(api.CreateConnection)(rec, authedReq("POST", "/api/connections",
+		`{"name":"good","protocol":"ssh","host":"h","color":"#e74c3c","description":"hi"}`, cv))
+	if rec.Code != 201 {
+		t.Fatalf("valid color: code = %d, want 201", rec.Code)
+	}
+}
+
+func TestAPICreateConnectionLengthValidation(t *testing.T) {
+	api, auth, cv := newTestAPI(t)
+	long := strings.Repeat("a", 201)
+	rec := httptest.NewRecorder()
+	auth.RequireAuth(api.CreateConnection)(rec, authedReq("POST", "/api/connections",
+		`{"name":"x","protocol":"ssh","host":"h","description":"`+long+`"}`, cv))
+	if rec.Code != 400 {
+		t.Fatalf("long description: code = %d, want 400", rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), "Description too long") {
+		t.Errorf("body = %s", rec.Body.String())
+	}
+
+	atLimit := strings.Repeat("a", 200)
+	rec = httptest.NewRecorder()
+	auth.RequireAuth(api.CreateConnection)(rec, authedReq("POST", "/api/connections",
+		`{"name":"x","protocol":"ssh","host":"h","description":"`+atLimit+`"}`, cv))
+	if rec.Code != 201 {
+		t.Fatalf("at-limit: code = %d, want 201 (body=%s)", rec.Code, rec.Body.String())
+	}
+}
+
+func TestAPIUpdateConnectionPartialNewFields(t *testing.T) {
+	api, auth, cv := newTestAPI(t)
+	rec := httptest.NewRecorder()
+	auth.RequireAuth(api.CreateConnection)(rec, authedReq("POST", "/api/connections",
+		`{"name":"a","protocol":"ssh","host":"h","color":"#ff0000","description":"d"}`, cv))
+	if rec.Code != 201 {
+		t.Fatalf("create: %d", rec.Code)
+	}
+	var created map[string]any
+	json.Unmarshal(rec.Body.Bytes(), &created)
+
+	// Update only description — color preserved
+	rec = httptest.NewRecorder()
+	req := authedReq("PUT", "/api/connections/1", `{"description":"updated"}`, cv)
+	req.SetPathValue("id", "1")
+	auth.RequireAuth(api.UpdateConnection)(rec, req)
+	if rec.Code != 200 {
+		t.Fatalf("update: %d", rec.Code)
+	}
+	var updated map[string]any
+	json.Unmarshal(rec.Body.Bytes(), &updated)
+	if updated["description"] != "updated" {
+		t.Errorf("description = %v, want updated", updated["description"])
+	}
+	if updated["color"] != "#ff0000" {
+		t.Errorf("color = %v, want preserved #ff0000", updated["color"])
+	}
+}
+
 func TestAPISessions(t *testing.T) {
 	api, auth, cv := newTestAPI(t)
 	api.Store.CreateSession("u1", "ssh", "h", nil)
