@@ -27,5 +27,9 @@ Thumbs.db
 # Worktrees
 .worktrees/
 
+# Superpowers (local-only docs & state)
+.superpowers/
+docs/superpowers/
+
 # Nix shell env
 .direnv/
