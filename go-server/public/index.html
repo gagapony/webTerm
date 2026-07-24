@@ -41,10 +41,15 @@
     .brand { flex-shrink: 0; }
     .toolbar-button.is-icon-only { width: 32px; min-width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
 
-    /* Login */
-    .login-overlay { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100% + 8%), transparent); backdrop-filter: blur(var(--blur-strength)); }
+    /* Login: the card is rendered with the exact same recipe as terminal
+       panes/topbar — a --bg gradient at --terminal-opacity floating directly
+       over the global .frost-layer (which already blurs the mesh background
+       app-wide). The overlay itself carries no dim and no backdrop-filter:
+       stacking a dim under the card would double the opacity (~76% dark) and
+       re-blur an already-frosted backdrop, making the card a dead dark slab. */
+    .login-overlay { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; }
     .login-overlay[hidden] { display: none; }
-    .login-card { width: min(400px, 90%); padding: 32px; border: 1px solid var(--line); border-radius: 20px; background: linear-gradient(180deg, color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100% + 14%), transparent), color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 100% + 14%), transparent)); backdrop-filter: blur(var(--blur-strength)); box-shadow: 0 24px 64px var(--shadow); }
+    .login-card { width: min(400px, 90%); padding: 32px; border: 1px solid var(--line); border-radius: 20px; background: linear-gradient(180deg, color-mix(in srgb, var(--bg) calc(var(--terminal-opacity) * 100%), transparent), color-mix(in srgb, var(--bg-top) calc(var(--terminal-opacity) * 98%), transparent)); box-shadow: inset 0 1px 0 color-mix(in srgb, var(--text) 4%, transparent), 0 24px 64px var(--shadow); }
     .login-card h1 { margin: 0 0 8px; font-size: 24px; font-weight: 700; color: var(--text); }
     .login-card p { margin: 0 0 24px; color: var(--muted); font-size: 13px; }
     .login-card .compact-field { margin-bottom: 16px; }
